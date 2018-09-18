@@ -1,0 +1,32 @@
+<PolicySet PolicySetId="91218d7a-62b9-22f8-7bda-964fc7aac0ab" PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-unless-permit" Version="1" xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17 http://docs.oasis-open.org/xacml/3.0/xacml-core-v3-schema-wd-17.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Description>Новая группа политик</Description>
+    <Target>
+    </Target>
+    <Policy PolicyId="686dac42-bce3-6769-539e-cceab05aea0c" Version="0.1" RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit">
+        <Description>p1</Description>
+        <Target>
+            <AnyOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">form</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:s_tst1:attr:01:resource:object" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" MustBePresent="false"/>
+                    </Match>
+                </AllOf>
+            </AnyOf>
+        </Target>
+        <Rule RuleId="2d164316-2e4b-a807-292a-2f669587159b" Effect="Permit"  >
+            <Description>Правило 1</Description>
+            <Condition>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:s_tst1:attr:01:resource:role" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" MustBePresent="false"/>
+                        </Apply>
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ADMIN</AttributeValue>
+                    </Apply>
+                </Apply>
+            </Condition>
+        </Rule>
+    </Policy>
+</PolicySet>
+
