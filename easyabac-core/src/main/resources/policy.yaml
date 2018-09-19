@@ -4,12 +4,12 @@ policies:
     target:
       logical-expression: or
       conditions:
-        - leftArg: action-id
-          function: equal
-          rightArg: Courses.CourseUnitEdit
-        - leftArg: action-id
-          function: equal
-          rightArg: Courses.CourseUnitDelete
+      - leftArg: action-id
+        function: equal
+        rightArg: Courses.CourseUnitEdit
+      - leftArg: action-id
+        function: equal
+        rightArg: Courses.CourseUnitDelete
     rules:
       combining-algorithm: deny-unless-permit
       rule1:
