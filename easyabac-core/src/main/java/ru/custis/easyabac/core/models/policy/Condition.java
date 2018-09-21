@@ -2,11 +2,15 @@ package ru.custis.easyabac.core.models.policy;
 
 import ru.custis.easyabac.core.models.attribute.Attribute;
 
+import java.util.List;
+
 public class Condition {
 
     private boolean negation;
-    private Attribute attribute;
-    private Attribute attributeValue;
+    private Attribute firstOperand;
+    private Attribute secondOperandAttribute;
+    private String secondOperandValue;
+    private List<String> secondOperandArray;
     private Function function;
     private String expression;
 
@@ -26,12 +30,20 @@ public class Condition {
         return negation;
     }
 
-    public Attribute getAttribute() {
-        return attribute;
+    public Attribute getFirstOperand() {
+        return firstOperand;
     }
 
-    public Attribute getAttributeValue() {
-        return attributeValue;
+    public Attribute getSecondOperandAttribute() {
+        return secondOperandAttribute;
+    }
+
+    public String getSecondOperandValue() {
+        return secondOperandValue;
+    }
+
+    public List<String> getSecondOperandArray() {
+        return secondOperandArray;
     }
 
     public Function getFunction() {

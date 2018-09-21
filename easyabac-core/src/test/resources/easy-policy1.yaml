@@ -1,12 +1,11 @@
-combiningAlgorithm: deny-unless-permit
 policies:
   policy2:
     title: policy2
-#    target:
-#      operation: OR
-#      conditions:
-#      - action-id == CourseUnit.Edit
-#      - action-id == CourseUnit.Delete
+    target:
+      operation: OR
+      conditions:
+      - action-id == CourseUnit.Edit
+      - action-id == CourseUnit.Delete
     rules:
       rule1:
         operation: OR
