@@ -2,21 +2,17 @@ combiningAlgorithm: deny-unless-permit
 policies:
   policy2:
     title: policy2
-    target:
-      operation: OR
-      conditions:
-      - action-id == CourseUnit.Edit
-      - action-id == CourseUnit.Delete
+#    target:
+#      operation: OR
+#      conditions:
+#      - action-id == CourseUnit.Edit
+#      - action-id == CourseUnit.Delete
     rules:
       rule1:
-        operation: AND
+        operation: OR
         conditions:
         - not object.CourseUnit.author ==  user.personId
         - object.CourseUnit.status in DRAFT, TEST
-        - object.CourseUnit.count > 15
       rule2:
-        operation: OR
         conditions:
-        - [not, object.CourseUnit.author, ==,  user.personId]
-        - [object.CourseUnit.status, in, DRAFT, TEST]
-        - [object.CourseUnit.count, '>', 15]
+        - object.CourseUnit.count > 15

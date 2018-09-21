@@ -5,7 +5,7 @@ import java.util.List;
 public class Rule {
     private Effect effect = Effect.Permit;
     private Operation operation = Operation.AND;
-    private List<List<String>> conditions;
+    private List<Condition> conditions;
 
     public Effect getEffect() {
         return effect;
@@ -24,11 +24,11 @@ public class Rule {
         this.operation = operation;
     }
 
-    public List<List<String>> getConditions() {
+    public List<Condition> getConditions() {
         return conditions;
     }
 
-    public void setConditions(List<List<String>> conditions) {
+    public void setConditions(List<Condition> conditions) {
         this.conditions = conditions;
     }
 }

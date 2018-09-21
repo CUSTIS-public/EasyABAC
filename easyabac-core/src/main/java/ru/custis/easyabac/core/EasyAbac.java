@@ -7,9 +7,6 @@ import org.wso2.balana.ParsingException;
 import org.wso2.balana.ctx.*;
 import org.wso2.balana.ctx.xacml3.Result;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.extensions.compactnotation.CompactConstructor;
-import org.yaml.snakeyaml.representer.Representer;
 import ru.custis.easyabac.core.models.attribute.Attribute;
 import ru.custis.easyabac.core.models.policy.EasyPolicy;
 
@@ -23,23 +20,23 @@ public class EasyAbac implements EasyAbacInit, EasyAbacAuth {
 
     private PDP pdpInstance;
 
+    private EasyPolicy easyPolicy;
 
-    public void initInstanceSimplePolicy(String policy, String attributes) {
-        Constructor constructor = new Constructor(EasyPolicy.class);
-        Representer representer = new Representer();
-//        representer.addTypeDescription(new TypeDescription())
-        Yaml yaml = new Yaml(new CompactConstructor());
-        EasyPolicy easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
+    public EasyPolicy getEasyPolicy() {
+        return easyPolicy;
+    }
+
+    public void initInstanceEasyPolicy(String policy, String attributes) {
 
     }
 
-    public void initInstanceSimplePolicy(InputStream policy, String attributes) {
+    public void initInstanceEasyPolicy(InputStream policy, String attributes) {
         Yaml yaml = new Yaml();
-        EasyPolicy easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
+        easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
 
     }
 
-    public void initInstanceSimplePolicy(EasyPolicy easyPolicy, List<Attribute> attributes) {
+    public void initInstanceEasyPolicy(EasyPolicy easyPolicy, List<Attribute> attributes) {
 
     }
 
