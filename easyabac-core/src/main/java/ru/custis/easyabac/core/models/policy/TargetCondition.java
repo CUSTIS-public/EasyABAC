@@ -3,8 +3,8 @@ package ru.custis.easyabac.core.models.policy;
 import ru.custis.easyabac.core.models.attribute.Attribute;
 
 public class TargetCondition {
-    private Attribute attribute;
-    private String attributeValue;
+    private Attribute firstOperand;
+    private String secondOperand;
     private Function function;
     private final String expression;
 
