@@ -17,7 +17,10 @@ policies:
         negation: false
         logical-expression: and
         conditions:
-        - leftArg: object.CourseUnit.authorId
+        - [not, object.CourseUnit.author, equal,  user.personId]
+        - [object.CourseUnit.status, DRAFT]
+        - negation: true
+          leftArg: object.CourseUnit.authorId
           function: equal
           rightArg: user.personId
         - leftArg: object.CourseUnit.status

@@ -1,9 +1,9 @@
-easy-policy:
+policies:
   #всегда один policy-set. политик одна или несколько
   #всегда policy-combining-algorithm: deny-unless-permit
   policy1:
     target: # target только у политик, у правил нет
-      logical-expression: or #один уоровень объединения or|and
+      operation: or #один уоровень объединения or|and
       conditions: # комбинация из вложенных AnyOf и AllOf
       - action-id == CourseUnit.Edit #только equal функция зависит от типа аргумента
       - action-id == CourseUnit.Delete
@@ -12,14 +12,14 @@ easy-policy:
       rule1:
         # всегда пермит  effect: permit
         # по умолчанию не указываем negation: false
-        logical-expression: and # заворачиваем в urn:oasis:names:tc:xacml:1.0:function:or или в and
+        operation: and # заворачиваем в urn:oasis:names:tc:xacml:1.0:function:or или в and, NOR и NAND
         conditions:  #- каждая строчка заворачиваем Apply
         - object.CourseUnit.authorId in user.personId # если атрибут не массив заворачиваем в one-and-only
         - not object.CourseUnit.status == 'DRAFT' #not заворачивает правило в urn:oasis:names:tc:xacml:1.0:function:not
       rule2:
         # всегда пермит  effect: permit
         negation: true  #not заворачивает все правила в urn:oasis:names:tc:xacml:1.0:function:not
-        logical-expression: and
+        operation: and
         conditions:
         - object.CourseUnit.curatorId == user.personId
         - object.CourseUnit.status == ['DRAFT', 'TEST'] #заворачивает в string-bag
