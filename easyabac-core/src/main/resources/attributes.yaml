@@ -5,7 +5,7 @@ easyabac:
     - code: name
       title:
     - code: role
-      array: true #
+      multiple: true
     - code: departmentId
       type: int
       datasource:

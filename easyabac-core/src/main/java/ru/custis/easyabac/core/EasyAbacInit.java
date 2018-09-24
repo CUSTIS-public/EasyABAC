@@ -9,7 +9,7 @@ import java.util.List;
 public interface EasyAbacInit {
     void initInstanceEasyPolicy(String policy, String attributes);
 
-    void initInstanceEasyPolicy(InputStream policy, String attributes);
+    void initInstanceEasyPolicy(InputStream policy, InputStream attributes);
 
     void initInstanceEasyPolicy(EasyPolicy easyPolicy, List<Attribute> attributes);
 

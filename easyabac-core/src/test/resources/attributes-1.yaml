@@ -1,0 +1,19 @@
+attributes:
+- code: id #по умолчанию тип строка, можно не задавать
+- code: name
+  title:
+- code: role
+  multiple: true
+- code: departmentId
+  type: int
+  datasource: DB
+- code: id
+  title: Идентификатор
+- code: accessLevel
+  title: Уровень доступа
+  allowableValues:  #Разрешенные значения, для валидации политики
+  - A
+  - B
+  - C
+
+

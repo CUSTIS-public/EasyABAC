@@ -2,13 +2,13 @@ package ru.custis.easyabac.core.models.attribute;
 
 import java.util.Set;
 
-public class Attribute {
+public class Attribute_ {
     private String code;
     private String title;
-    private Category category;
-    private DataType type;
+    private String type;
     private boolean multiple = false;
     private Set<String> allowableValues;
+    private Datasource datasource;
 
     public String getCode() {
         return code;
@@ -18,19 +18,19 @@ public class Attribute {
         this.code = code;
     }
 
-    public Category getCategory() {
-        return category;
+    public String getTitle() {
+        return title;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public DataType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(DataType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -50,11 +50,11 @@ public class Attribute {
         this.allowableValues = allowableValues;
     }
 
-    public String getTitle() {
-        return title;
+    public Datasource getDatasource() {
+        return datasource;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setDatasource(Datasource datasource) {
+        this.datasource = datasource;
     }
 }

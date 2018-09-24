@@ -1,6 +1,6 @@
 package ru.custis.easyabac.core.models.policy;
 
-        import java.util.Map;
+import java.util.Map;
 
 public class EasyPolicy {
     private String combiningAlgorithm = "deny-unless-permit";

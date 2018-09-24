@@ -8,6 +8,7 @@ import org.wso2.balana.ctx.*;
 import org.wso2.balana.ctx.xacml3.Result;
 import org.yaml.snakeyaml.Yaml;
 import ru.custis.easyabac.core.models.attribute.Attribute;
+import ru.custis.easyabac.core.models.attribute.EasyAttribute;
 import ru.custis.easyabac.core.models.policy.EasyPolicy;
 
 import java.io.InputStream;
@@ -22,6 +23,8 @@ public class EasyAbac implements EasyAbacInit, EasyAbacAuth {
 
     private EasyPolicy easyPolicy;
 
+    private EasyAttribute easyAttribute;
+
     public EasyPolicy getEasyPolicy() {
         return easyPolicy;
     }
@@ -30,10 +33,11 @@ public class EasyAbac implements EasyAbacInit, EasyAbacAuth {
 
     }
 
-    public void initInstanceEasyPolicy(InputStream policy, String attributes) {
+    public void initInstanceEasyPolicy(InputStream policy, InputStream attributes) {
         Yaml yaml = new Yaml();
         easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
 
+        easyAttribute = yaml.loadAs(attributes, EasyAttribute.class);
     }
 
     public void initInstanceEasyPolicy(EasyPolicy easyPolicy, List<Attribute> attributes) {
