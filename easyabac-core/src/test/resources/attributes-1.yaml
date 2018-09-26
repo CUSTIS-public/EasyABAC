@@ -1,19 +1,53 @@
-attributes:
-- code: id #по умолчанию тип строка, можно не задавать
-- code: name
-  title:
-- code: role
-  multiple: true
-- code: departmentId
-  type: int
-  datasource: DB
-- code: id
-  title: Идентификатор
-- code: accessLevel
-  title: Уровень доступа
-  allowableValues:  #Разрешенные значения, для валидации политики
-  - A
-  - B
-  - C
-
+model:
+  subject:
+    attributes:
+    - code: id #по умолчанию тип строка, можно не задавать
+    - code: name
+      title:
+    - code: role
+      multiple: true
+    - code: departmentId
+      type: int
+      datasource: DB
+    - code: id
+      title: Идентификатор
+    - code: accessLevel
+      title: Уровень доступа
+      allowableValues:  #Разрешенные значения, для валидации политики
+      - A
+      - B
+      - C
+  course:
+    title: Курс
+    actions:
+    - code: edit
+      title: редактировать курс
+    - code: view
+    - code: remove
+    attributes:
+    - code: id
+      type: int
+    - code: authorId
+      type: int
+    - code: departmentId
+      type: int
+      multiple: true
+    - code: name #по умолчанию строка, можно не задавать
+  lesson:
+    title: Учебная встреча, УВ
+    actions:
+    - code: edit
+      title: редактировать курс
+    - code: view
+    - code: remove
+    - code: print
+    attributes:
+    - code: id
+      title: Идентификатор
+    - code: accessLevel
+      title: Уровень доступа
+      allowableValues:  #Разрешенные значения, для валидации политики
+      - A
+      - B
+      - C
 

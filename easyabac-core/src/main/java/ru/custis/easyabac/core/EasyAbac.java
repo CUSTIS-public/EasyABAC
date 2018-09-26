@@ -7,51 +7,107 @@ import org.wso2.balana.ParsingException;
 import org.wso2.balana.ctx.*;
 import org.wso2.balana.ctx.xacml3.Result;
 import org.yaml.snakeyaml.Yaml;
-import ru.custis.easyabac.core.models.attribute.Attribute;
-import ru.custis.easyabac.core.models.attribute.EasyAttribute;
+import ru.custis.easyabac.core.models.attribute.Datasource;
+import ru.custis.easyabac.core.models.attribute.load.EasyAttributeModel;
 import ru.custis.easyabac.core.models.policy.EasyPolicy;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EasyAbac implements EasyAbacInit, EasyAbacAuth {
+public class EasyAbac implements EasyAbacAuth {
 
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
-    private PDP pdpInstance;
+    private final PDP pdpInstance;
 
-    private EasyPolicy easyPolicy;
 
-    private EasyAttribute easyAttribute;
+    private EasyAbac(PDP pdpInstance) {
 
-    public EasyPolicy getEasyPolicy() {
-        return easyPolicy;
+        this.pdpInstance = pdpInstance;
     }
 
-    public void initInstanceEasyPolicy(String policy, String attributes) {
 
+    public static class Builder {
+        private final EasyPolicy easyPolicy;
+        private final EasyAttributeModel easyAttributeModel;
+        private List<Datasource> datasources;
+        private Cache cache;
+        private Trace trace;
+
+        public Builder(String policy, String attributes) {
+
+            Yaml yaml = new Yaml();
+
+            easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
+
+            easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
+
+        }
+
+        public Builder(InputStream policy, InputStream attributes) {
+
+            Yaml yaml = new Yaml();
+
+            easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
+
+            easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
+        }
+
+        public Builder setDatasources(List<Datasource> datasources) {
+            this.datasources = datasources;
+            return this;
+        }
+
+        public Builder setCache(Cache cache) {
+            this.cache = cache;
+            return this;
+        }
+
+        public Builder setTrace(Trace trace) {
+            this.trace = trace;
+            return this;
+        }
+
+        public EasyAbac build() {
+            PolicyInitializer policyInitializer = new PolicyInitializer();
+            PDP pdpInstance = policyInitializer.getPDPNewInstance(easyPolicy, easyAttributeModel, datasources);
+
+            return new EasyAbac(pdpInstance);
+        }
     }
 
-    public void initInstanceEasyPolicy(InputStream policy, InputStream attributes) {
-        Yaml yaml = new Yaml();
-        easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
 
-        easyAttribute = yaml.loadAs(attributes, EasyAttribute.class);
-    }
-
-    public void initInstanceEasyPolicy(EasyPolicy easyPolicy, List<Attribute> attributes) {
-
-    }
-
-    public void initInstanceXacmlPolicy(String policyXacml, String attributes) {
-        PolicyInitializer policyInitializer = new PolicyInitializer();
-        pdpInstance = policyInitializer.getPDPNewInstance(policyXacml);
-    }
-
-    public String getXacmlPolicy() {
-        return "";
-    }
+//    public static EasyAbacAuth newInstance(String policy, String attributes, List<Datasource> datasources, Cache cache, Trace trace) {
+//
+//    }
+//
+//
+//    public static EasyAbacAuth newInstance(InputStream policy, InputStream attributes, List<Datasource> datasources, Cache cache, Trace trace) {
+//
+//        EasyAbac easyAbac = new EasyAbac();
+//
+//        Yaml yaml = new Yaml();
+//
+//        EasyPolicy easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
+//
+//        EasyAttributeModel easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
+//
+//    }
+//
+//    public static EasyAbacAuth newInstanceFromXacml(String policyXacml) {
+//
+//        PolicyInitializer policyInitializer = new PolicyInitializer();
+//        PDP pdpInstance = policyInitializer.getPDPNewInstance(policyXacml);
+//
+//        EasyAbac easyAbac = new EasyAbac(pdpInstance);
+//
+//    }
+//
+//
+//    public String getXacmlPolicy() {
+//        return "";
+//    }
 
     @Override
     public EasyAbacResponse auth(EasyAbacRequest request) {

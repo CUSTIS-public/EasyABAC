@@ -1,11 +1,13 @@
-package ru.custis.easyabac.core.models.attribute;
+package ru.custis.easyabac.core.models.attribute.load;
+
+import ru.custis.easyabac.core.models.attribute.Datasource;
 
 import java.util.Set;
 
-public class Attribute_ {
+public class EasyAttribute {
     private String code;
     private String title;
-    private String type;
+    private String type = "string";
     private boolean multiple = false;
     private Set<String> allowableValues;
     private Datasource datasource;

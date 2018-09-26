@@ -7,6 +7,9 @@ import org.wso2.balana.finder.AttributeFinder;
 import org.wso2.balana.finder.AttributeFinderModule;
 import org.wso2.balana.finder.PolicyFinder;
 import org.wso2.balana.finder.PolicyFinderModule;
+import ru.custis.easyabac.core.models.attribute.Datasource;
+import ru.custis.easyabac.core.models.attribute.load.EasyAttributeModel;
+import ru.custis.easyabac.core.models.policy.EasyPolicy;
 
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +20,7 @@ public class PolicyInitializer {
     public PDP getPDPNewInstance(String policyXacml) {
 
         PolicyFinder policyFinder = new PolicyFinder();
-        
+
         PolicyFinderModule stringPolicyFinderModule = new StringPolicyFinderModule(policyXacml);
         Set<PolicyFinderModule> policyModules = new HashSet<>();
 
@@ -34,6 +37,11 @@ public class PolicyInitializer {
         attributeFinder.setModules(finderModules);
 
         return new PDP(new PDPConfig(null, policyFinder, null, true));
+    }
+
+
+    public PDP getPDPNewInstance(EasyPolicy easyPolicy, EasyAttributeModel easyAttributeModel, List<Datasource> datasources) {
+            return getPDPNewInstance("");
     }
 
 }
