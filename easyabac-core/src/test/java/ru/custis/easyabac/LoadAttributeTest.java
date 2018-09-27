@@ -2,6 +2,7 @@ package ru.custis.easyabac;
 
 import org.junit.Test;
 import ru.custis.easyabac.core.EasyAbac;
+import ru.custis.easyabac.core.auth.EasyAbacAuth;
 import ru.custis.easyabac.core.models.attribute.load.EasyAttribute;
 
 import java.io.InputStream;
@@ -17,9 +18,10 @@ public class LoadAttributeTest {
                 .getClassLoader()
                 .getResourceAsStream("attributes-1.yaml");
 
-        EasyAbac.Builder(policy, attributes)
+//        EasyAbacAuth abacAuth = new EasyAbac.Builder(policy, attributes).build();
 
-        easyAbac.initInstanceEasyPolicy(policy, attributes);
+//        abacAuth.auth();
+
 
 //        EasyAbacTraceHandler handler;
 //
@@ -28,10 +30,10 @@ public class LoadAttributeTest {
 //        easyAbac.auth();
 //        handler.getLastTrace();
 
-        for (EasyAttribute attribute : easyAbac.getEasyAttributeModel().getModel().get("lesson").getAttributes()) {
-            System.out.println(attribute.getCode());
-            System.out.println(attribute.getType());
-        }
+//        for (EasyAttribute attribute : easyAbac.getEasyAttributeModel().getModel().get("lesson").getAttributes()) {
+//            System.out.println(attribute.getCode());
+//            System.out.println(attribute.getType());
+//        }
 
     }
 }

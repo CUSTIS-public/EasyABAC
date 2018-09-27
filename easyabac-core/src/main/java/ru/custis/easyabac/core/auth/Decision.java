@@ -1,4 +1,4 @@
-package ru.custis.easyabac.core;
+package ru.custis.easyabac.core.auth;
 
 public enum Decision {
     PERMIT(0), DENY(1), INDETERMINATE(2), NOT_APPLICABLE(3);

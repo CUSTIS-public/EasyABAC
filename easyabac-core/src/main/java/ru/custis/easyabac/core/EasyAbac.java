@@ -7,9 +7,15 @@ import org.wso2.balana.ParsingException;
 import org.wso2.balana.ctx.*;
 import org.wso2.balana.ctx.xacml3.Result;
 import org.yaml.snakeyaml.Yaml;
+import ru.custis.easyabac.core.auth.EasyAbacAuth;
+import ru.custis.easyabac.core.auth.EasyAbacRequest;
+import ru.custis.easyabac.core.auth.EasyAbacResponse;
+import ru.custis.easyabac.core.cache.Cache;
+import ru.custis.easyabac.core.init.PolicyInitializer;
 import ru.custis.easyabac.core.models.attribute.Datasource;
 import ru.custis.easyabac.core.models.attribute.load.EasyAttributeModel;
 import ru.custis.easyabac.core.models.policy.EasyPolicy;
+import ru.custis.easyabac.core.trace.Trace;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -54,22 +60,22 @@ public class EasyAbac implements EasyAbacAuth {
             easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
         }
 
-        public Builder setDatasources(List<Datasource> datasources) {
+        public Builder datasources(List<Datasource> datasources) {
             this.datasources = datasources;
             return this;
         }
 
-        public Builder setCache(Cache cache) {
+        public Builder cache(Cache cache) {
             this.cache = cache;
             return this;
         }
 
-        public Builder setTrace(Trace trace) {
+        public Builder trace(Trace trace) {
             this.trace = trace;
             return this;
         }
 
-        public EasyAbac build() {
+        public EasyAbacAuth build() {
             PolicyInitializer policyInitializer = new PolicyInitializer();
             PDP pdpInstance = policyInitializer.getPDPNewInstance(easyPolicy, easyAttributeModel, datasources);
 

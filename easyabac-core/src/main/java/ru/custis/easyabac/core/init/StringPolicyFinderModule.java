@@ -1,4 +1,4 @@
-package ru.custis.easyabac.core;
+package ru.custis.easyabac.core.init;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

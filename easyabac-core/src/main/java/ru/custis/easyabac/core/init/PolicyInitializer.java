@@ -1,4 +1,4 @@
-package ru.custis.easyabac.core;
+package ru.custis.easyabac.core.init;
 
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;

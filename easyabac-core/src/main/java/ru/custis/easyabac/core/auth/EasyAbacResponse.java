@@ -1,4 +1,4 @@
-package ru.custis.easyabac.core;
+package ru.custis.easyabac.core.auth;
 
 import org.wso2.balana.ctx.ResponseCtx;
 
