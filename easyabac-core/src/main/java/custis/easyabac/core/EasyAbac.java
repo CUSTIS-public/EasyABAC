@@ -100,4 +100,5 @@ public class EasyAbac implements EasyAbacAuth {
         log.debug(responseCtx.encode());
         return new EasyAbacResponse(responseCtx);
     }
+
 }
