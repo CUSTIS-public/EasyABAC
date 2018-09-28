@@ -1,4 +1,4 @@
-package main.java.custis.easyabac.boot;
+package custis.easyabac.boot;
 
 import custis.easyabac.api.config.EnablePermissionCheckers;
 import org.springframework.context.annotation.ComponentScan;

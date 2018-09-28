@@ -1,6 +1,5 @@
 package custis.easyabac.demo.config;
 
-import custis.easyabac.boot.EasyABACConfiguration;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -20,7 +19,7 @@ import javax.sql.DataSource;
 @EnableJpaRepositories("custis.easyabac.demo.repository")
 @EnableConfigurationProperties
 @EnableAutoConfiguration
-@Import(EasyABACConfiguration.class)
+@Import(custis.easyabac.boot.EasyABACConfiguration.class)
 public class ServiceDefaultApplicationContext {
 
     @Bean

@@ -2,8 +2,9 @@ package custis.easyabac.api.core.call;
 
 import custis.easyabac.api.NotExpectedResultException;
 import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.RequestId;
 
-import java.util.List;
+import java.util.Map;
 
 public class CheckingResultConverter implements ResultConverter {
 
@@ -17,9 +18,9 @@ public class CheckingResultConverter implements ResultConverter {
         this.actionPatternType = actionPatternType;
     }
 
-    public Object convert(List<AuthResponse> responses) {
+    public Object convert(Map<RequestId, AuthResponse> responses) {
         boolean check = false;
-        for (AuthResponse response : responses) {
+        for (AuthResponse response : responses.values()) {
             if (response.getResult().equals(decisionType.getAuthResult())) {
                 if (actionPatternType == ActionPatternType.ANY) {
                     check = true;

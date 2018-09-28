@@ -7,6 +7,7 @@ import custis.easyabac.api.impl.AttributeValueExtractor;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.RequestId;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -34,12 +35,12 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
     }
 
     @Override
-    protected List<List<AuthAttribute>> generateAttributeRequest(Object[] arguments) {
+    protected Map<RequestId, List<AuthAttribute>> generateAttributeRequest(Object[] arguments) {
         return attributesValuesGetter.getAttributes(arguments);
     }
 
     @Override
-    protected Object convertResponse(List<AuthResponse> responses) {
+    protected Object convertResponse(Map<RequestId, AuthResponse> responses) {
         return converter.convert(responses);
     }
 
@@ -119,16 +120,16 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
 
 
     private interface AttributesValuesGetter {
-        List<List<AuthAttribute>> getAttributes(Object[] objects);
+        Map<RequestId, List<AuthAttribute>> getAttributes(Object[] objects);
     }
 
     private class SingleResourceAndAction implements AttributesValuesGetter {
 
         @Override
-        public List<List<AuthAttribute>> getAttributes(Object[] objects) {
-            return new ArrayList<List<AuthAttribute>>() {
+        public Map<RequestId, List<AuthAttribute>> getAttributes(Object[] objects) {
+            return new HashMap<RequestId, List<AuthAttribute>>() {
                 {
-                    add(AttributeValueExtractor.collectAttributes(objects[0], objects[1]));
+                    put(RequestId.newRandom(), AttributeValueExtractor.collectAttributes(objects[0], objects[1]));
                 }
             };
         }
@@ -145,23 +146,23 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
             this.actions = actions;
         }
 
-        public List<List<AuthAttribute>> getAttributes(Object[] objects) {
+        public Map<RequestId, List<AuthAttribute>> getAttributes(Object[] objects) {
             Object object = actions.isEmpty() ? objects[1] : actions;
-            return (List<List<AuthAttribute>>) ((List) object).stream()
+            return (Map<RequestId, List<AuthAttribute>>) ((List) object).stream()
                     .map(o -> AttributeValueExtractor.collectAttributes(objects[0], o))
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toMap(o -> RequestId.newRandom(), o -> o));
         }
     }
 
     private class MapAttributeValueGetter implements AttributesValuesGetter {
 
         @Override
-        public List<List<AuthAttribute>> getAttributes(Object[] objects) {
+        public Map<RequestId, List<AuthAttribute>> getAttributes(Object[] objects) {
             Object object = objects[0];
-            List<List<AuthAttribute>> attributes = new ArrayList<>();
+            Map<RequestId, List<AuthAttribute>> attributes = new HashMap<>();
             for (Object ob : ((Map) object).entrySet()) {
                 Map.Entry castedObj = (Map.Entry) ob;
-                attributes.add(AttributeValueExtractor.collectAttributes(castedObj.getKey(), castedObj.getValue()));
+                attributes.put(RequestId.newRandom(), AttributeValueExtractor.collectAttributes(castedObj.getKey(), castedObj.getValue()));
             }
             return attributes;
         }

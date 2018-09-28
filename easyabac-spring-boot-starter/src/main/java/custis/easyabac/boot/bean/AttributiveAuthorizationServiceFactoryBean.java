@@ -1,4 +1,4 @@
-package main.java.custis.easyabac.boot.bean;
+package custis.easyabac.boot.bean;
 
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AttributiveAuthorizationServiceImpl;

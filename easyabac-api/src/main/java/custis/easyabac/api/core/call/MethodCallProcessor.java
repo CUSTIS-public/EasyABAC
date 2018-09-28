@@ -4,9 +4,11 @@ import custis.easyabac.api.core.PermissionCheckerInformation;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.RequestId;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 public abstract class MethodCallProcessor {
     protected final AttributiveAuthorizationService attributiveAuthorizationService;
@@ -25,12 +27,12 @@ public abstract class MethodCallProcessor {
 
 
     public Object execute(Object[] arguments) {
-        List<List<AuthAttribute>> req = generateAttributeRequest(arguments);
-        List<AuthResponse> responses = attributiveAuthorizationService.authorizeMultiple(req);
+        Map<RequestId, List<AuthAttribute>> req = generateAttributeRequest(arguments);
+        Map<RequestId, AuthResponse> responses = attributiveAuthorizationService.authorizeMultiple(req);
         return convertResponse(responses);
     }
 
-    protected abstract Object convertResponse(List<AuthResponse> responses);
+    protected abstract Object convertResponse(Map<RequestId, AuthResponse> responses);
 
-    protected abstract List<List<AuthAttribute>> generateAttributeRequest(Object[] arguments);
+    protected abstract Map<RequestId, List<AuthAttribute>> generateAttributeRequest(Object[] arguments);
 }

@@ -5,10 +5,12 @@ import custis.easyabac.api.core.UnsupportedPermissionCheckerMethodSignature;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.RequestId;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Call Processor for dynamic methods
@@ -25,12 +27,12 @@ public class GettingMethodCallProcessor extends MethodCallProcessor {
     }
 
     @Override
-    protected List<List<AuthAttribute>> generateAttributeRequest(Object[] arguments) {
-        return Collections.emptyList();
+    protected Map<RequestId, List<AuthAttribute>> generateAttributeRequest(Object[] arguments) {
+        return Collections.emptyMap();
     }
 
     @Override
-    protected Object convertResponse(List<AuthResponse> responses) {
+    protected Object convertResponse(Map<RequestId, AuthResponse> responses) {
         return Void.class;
     }
 
