@@ -14,6 +14,10 @@
     <modules>
         <module>easyabac-core</module>
         <!--<module>easyabac-example</module>-->
+        <module>example-project</module>
+        <module>easyabac-api</module>
+        <module>easyabac-pdp</module>
+        <module>easyabac-spring-boot-starter</module>
     </modules>
 
     <properties>
