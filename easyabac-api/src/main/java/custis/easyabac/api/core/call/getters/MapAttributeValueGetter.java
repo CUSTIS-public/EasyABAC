@@ -59,11 +59,6 @@ public class MapAttributeValueGetter extends AbstractAttributesValuesGetter {
             }
         }
 
-        Map<RequestId, List<AuthAttribute>> attributes = new HashMap<>();
-        for (Object ob : ((Map) object).entrySet()) {
-            Map.Entry castedObj = (Map.Entry) ob;
-            attributes.put(RequestId.newRandom(), AttributeValueExtractor.collectAttributes(castedObj.getKey(), castedObj.getValue()));
-        }
-        return attributes;
+        return result;
     }
 }
