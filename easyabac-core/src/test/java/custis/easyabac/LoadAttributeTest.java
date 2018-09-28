@@ -1,7 +1,5 @@
 package custis.easyabac;
 
-import custis.easyabac.core.EasyAbac;
-import custis.easyabac.core.auth.EasyAbacAuth;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -17,7 +15,7 @@ public class LoadAttributeTest {
                 .getClassLoader()
                 .getResourceAsStream("attributes-1.yaml");
 
-        EasyAbacAuth abacAuth = new EasyAbac.Builder(policy, attributes).build();
+//        EasyAbacAuth abacAuth = new EasyAbac.Builder(policy, attributes).build();
 
 //        abacAuth.auth();
 

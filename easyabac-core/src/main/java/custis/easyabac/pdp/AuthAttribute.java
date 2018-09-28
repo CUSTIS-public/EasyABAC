@@ -1,13 +1,9 @@
 package custis.easyabac.pdp;
 
-import lombok.Builder;
-import lombok.Getter;
-
 import java.util.Arrays;
 import java.util.List;
 
-@Getter
-@Builder
+
 public class AuthAttribute {
 
     private String id;
@@ -21,5 +17,13 @@ public class AuthAttribute {
     public AuthAttribute(String id, String value) {
         this.id = id;
         this.values = Arrays.asList(value);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<String> getValues() {
+        return values;
     }
 }
