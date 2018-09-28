@@ -53,7 +53,7 @@ public class EasyABACPermissionCheckerFactory implements BeanClassLoaderAware, B
      *
      * @return
      */
-    private EasyABACPermissionChecker<?, ?> getTargetPermissionChecker(PermissionCheckerInformation information) {
+    private EasyABACPermissionChecker<?, ?, ?> getTargetPermissionChecker(PermissionCheckerInformation information) {
 
         // FIXME JpaEntityInformation<?, ?> entityInformation = getEntityInformation(information.getResourceType());
 

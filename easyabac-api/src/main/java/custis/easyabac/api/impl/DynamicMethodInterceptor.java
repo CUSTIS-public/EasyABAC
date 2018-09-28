@@ -1,8 +1,8 @@
 package custis.easyabac.api.impl;
 
 import custis.easyabac.api.core.PermissionCheckerInformation;
-import custis.easyabac.api.core.call.AttributiveMethodCallFactory;
-import custis.easyabac.api.core.call.MethodCallProcessor;
+import custis.easyabac.api.core.call.callprocessor.MethodCallProcessorFactory;
+import custis.easyabac.api.core.call.callprocessor.MethodCallProcessor;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -29,7 +29,7 @@ public class DynamicMethodInterceptor implements MethodInterceptor {
     private void lookupMethods(PermissionCheckerInformation permissionCheckerInformation) {
         if (permissionCheckerInformation.hasAuthorizationCalls()) {
             for (Method authorizationCall : permissionCheckerInformation.getAuthorizationCalls()) {
-                callProcessors.put(authorizationCall, AttributiveMethodCallFactory.createCallProcessor(permissionCheckerInformation, authorizationCall, attributiveAuthorizationService));
+                callProcessors.put(authorizationCall, MethodCallProcessorFactory.createCallProcessor(permissionCheckerInformation, authorizationCall, attributiveAuthorizationService));
             }
         }
 
