@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static custis.easyabac.api.impl.AttributeValueExtractor.collectAttributes;
 
 @Slf4j
-public class EasyABACPermissionChecker<T, A> implements ConcreteUserPermissionChecker<T, A> {
+public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissionChecker<T, A, U> {
 
     private AttributiveAuthorizationService attributiveAuthorizationService;
 
@@ -113,4 +113,44 @@ public class EasyABACPermissionChecker<T, A> implements ConcreteUserPermissionCh
         return null;
     }
 
+
+    @Override
+    public void ensurePermittedForUser(T entity, A operation, U user) throws NotPermittedException {
+
+    }
+
+    @Override
+    public void ensurePermittedAnyForUser(T entity, List<A> operations, U user) throws NotPermittedException {
+
+    }
+
+    @Override
+    public void ensurePermittedAllForUser(T entity, List<A> operations, U user) throws NotPermittedException {
+
+    }
+
+    @Override
+    public void ensurePermittedAllForUser(Map<T, A> operationsMap, U user) throws NotPermittedException {
+
+    }
+
+    @Override
+    public void ensurePermittedAnyForUser(Map<T, A> operationsMap, U user) throws NotPermittedException {
+
+    }
+
+    @Override
+    public List<A> getPermittedActionsForUser(T entity, List<A> operations, U user) {
+        return null;
+    }
+
+    @Override
+    public Map<T, List<A>> getPermittedActionsForUser(Map<T, List<A>> operationsMap, U user) {
+        return null;
+    }
+
+    @Override
+    public Map<T, List<A>> getPermittedActionsForUser(List<T> entities, List<A> operations, U user) {
+        return null;
+    }
 }

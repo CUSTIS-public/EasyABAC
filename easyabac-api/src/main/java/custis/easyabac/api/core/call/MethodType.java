@@ -5,7 +5,7 @@ import custis.easyabac.api.core.UnsupportedPermissionCheckerMethodSignature;
 import java.lang.reflect.Method;
 
 public enum MethodType {
-    ENSURE("ensure"), IS("is"), GET("getAttribute");
+    ENSURE("ensure"), IS("is"), GET("get");
 
     private final String code;
 

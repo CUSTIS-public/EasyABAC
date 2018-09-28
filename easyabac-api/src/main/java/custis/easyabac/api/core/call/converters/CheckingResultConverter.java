@@ -1,6 +1,9 @@
-package custis.easyabac.api.core.call;
+package custis.easyabac.api.core.call.converters;
 
 import custis.easyabac.api.NotExpectedResultException;
+import custis.easyabac.api.core.call.ActionPatternType;
+import custis.easyabac.api.core.call.DecisionType;
+import custis.easyabac.api.core.call.MethodType;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.RequestId;
 
@@ -18,7 +21,7 @@ public class CheckingResultConverter implements ResultConverter {
         this.actionPatternType = actionPatternType;
     }
 
-    public Object convert(Map<RequestId, AuthResponse> responses) {
+    public Object convert(Object[] arguments, Map<RequestId, AuthResponse> responses) {
         boolean check = false;
         for (AuthResponse response : responses.values()) {
             if (response.getResult().equals(decisionType.getAuthResult())) {

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 
 @RestController
@@ -31,14 +32,19 @@ public class Resource {
     public String index() throws NotExpectedResultException {
         Order order = new Order(new Customer("asdasda", "asdasd", new Branch("gggggg")),
                 new Branch("pppppp"), BigDecimal.ZERO);
-        orderPermissionChecker.isPermitted(order, OrderAction.VIEW);
+        /*orderPermissionChecker.isPermitted(order, OrderAction.VIEW);
         orderPermissionChecker.isPermittedRead(order);
-        orderPermissionChecker.ensureDeniedAll(new HashMap<Order, OrderAction>() {
+        orderPermissionChecker.isPermittedReadOrApprove(order);
+        */
+       /* orderPermissionChecker.ensureDeniedAll(new HashMap<Order, OrderAction>() {
             {
                 put(order, OrderAction.VIEW);
                 put(order, OrderAction.CREATE);
             }
-        });
+        });*/
+       orderPermissionChecker.ensureDeniedAll(order, Arrays.asList(OrderAction.VIEW, OrderAction.APPROVE));
+
+
 
 
         return "AZAZAZAZA";

@@ -3,7 +3,7 @@ package custis.easyabac.pdp;
 public class AuthResponse {
 
     public AuthResult getResult() {
-        return AuthResult.PERMIT;
+        return AuthResult.DENY;
     }
 
     public enum AuthResult {
