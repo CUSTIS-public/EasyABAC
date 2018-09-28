@@ -1,27 +1,25 @@
 package custis.easyabac.core;
 
-import custis.easyabac.core.auth.EasyAbacAuth;
-import custis.easyabac.core.auth.EasyAbacRequest;
-import custis.easyabac.core.auth.EasyAbacResponse;
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.init.PolicyInitializer;
 import custis.easyabac.core.model.attribute.Datasource;
 import custis.easyabac.core.model.attribute.load.EasyAttributeModel;
 import custis.easyabac.core.model.policy.EasyPolicy;
 import custis.easyabac.core.trace.Trace;
+import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.pdp.AuthAttribute;
+import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.RequestId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.PDP;
-import org.wso2.balana.ParsingException;
-import org.wso2.balana.ctx.*;
-import org.wso2.balana.ctx.xacml3.Result;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class EasyAbac implements EasyAbacAuth {
+public class EasyAbac implements AttributiveAuthorizationService {
 
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
@@ -31,6 +29,16 @@ public class EasyAbac implements EasyAbacAuth {
     private EasyAbac(PDP pdpInstance) {
 
         this.pdpInstance = pdpInstance;
+    }
+
+    @Override
+    public AuthResponse authorize(List<AuthAttribute> attributes) {
+        return null;
+    }
+
+    @Override
+    public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
+        return null;
     }
 
 
@@ -75,7 +83,7 @@ public class EasyAbac implements EasyAbacAuth {
             return this;
         }
 
-        public EasyAbacAuth build() {
+        public AttributiveAuthorizationService build() {
             PolicyInitializer policyInitializer = new PolicyInitializer();
             PDP pdpInstance = policyInitializer.getPDPNewInstance(easyPolicy, easyAttributeModel, datasources);
 
@@ -83,22 +91,6 @@ public class EasyAbac implements EasyAbacAuth {
         }
     }
 
-    @Override
-    public EasyAbacResponse auth(EasyAbacRequest request) {
-        AbstractRequestCtx requestCtx;
-        ResponseCtx responseCtx;
-        try {
-            requestCtx = RequestCtxFactory.getFactory().getRequestCtx(request.getXacmlRequest().replaceAll(">\\s+<", "><"));
-            responseCtx = pdpInstance.evaluate(requestCtx);
-        } catch (ParsingException e) {
-            List<String> code = new ArrayList<>();
-            code.add(Status.STATUS_SYNTAX_ERROR);
-            String error = "Invalid request  : " + e.getMessage();
-            Status status = new Status(code, error);
-            responseCtx = new ResponseCtx(new Result(AbstractResult.DECISION_INDETERMINATE, status));
-        }
-        log.debug(responseCtx.encode());
-        return new EasyAbacResponse(responseCtx);
-    }
+
 
 }
