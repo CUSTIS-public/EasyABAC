@@ -1,6 +1,7 @@
 package custis.easyabac.pdp;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AttributiveAuthorizationServiceImpl implements AttributiveAuthorizationService {
@@ -16,10 +17,10 @@ public class AttributiveAuthorizationServiceImpl implements AttributiveAuthoriza
     }
 
     @Override
-    public List<AuthResponse> authorizeMultiple(List<List<AuthAttribute>> attributes) {
+    public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
         System.out.println("MDP request");
-        return attributes.stream()
-                .map(authAttributes -> authorize(authAttributes))
-                .collect(Collectors.toList());
+        return attributes.entrySet()
+                .stream()
+                .collect(Collectors.toMap(o -> o.getKey(), o -> authorize(o.getValue())));
     }
 }
