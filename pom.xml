@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.custis</groupId>
+    <groupId>custis.easyabac</groupId>
     <artifactId>easyabac</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>easyabac</name>
@@ -14,6 +14,10 @@
     <modules>
         <module>easyabac-core</module>
         <!--<module>easyabac-example</module>-->
+        <module>example-project</module>
+        <module>easyabac-api</module>
+        <module>easyabac-pdp</module>
+        <module>easyabac-spring-boot-starter</module>
     </modules>
 
     <properties>

@@ -1,0 +1,22 @@
+spring:
+  jpa:
+    show-sql: false
+    database-platform: H2
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: false
+        format_sql: false
+
+joker-db:
+  jdbc-url: jdbc:h2:mem:testdb
+  username: sa
+  password:
+  driver-class-name: org.h2.Driver
+  testOnBorrow: true
+  validationQuery: SELECT 1
+
+
+
