@@ -1,6 +1,5 @@
 package custis.easyabac.test;
 
-import custis.easyabac.api.tests.EasyAbacTestable;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
@@ -9,6 +8,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.codehaus.plexus.util.StringUtils;
@@ -19,10 +19,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
-@Mojo( name = "generate")
+@Mojo( name = "generate", requiresDependencyResolution = ResolutionScope.COMPILE)
 public class TestGenerationMojo extends AbstractMojo {
+
+    // input paramters
 
     @Parameter( property = "generate.testPath", defaultValue = "src/test/java" )
     private String testPath;
@@ -33,8 +34,8 @@ public class TestGenerationMojo extends AbstractMojo {
     @Parameter( property = "generate.basePackage", defaultValue = "easyabac.autogen" )
     private String basePackage;
 
-    @Parameter( property = "generate.permissionCheckersPackage", defaultValue = "easyabac.permissioncheckers" )
-    private String permissionCheckersPackage;
+
+    // injectable
 
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
@@ -51,6 +52,17 @@ public class TestGenerationMojo extends AbstractMojo {
 
     private String testFolder;
     private String testResourceFolder;
+
+
+    /**
+     * Defines files in the source directories to include (all .java files by default).
+     */
+    private String[] includes = {"**/*.java"};
+
+    /**
+     * Defines which of the included files in the source directories to exclude (non by default).
+     */
+    private String[] excludes;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -78,19 +90,30 @@ public class TestGenerationMojo extends AbstractMojo {
 
             File basedir = project.getBasedir();
             System.out.println(basedir.toPath());
+
+
+
         } catch (DependencyResolutionRequiredException e) {
             e.printStackTrace();
         }
 
 
-
-        Reflections reflections = new Reflections(permissionCheckersPackage);
-        Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(EasyAbacTestable.class);
+        Reflections reflections = new Reflections("");
+        for (String allType : reflections.getAllTypes()) {
+            System.out.println(allType);
+        }
     }
 
     private void createTestStructure() {
-        new File(testPath).mkdirs();
-        new File(testResourcePath).mkdirs();
+        new File(testFolder).mkdirs();
+        new File(testResourceFolder).mkdirs();
+
+        createTestForPolicies();
+
+    }
+
+    private void createTestForPolicies() {
+
     }
 
     private void prepareParameters() {
@@ -111,6 +134,8 @@ public class TestGenerationMojo extends AbstractMojo {
     private void clearOld() {
         deleteDirectory(new File(testFolder));
         deleteDirectory(new File(testResourceFolder));
+
+
     }
 
     private static boolean deleteDirectory(File directoryToBeDeleted) {

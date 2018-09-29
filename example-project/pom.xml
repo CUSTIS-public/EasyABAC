@@ -134,7 +134,6 @@
                     <testPath>src/test/java</testPath>
                     <testResourcePath>src/test/resources</testResourcePath>
                     <basePackage>custis.easyabac.autogen</basePackage>
-                    <permissionCheckersPackage>custis.easyabac.demo.permissionchecker</permissionCheckersPackage>
                 </configuration>
             </plugin>
         </plugins>
