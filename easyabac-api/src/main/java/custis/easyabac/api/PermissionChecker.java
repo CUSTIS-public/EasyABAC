@@ -11,5 +11,5 @@ import org.springframework.stereotype.Indexed;
 @Indexed
 public interface PermissionChecker<T, A> {
 
-    AuthResponse.AuthResult authorize(T entity, A action);
+    AuthResponse.Decision authorize(T entity, A action);
 }

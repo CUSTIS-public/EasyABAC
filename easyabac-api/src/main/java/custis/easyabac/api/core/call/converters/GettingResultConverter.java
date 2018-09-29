@@ -6,7 +6,6 @@ import custis.easyabac.api.core.call.MethodType;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.RequestId;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class GettingResultConverter implements ResultConverter {
 
             List<?> returnList = responses.values()
                     .stream()
-                    .filter(authResponse -> authResponse.getResult() == decisionType.getAuthResult())
+                    .filter(authResponse -> authResponse.getDecision() == decisionType.getDecision())
                     .collect(Collectors.toList());
 
             return returnList;

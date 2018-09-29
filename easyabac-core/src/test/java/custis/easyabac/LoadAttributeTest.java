@@ -1,5 +1,6 @@
 package custis.easyabac;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -7,6 +8,7 @@ import java.io.InputStream;
 public class LoadAttributeTest {
 
     @Test
+    @Ignore
     public void loadAttribute() {
         InputStream policy = this.getClass()
                 .getClassLoader()

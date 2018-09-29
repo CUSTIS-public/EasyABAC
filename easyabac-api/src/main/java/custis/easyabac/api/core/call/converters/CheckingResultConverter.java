@@ -24,7 +24,7 @@ public class CheckingResultConverter implements ResultConverter {
     public Object convert(Object[] arguments, Map<RequestId, AuthResponse> responses) {
         boolean check = false;
         for (AuthResponse response : responses.values()) {
-            if (response.getResult().equals(decisionType.getAuthResult())) {
+            if (response.getDecision().equals(decisionType.getDecision())) {
                 if (actionPatternType == ActionPatternType.ANY) {
                     check = true;
                     break;
@@ -45,7 +45,7 @@ public class CheckingResultConverter implements ResultConverter {
 
         if (!check) {
             if (methodType == MethodType.ENSURE) {
-                throw new NotExpectedResultException(decisionType.getAuthResult(), "Not expected");
+                throw new NotExpectedResultException(decisionType.getDecision(), "Not expected");
             } else {
                 return false;
             }
