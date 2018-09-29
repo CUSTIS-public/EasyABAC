@@ -7,17 +7,15 @@ import custis.easyabac.api.core.call.ActionPatternType;
 import custis.easyabac.api.core.call.MethodType;
 import custis.easyabac.api.core.call.converters.CheckingResultConverter;
 import custis.easyabac.api.core.call.converters.ResultConverter;
-import custis.easyabac.api.core.call.getters.AttributesValuesGetter;
-import custis.easyabac.api.core.call.getters.ListAttributesValueGetter;
+import custis.easyabac.api.core.call.getters.RequestGenerator;
+import custis.easyabac.api.core.call.getters.TwoArgumentsValueGetter;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static custis.easyabac.api.core.call.ActionPatternType.ALL;
-import static custis.easyabac.api.core.call.ActionPatternType.ANY;
-import static custis.easyabac.api.core.call.ActionPatternType.EMPTY;
+import static custis.easyabac.api.core.call.ActionPatternType.*;
 import static custis.easyabac.api.core.call.Constants.LEXEM_AND;
 import static custis.easyabac.api.core.call.Constants.LEXEM_OR;
 
@@ -38,31 +36,17 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
         checkParameters();
     }
 
-    private void checkParameters() {
-        // if actionPatternType = EMPTY than no List or Maps
-        if (actionPatternType == EMPTY) {
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            for (Class<?> parameterType : parameterTypes) {
-                if (permissionCheckerInformation.getResourceType().isAssignableFrom(parameterType) || permissionCheckerInformation.getActionType().isAssignableFrom(parameterType)) {
-                    return;
-                } else {
-                    throw new UnsupportedPermissionCheckerMethodSignature(method, "Method signature expects no List or Map parameters. Try to use All or Any postfix");
-                }
-            }
-        }
-    }
-
     @Override
     protected ResultConverter prepareResultConverter() {
         return new CheckingResultConverter(methodType, decisionType, actionPatternType);
     }
 
     @Override
-    protected Optional<AttributesValuesGetter> prepareCustomAttributesValuesGetter() {
+    protected Optional<RequestGenerator> prepareCustomAttributesValuesGetter() {
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (parameterTypes.length == 1) {
             Class<?> first = parameterTypes[0];
-            if (permissionCheckerInformation.getResourceType().isAssignableFrom(first)) {
+            if (checkerInfo.getResourceType().isAssignableFrom(first)) {
                 int methodStartIndex = methodType.getCode().length() + decisionType.getSecondForm().length();
                 String lowerMethodName = method.getName().toLowerCase();
                 int trimEnding = (lowerMethodName.endsWith(ALL.getCode()) || lowerMethodName.endsWith(ANY.getCode())) ? actionPatternType.getCode().length() : 0;
@@ -72,15 +56,32 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
 
                 String[] splittedActions = actionsString.toLowerCase().split(LEXEM_OR);
                 if (splittedActions.length != 1) {
-                    return Optional.of(new ListAttributesValueGetter(permissionCheckerInformation, Arrays.asList(splittedActions)));
+                    return Optional.of(new TwoArgumentsValueGetter(checkerInfo, Arrays.asList(splittedActions)));
                 } else {
                     splittedActions = actionsString.toLowerCase().split(LEXEM_AND);
-                    return Optional.of(new ListAttributesValueGetter(permissionCheckerInformation, Arrays.asList(splittedActions)));
+                    return Optional.of(new TwoArgumentsValueGetter(checkerInfo, Arrays.asList(splittedActions)));
                 }
             }
         }
         return Optional.empty();
     }
+
+    private void checkParameters() {
+        // if actionPatternType = EMPTY than no List or Maps
+        if (actionPatternType == EMPTY) {
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            for (Class<?> parameterType : parameterTypes) {
+                if (checkerInfo.getResourceType().isAssignableFrom(parameterType) || checkerInfo.getActionType().isAssignableFrom(parameterType)) {
+                    return;
+                } else {
+                    throw new UnsupportedPermissionCheckerMethodSignature(method, "Method signature expects no List or Map parameters. Try to use All or Any postfix");
+                }
+            }
+        } else {
+            // check generic types or List or Map
+        }
+    }
+
 
     private void checkExceptions() {
         Class<?>[] exceptionTypes = method.getExceptionTypes();

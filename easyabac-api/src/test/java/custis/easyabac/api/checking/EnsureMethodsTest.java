@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,11 +64,51 @@ public class EnsureMethodsTest {
     }
 
     @Test
-    public void testMap() {
+    public void testMapOfSingleObjects() {
         Order order = new Order("1", BigDecimal.ZERO);
         Map<Order, OrderAction> map = Stream.of(order)
                 .collect(Collectors.toMap(o -> order, o -> OrderAction.VIEW));
         checker.ensureDeniedAll(map);
+
+        Map<OrderAction, Order> map2 = Stream.of(order)
+                .collect(Collectors.toMap(o -> OrderAction.VIEW, o -> order));
+        checker.ensureDenied2All(map2);
+    }
+
+    @Test
+    public void testMapOfSingleObjectAndList() {
+        Order order = new Order("1", BigDecimal.ZERO);
+        Map<Order, List<OrderAction>> map = Stream.of(order)
+                .collect(Collectors.toMap(o -> order, o -> Arrays.asList(OrderAction.VIEW)));
+        checker.ensureDenied3All(map);
+
+        Map<OrderAction, List<Order>> map2 = Stream.of(order)
+                .collect(Collectors.toMap(o -> OrderAction.VIEW, o -> Arrays.asList(order)));
+        checker.ensureDenied4All(map2);
+    }
+
+    @Test
+    public void testMapOfListAndSingleObject() {
+        Order order = new Order("1", BigDecimal.ZERO);
+        Map<List<Order>, OrderAction> map = Stream.of(order)
+                .collect(Collectors.toMap(o -> Arrays.asList(order), o -> OrderAction.VIEW));
+        checker.ensureDenied5All(map);
+
+        Map<List<OrderAction>, Order> map2 = Stream.of(order)
+                .collect(Collectors.toMap(o -> Arrays.asList(OrderAction.VIEW), o -> order));
+        checker.ensureDenied6All(map2);
+    }
+
+    @Test
+    public void testMapOfLists() {
+        Order order = new Order("1", BigDecimal.ZERO);
+        Map<List<Order>, List<OrderAction>> map = Stream.of(order)
+                .collect(Collectors.toMap(o -> Arrays.asList(order), o -> Arrays.asList(OrderAction.VIEW)));
+        checker.ensureDenied7All(map);
+
+        Map<List<OrderAction>, List<Order>> map2 = Stream.of(order)
+                .collect(Collectors.toMap(o -> Arrays.asList(OrderAction.VIEW), o -> Arrays.asList(order)));
+        checker.ensureDenied8All(map2);
     }
 
     @BeforeClass
