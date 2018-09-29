@@ -11,17 +11,18 @@ import org.wso2.balana.finder.AttributeFinderModule;
 import org.wso2.balana.finder.PolicyFinder;
 import org.wso2.balana.finder.PolicyFinderModule;
 
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class PolicyInitializer {
 
-    public PDP getPDPNewInstance(String policyXacml) {
+    public PDP newPDPInstance(InputStream policyXacml) {
 
         PolicyFinder policyFinder = new PolicyFinder();
 
-        PolicyFinderModule stringPolicyFinderModule = new StringPolicyFinderModule(policyXacml);
+        PolicyFinderModule stringPolicyFinderModule = new InputStreamPolicyFinderModule(policyXacml);
         Set<PolicyFinderModule> policyModules = new HashSet<>();
 
         policyModules.add(stringPolicyFinderModule);
@@ -40,8 +41,8 @@ public class PolicyInitializer {
     }
 
 
-    public PDP getPDPNewInstance(EasyPolicy easyPolicy, EasyAttributeModel easyAttributeModel, List<Datasource> datasources) {
-            return getPDPNewInstance("");
+    public PDP newPDPInstance(EasyPolicy easyPolicy, EasyAttributeModel easyAttributeModel, List<Datasource> datasources) {
+        return null;
     }
 
 }

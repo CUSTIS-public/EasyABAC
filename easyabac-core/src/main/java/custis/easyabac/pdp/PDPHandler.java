@@ -18,6 +18,6 @@ public class PDPHandler {
             System.out.println(attribute.getId() + " = " + attribute.getValues());
         }
         System.out.println("--------------------------------");
-        return new AuthResponse();
+        return new AuthResponse(AuthResponse.Decision.DENY);
     }
 }

@@ -24,14 +24,14 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
     }
 
     @Override
-    public AuthResponse.AuthResult authorize(T object, A action) {
+    public AuthResponse.Decision authorize(T object, A action) {
         AuthResponse response = attributiveAuthorizationService.authorize(collectAttributes(object, action));
-        return response.getResult();
+        return response.getDecision();
     }
 
     @Override
     public void ensurePermitted(T entity, A operation) throws NotPermittedException {
-        if (authorize(entity, operation) != AuthResponse.AuthResult.PERMIT) {
+        if (authorize(entity, operation) != AuthResponse.Decision.PERMIT) {
             throw new NotPermittedException("Not permitted " + operation);
         }
     }
@@ -45,7 +45,7 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
         Map<RequestId, AuthResponse> results = attributiveAuthorizationService.authorizeMultiple(attributes);
 
         for (AuthResponse result : results.values()) {
-            if (result.getResult() != AuthResponse.AuthResult.PERMIT) {
+            if (result.getDecision() != AuthResponse.Decision.PERMIT) {
                 throw new NotPermittedException("Not permitted");
             }
         }
@@ -59,7 +59,7 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
 
         Map<RequestId, AuthResponse> results = attributiveAuthorizationService.authorizeMultiple(attributes);
         for (AuthResponse result : results.values()) {
-            if (result.getResult() != AuthResponse.AuthResult.PERMIT) {
+            if (result.getDecision() != AuthResponse.Decision.PERMIT) {
                 throw new NotPermittedException("Not permitted");
             }
         }
@@ -74,7 +74,7 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
         Map<RequestId, AuthResponse> results = attributiveAuthorizationService.authorizeMultiple(attributes);
 
         for (AuthResponse result : results.values()) {
-            if (result.getResult() == AuthResponse.AuthResult.PERMIT) {
+            if (result.getDecision() == AuthResponse.Decision.PERMIT) {
                 return;
             }
         }
@@ -90,7 +90,7 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
         Map<RequestId, AuthResponse> results = attributiveAuthorizationService.authorizeMultiple(attributes);
 
         for (AuthResponse result : results.values()) {
-            if (result.getResult() == AuthResponse.AuthResult.PERMIT) {
+            if (result.getDecision() == AuthResponse.Decision.PERMIT) {
                 return;
             }
         }

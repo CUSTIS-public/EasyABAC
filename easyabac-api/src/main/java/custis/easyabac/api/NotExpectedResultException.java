@@ -5,15 +5,15 @@ import custis.easyabac.pdp.AuthResponse;
 
 public class NotExpectedResultException extends RuntimeException {
 
-    public NotExpectedResultException(AuthResponse.AuthResult result, String message) {
+    public NotExpectedResultException(AuthResponse.Decision result, String message) {
         super(message);
     }
 
-    public NotExpectedResultException(AuthResponse.AuthResult result, String message, Throwable cause) {
+    public NotExpectedResultException(AuthResponse.Decision result, String message, Throwable cause) {
         super(message, cause);
     }
 
-    public NotExpectedResultException(AuthResponse.AuthResult result, Throwable cause) {
+    public NotExpectedResultException(AuthResponse.Decision result, Throwable cause) {
         super(cause);
     }
 

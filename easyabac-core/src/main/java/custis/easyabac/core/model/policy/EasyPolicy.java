@@ -4,6 +4,7 @@ import java.util.Map;
 
 public class EasyPolicy {
     private String combiningAlgorithm = "deny-unless-permit";
+
     private Map<String, Policy> policies;
 
     public Map<String, Policy> getPolicies() {

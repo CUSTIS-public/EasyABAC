@@ -1,10 +1,12 @@
 package custis.easyabac;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class LoadEasyPolicyTest {
 
     @Test
+    @Ignore
     public void loadPolicy() {
 //        EasyAbac easyAbac = new EasyAbac();
 //
