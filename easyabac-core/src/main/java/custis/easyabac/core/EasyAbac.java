@@ -15,6 +15,7 @@ import custis.easyabac.pdp.RequestId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.PDP;
+import org.wso2.balana.attr.AttributeValue;
 import org.wso2.balana.attr.StringAttribute;
 import org.wso2.balana.ctx.AbstractResult;
 import org.wso2.balana.ctx.Attribute;
@@ -50,8 +51,15 @@ public class EasyAbac implements AttributiveAuthorizationService {
             Set<Attribute> balanaAttributes = new HashSet<>();
             for (AuthAttribute attribute : attributes) {
                 //TODO: здесь определять тип и массив, подставлять префикс
-                Attribute newBalanaAttribute = new Attribute(new URI(attribute.getId()), "",
-                        null, new StringAttribute(attribute.getValues().get(0)), 3);
+
+                List<AttributeValue> attributeValues = new ArrayList<>();
+
+                for (String attributeValue : attribute.getValues()) {
+                    attributeValues.add(new StringAttribute(attributeValue));
+                }
+
+
+                Attribute newBalanaAttribute = new Attribute(new URI(attribute.getId()), new URI(StringAttribute.identifier), "", null, attributeValues, true, 3);
                 balanaAttributes.add(newBalanaAttribute);
             }
 
