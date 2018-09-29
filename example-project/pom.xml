@@ -131,25 +131,11 @@
                 <artifactId>easyabac-test-generation-plugin</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
                 <configuration>
-                    <sourcePath>src/main/java</sourcePath>
-                    <resourcePath>src/main/resources</resourcePath>
                     <testPath>src/test/java</testPath>
                     <testResourcePath>src/test/resources</testResourcePath>
-                    <package>custis.easyabac.autogen</package>
+                    <basePackage>custis.easyabac.autogen</basePackage>
                     <permissionCheckersPackage>custis.easyabac.demo.permissionchecker</permissionCheckersPackage>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.reflections</groupId>
-                        <artifactId>reflections</artifactId>
-                        <version>0.9.11</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>custis.easyabac</groupId>
-                        <artifactId>easyabac-api</artifactId>
-                        <version>1.0.0-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
