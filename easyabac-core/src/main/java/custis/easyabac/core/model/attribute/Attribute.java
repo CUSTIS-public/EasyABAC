@@ -3,19 +3,19 @@ package custis.easyabac.core.model.attribute;
 import java.util.Set;
 
 public class Attribute {
-    private String code;
+    private String id;
     private String title;
     private Category category;
     private DataType type;
     private boolean multiple = false;
     private Set<String> allowableValues;
 
-    public String getCode() {
-        return code;
+    public String getId() {
+        return id;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Category getCategory() {

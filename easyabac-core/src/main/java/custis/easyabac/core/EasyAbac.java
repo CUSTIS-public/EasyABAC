@@ -166,7 +166,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
                     easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
                 }
-
             }
 
 

@@ -37,7 +37,7 @@ public class PolicyInitializer {
         finderModules.add(new SampleAttributeFinderModule());
         attributeFinder.setModules(finderModules);
 
-        return new PDP(new PDPConfig(null, policyFinder, null, true));
+        return new PDP(new PDPConfig(attributeFinder, policyFinder, null, true));
     }
 
 

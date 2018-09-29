@@ -28,8 +28,23 @@ public class PipTest {
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute("urn:s_tst2:attr:01:action:operation", "edit"));
-        authAttrList.add(new AuthAttribute("urn:s_tst2:attr:01:resource:category", "report"));
-        authAttrList.add(new AuthAttribute("urn:s_tst2:attr:01:subject:allow-category", Arrays.asList("form", "report")));
+        authAttrList.add(new AuthAttribute("urn:s_tst2:attr:01:resource:category", "iod"));
+        authAttrList.add(new AuthAttribute("urn:s_tst2:attr:01:subject:allowed-categories", Arrays.asList("iod", "dsp")));
+        AuthResponse authResponse = authorizationService.authorize(authAttrList);
+        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+
+    }
+
+    @Test
+    public void SamplePipTest() {
+        InputStream policy = getResourceAsStream("test_pip.xacml");
+        InputStream attributes = getResourceAsStream("attributes-1.yaml");
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, attributes, ModelType.XACML).build();
+
+        List<AuthAttribute> authAttrList = new ArrayList<>();
+        authAttrList.add(new AuthAttribute("urn:s_tst2:attr:01:action:operation", "edit"));
+        authAttrList.add(new AuthAttribute("urn:s_tst2:attr:01:resource:category", "iod"));
+        authAttrList.add(new AuthAttribute("urn:oasis:names:tc:xacml:1.0:subject:subject-id", "bob"));
         AuthResponse authResponse = authorizationService.authorize(authAttrList);
         Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
 
