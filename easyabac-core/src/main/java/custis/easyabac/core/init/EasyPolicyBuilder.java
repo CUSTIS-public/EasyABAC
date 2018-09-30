@@ -6,10 +6,8 @@ import org.wso2.balana.Policy;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -29,22 +27,16 @@ public class EasyPolicyBuilder {
     public Map<URI, AbstractPolicy> buildFrom(EasyPolicy easyPolicy) {
         return easyPolicy.getPolicies().entrySet().stream()
                 .map(e -> buildBalanaPolicy(e.getValue(), e.getKey()))
-                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(AbstractPolicy::getId, bp -> bp));
     }
 
     private AbstractPolicy buildBalanaPolicy(custis.easyabac.core.model.policy.Policy easyPolicy, String policyKey) {
-        try {
 
-            return new Policy(URI.create(policyNamespace + ":" + policyKey),
-                    null,
-                    new DenyUnlessPermitRuleAlg(new URI("")),
-                    easyPolicy.getTitle(),
-                    null,
-                    Collections.emptyList());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return new Policy(URI.create(policyNamespace + ":" + policyKey),
+                null,
+                new DenyUnlessPermitRuleAlg(),
+                easyPolicy.getTitle(),
+                null,
+                Collections.emptyList());
     }
 }
