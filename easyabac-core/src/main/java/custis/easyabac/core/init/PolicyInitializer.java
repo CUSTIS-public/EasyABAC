@@ -42,7 +42,18 @@ public class PolicyInitializer {
 
 
     public PDP newPDPInstance(EasyPolicy easyPolicy, EasyAttributeModel easyAttributeModel, List<Datasource> datasources) {
-        return null;
-    }
 
+        PolicyFinder policyFinder = new PolicyFinder();
+
+        EasyPolicyFinderModule easyPolicyFinderModule = new EasyPolicyFinderModule(easyPolicy);
+        Set<PolicyFinderModule> policyModules = new HashSet<>();
+
+        policyModules.add(easyPolicyFinderModule);
+        policyFinder.setModules(policyModules);
+
+        AttributeFinder attributeFinder = new AttributeFinder();
+        //TODO Register EasyAttributeFinderModule based on easyAttributeModel in AttributeFinder
+
+        return new PDP(new PDPConfig(attributeFinder, policyFinder, null, true));
+    }
 }
