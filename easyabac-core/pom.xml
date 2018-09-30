@@ -9,7 +9,7 @@
         <artifactId>easyabac</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <groupId>custis.easyabac</groupId>
+    
     <artifactId>easyabac-core</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <properties>
@@ -62,6 +62,25 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javacc-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <packageName>custis.easyabac.core.model.policy</packageName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-parser</id>
+                        <goals>
+                            <goal>javacc</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
