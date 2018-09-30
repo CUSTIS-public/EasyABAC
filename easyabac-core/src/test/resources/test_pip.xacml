@@ -33,7 +33,7 @@
                                                  Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
                                                  MustBePresent="false"/>
                         </Apply>
-                        <AttributeDesignator AttributeId="urn:s_tst2:attr:01:subject:allow-category"
+                        <AttributeDesignator AttributeId="urn:s_tst2:attr:01:subject:allowed-categories"
                                              DataType="http://www.w3.org/2001/XMLSchema#string"
                                              Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
                                              MustBePresent="false"/>
