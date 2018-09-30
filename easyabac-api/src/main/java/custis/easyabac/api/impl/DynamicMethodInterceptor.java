@@ -1,14 +1,16 @@
 package custis.easyabac.api.impl;
 
 import custis.easyabac.api.core.PermissionCheckerInformation;
-import custis.easyabac.api.core.call.callprocessor.MethodCallProcessorFactory;
 import custis.easyabac.api.core.call.callprocessor.MethodCallProcessor;
+import custis.easyabac.api.core.call.callprocessor.MethodCallProcessorFactory;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +40,8 @@ public class DynamicMethodInterceptor implements MethodInterceptor {
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         Method method = invocation.getMethod();
-        Object[] arguments = invocation.getArguments();
+        Object[] argumentsArray = invocation.getArguments();
+        List<Object> arguments = Arrays.asList(argumentsArray);
 
         if (hasCustomCall(method)) {
             return callProcessors.get(method).execute(arguments);

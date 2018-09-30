@@ -1,7 +1,6 @@
 package custis.easyabac.api.core.call.getters;
 
 import custis.easyabac.api.core.PermissionCheckerMetadata;
-import custis.easyabac.api.impl.AttributeValueExtractor;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.RequestId;
 
@@ -15,50 +14,39 @@ import java.util.Map;
  * Map<Action, List<Entity>>
  * Map<Action, Entity>
  */
-public class MapAttributeValueGetter extends AbstractAttributesValuesGetter {
+public class MapAttributeValueGetter extends AbstractRequestGenerator {
 
-    public MapAttributeValueGetter(PermissionCheckerMetadata permissionCheckerInformation) {
+    private final boolean firstIsList;
+    private final boolean secondIsList;
+    private final boolean resourceIsFirst;
+
+    public MapAttributeValueGetter(PermissionCheckerMetadata permissionCheckerInformation, boolean firstIsList, boolean secondIsList, boolean resourceIsFirst) {
         super(permissionCheckerInformation);
+        this.firstIsList = firstIsList;
+        this.secondIsList = secondIsList;
+        this.resourceIsFirst = resourceIsFirst;
     }
 
     /**
-     * FIXME type-checking в момент вызова.... Можно попытаться что-то придумать
      * @param objects
      * @return
      */
     @Override
-    public Map<RequestId, List<AuthAttribute>> getAttributes(Object[] objects) {
-        HashMap<RequestId, List<AuthAttribute>> result = new HashMap<>();
-        Map<?, ?> object = (Map) objects[0];
+    public RequestWrapper generate(List<Object> objects) {
+        HashMap<RequestId, List<AuthAttribute>> requests = new HashMap<>();
+        Map<RequestId, ResourceActionPair> mapping = new HashMap<>();
+
+        Map<?, ?> object = (Map) objects.get(0);
         for (Map.Entry<?, ?> entry : object.entrySet()) {
             Object key = entry.getKey();
             Object value = entry.getValue();
 
-            if (resourceType.isAssignableFrom(key.getClass())) {
-                // simple resource
-                if (actionType.isAssignableFrom(value.getClass())) {
-                    // single action
-                    result.put(RequestId.newRandom(), AttributeValueExtractor.collectAttributes(key, value));
-                } else {
-                    // list of actions
-                    for (Object o : ((List) value)) {
-                        result.put(RequestId.newRandom(), AttributeValueExtractor.collectAttributes(key, o));
-                    }
-                }
-            } else if (actionType.isAssignableFrom(key.getClass())) {
-                // simple action
-                if (resourceType.isAssignableFrom(value.getClass())) {
-                    // single resource
-                    result.put(RequestId.newRandom(), AttributeValueExtractor.collectAttributes(value, key));
-                } else {
-                    // list of resources
-                    for (Object o : ((List) value)) {
-                        result.put(RequestId.newRandom(), AttributeValueExtractor.collectAttributes(o, key));
-                    }
-                }
-            }
+            List<Object> first = wrapIfNeeded(key, firstIsList);
+            List<Object> second = wrapIfNeeded(value, secondIsList);
+
+            doResult(first, second, resourceIsFirst, requests, mapping);
         }
 
-        return result;
+        return new RequestWrapper(requests, mapping);
     }
 }

@@ -28,7 +28,21 @@ public interface EnsureMethods extends PermitAwarePermissionChecker<Order, Order
 
     void ensureDeniedAll(List<Order> orders, List<OrderAction> actions) throws NotExpectedResultException;
 
-    void ensureDenied2All(List<OrderAction> actions, List<Order> orders) throws NotExpectedResultException;
+    void ensureDeniedAll_2(List<OrderAction> actions, List<Order> orders) throws NotExpectedResultException;
 
     void ensureDeniedAll(Map<Order, OrderAction> orderActionMap) throws NotExpectedResultException;
+
+    void ensureDeniedAll_2(Map<OrderAction, Order> orderActionMap) throws NotExpectedResultException;
+
+    void ensureDeniedAll_3(Map<Order, List<OrderAction>> orderActionMap) throws NotExpectedResultException;
+
+    void ensureDeniedAll_4(Map<OrderAction, List<Order>> orderActionMap) throws NotExpectedResultException;
+
+    void ensureDeniedAll_5(Map<List<Order>, OrderAction> orderActionMap) throws NotExpectedResultException;
+
+    void ensureDeniedAll_6(Map<List<OrderAction>, Order> orderActionMap) throws NotExpectedResultException;
+
+    void ensureDeniedAll_7(Map<List<Order>, List<OrderAction>> orderActionMap) throws NotExpectedResultException;
+
+    void ensureDeniedAll_8(Map<List<OrderAction>, List<Order>> orderActionMap) throws NotExpectedResultException;
 }
