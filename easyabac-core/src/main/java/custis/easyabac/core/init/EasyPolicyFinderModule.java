@@ -4,6 +4,7 @@ import custis.easyabac.core.model.policy.EasyPolicy;
 import org.wso2.balana.finder.PolicyFinder;
 
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * TODO: Write documentation for EasyPolicyFinderModule
@@ -19,6 +20,7 @@ public class EasyPolicyFinderModule extends EasyAbacBasePolicyFinderModule {
 
     @Override
     public void init(PolicyFinder policyFinder) {
-        this.policies = new EasyPolicyBuilder().buildFrom(easyPolicy);
+        //TODO pass properties for builder
+        this.policies = new EasyPolicyBuilder(new Properties()).buildFrom(easyPolicy);
     }
 }
