@@ -9,6 +9,17 @@ public class Attribute {
     private DataType type;
     private boolean multiple = false;
     private Set<String> allowableValues;
+    private String xacmlName;
+
+    public Attribute(String id, DataType type, Category category) {
+        this.id = id;
+        this.category = category;
+        this.type = type;
+    }
+
+    public Attribute(String id) {
+        this(id, DataType.STRING, Category.RESOURCE);
+    }
 
     public String getId() {
         return id;
@@ -57,4 +68,14 @@ public class Attribute {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    public String getXacmlName() {
+        return xacmlName;
+    }
+
+    public void setXacmlName(String xacmlName) {
+        this.xacmlName = xacmlName;
+    }
+
+
 }

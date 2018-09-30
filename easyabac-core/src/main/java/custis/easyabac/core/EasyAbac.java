@@ -3,8 +3,8 @@ package custis.easyabac.core;
 import custis.easyabac.ModelType;
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.init.PolicyInitializer;
+import custis.easyabac.core.init.SampleDatasource;
 import custis.easyabac.core.model.attribute.Category;
-import custis.easyabac.core.model.attribute.Datasource;
 import custis.easyabac.core.model.attribute.load.EasyAttributeModel;
 import custis.easyabac.core.model.policy.EasyPolicy;
 import custis.easyabac.core.trace.Trace;
@@ -100,7 +100,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
         private EasyPolicy easyPolicy;
         private EasyAttributeModel easyAttributeModel;
-        private List<Datasource> datasources;
+        private List<SampleDatasource> datasources = Collections.EMPTY_LIST;
         private Cache cache;
         private Trace trace;
 
@@ -116,26 +116,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             this.modelType = modelType;
         }
 
-//        public Builder(String policy, String attributes) {
-//
-//            Yaml yaml = new Yaml();
-//
-//            easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
-//
-//            easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
-//
-//        }
-//
-//        public Builder(InputStream policy, InputStream attributes) {
-//
-//            Yaml yaml = new Yaml();
-//
-//            easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
-//
-//            easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
-//        }
-
-        public Builder datasources(List<Datasource> datasources) {
+        public Builder datasources(List<SampleDatasource> datasources) {
             this.datasources = datasources;
             return this;
         }
@@ -155,7 +136,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             switch (modelType) {
                 case XACML: {
                     PolicyInitializer policyInitializer = new PolicyInitializer();
-                    PDP pdpInstance = policyInitializer.newPDPInstance(policy);
+                    PDP pdpInstance = policyInitializer.newPDPInstance(policy, datasources, cache);
 
                     return new EasyAbac(pdpInstance);
                 }
