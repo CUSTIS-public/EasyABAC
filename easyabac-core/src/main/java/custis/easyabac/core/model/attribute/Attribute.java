@@ -1,5 +1,6 @@
 package custis.easyabac.core.model.attribute;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class Attribute {
@@ -9,6 +10,22 @@ public class Attribute {
     private DataType type;
     private boolean multiple = false;
     private Set<String> allowableValues;
+
+    public static final Attribute ACTION_ID = new Attribute("action-id", Category.ACTION, DataType.STRING);
+    public static final Attribute RESOURCE_ID = new Attribute("resource-id", Category.RESOURCE, DataType.STRING);
+    public static final Attribute SUBJECT_ID = new Attribute("subject-id", Category.SUBJECT, DataType.STRING);
+
+    public Attribute() {
+    }
+
+    public Attribute(String code, Category category, DataType type) {
+        this.code = code;
+        this.title = code;
+        this.category = category;
+        this.type = type;
+        this.multiple = false;
+        this.allowableValues = Collections.emptySet();
+    }
 
     public String getCode() {
         return code;

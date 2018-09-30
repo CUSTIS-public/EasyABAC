@@ -1,5 +1,8 @@
 package custis.easyabac.core.model.policy;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 public enum Function {
     EQUAL("=="),
     GREATER(">"),
@@ -18,5 +21,11 @@ public enum Function {
 
     public String getFunctionName() {
         return functionName;
+    }
+
+    public static Optional<Function> of(String name) {
+        return Stream.of(Function.values())
+                .filter(v -> v.functionName.equals(name))
+                .findFirst();
     }
 }

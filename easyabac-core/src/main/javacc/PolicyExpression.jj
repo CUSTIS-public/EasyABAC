@@ -1,6 +1,32 @@
+options
+{
+  STATIC = false;
+  JDK_VERSION = "1.8";
+  IGNORE_CASE = false;
+  JAVA_UNICODE_ESCAPE = true;
+  UNICODE_INPUT = false;
+  DEBUG_TOKEN_MANAGER = false;
+}
+
 PARSER_BEGIN(PolicyExpressionParser)
 
+package custis.easyabac.core.model.policy;
+
+import java.util.Optional;
+import custis.easyabac.core.model.policy.*;
+import custis.easyabac.core.model.attribute.*;
+
 public class PolicyExpressionParser {
+
+    private Attribute attribute;
+    private String attributeValue;
+    private Function function;
+
+    public TargetCondition parse() throws ParseException {
+        Expression();
+        return new TargetCondition(attribute, attributeValue, function);
+    }
+
 }
 
 PARSER_END(PolicyExpressionParser)
@@ -18,7 +44,6 @@ TOKEN :
     < ACTION_ID: "action-id" > |
     < SUBJECT_ID: "subject-id" > |
     < RESOURCE_ID: "resource-id" > |
-    < XACML_ATTRIBUTE : <ACTION_ID> | <SUBJECT_ID> | <RESOURCE_ID> > |
     < DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* > |
     < STRING_LITERAL : "\"" (   (~["\"","\\","\n","\r"])
                                | ("\\"
@@ -28,7 +53,8 @@ TOKEN :
                                    )
                                  )
                              )* "\"" > |
-    < OBJECT_PROPERTY : "object\\." <STRING_LITERAL> ("\\." <STRING_LITERAL>)? >
+    < IDENTIFIER : "\\w+" > |
+    < OBJECT_PROPERTY : "object." <IDENTIFIER> ("." <IDENTIFIER>)? >
 }
 
 void Expression():
@@ -44,19 +70,43 @@ void TargetExpression():
 }
 
 void AttributeReference():
-{}
 {
-    <OBJECT_PROPERTY> | <XACML_ATTRIBUTE>
+    Token t;
+}
+{
+    <OBJECT_PROPERTY>
+    |
+    t = <ACTION_ID> { this.attribute = Attribute.ACTION_ID;}
+    |
+    t = <SUBJECT_ID> { this.attribute = Attribute.SUBJECT_ID;}
+    |
+    t = <RESOURCE_ID> { this.attribute = Attribute.RESOURCE_ID;}
 }
 
 void Function():
-{}
 {
-    "==" | "!=" | ">=" | "<=" | ">" | "<" | "in" | "one-of" | "subset"
+  Token t;
+}
+{
+    (t = "==" | t = "!=" | t = ">=" | t = "<=" | t = ">" | t = "<" | t = "in" | t = "one-of" | t = "subset")
+    {
+        Optional<Function> f = Function.of(t.image);
+        if (f.isPresent()) {
+            this.function = f.get();
+        } else {
+            throw new ParseException("Unsupported function " + t.image);
+        }
+    }
 }
 
 void AttributeValue():
-{}
 {
-   <DECIMAL_LITERAL> | <STRING_LITERAL>
+    Token t;
+}
+{
+  //TODO Add EasyObject.Actions support. Futher, action would be translated as string for XACML Policy
+   (t = <DECIMAL_LITERAL> | t = <STRING_LITERAL>)
+   {
+      this.attributeValue = t.image;
+   }
 }
