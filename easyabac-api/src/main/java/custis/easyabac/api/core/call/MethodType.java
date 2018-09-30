@@ -1,6 +1,6 @@
 package custis.easyabac.api.core.call;
 
-import custis.easyabac.api.core.UnsupportedPermissionCheckerMethodSignature;
+import custis.easyabac.api.core.UnsupportedDynamicMethodSignature;
 
 import java.lang.reflect.Method;
 
@@ -24,7 +24,7 @@ public enum MethodType {
                 return value;
             }
         }
-        throw new UnsupportedPermissionCheckerMethodSignature(method);
+        throw new UnsupportedDynamicMethodSignature(method);
     }
 
 
