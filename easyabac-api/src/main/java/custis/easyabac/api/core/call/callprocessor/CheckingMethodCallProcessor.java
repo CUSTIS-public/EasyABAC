@@ -2,13 +2,13 @@ package custis.easyabac.api.core.call.callprocessor;
 
 import custis.easyabac.api.NotExpectedResultException;
 import custis.easyabac.api.core.PermissionCheckerInformation;
-import custis.easyabac.api.core.UnsupportedPermissionCheckerMethodSignature;
+import custis.easyabac.api.core.UnsupportedDynamicMethodSignature;
 import custis.easyabac.api.core.call.ActionPatternType;
 import custis.easyabac.api.core.call.MethodType;
 import custis.easyabac.api.core.call.converters.CheckingResultConverter;
 import custis.easyabac.api.core.call.converters.ResultConverter;
 import custis.easyabac.api.core.call.getters.RequestGenerator;
-import custis.easyabac.api.core.call.getters.TwoArgumentsValueGetter;
+import custis.easyabac.api.core.call.getters.TwoArgumentsRequestGenerator;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 
 import java.lang.reflect.Method;
@@ -56,10 +56,10 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
 
                 String[] splittedActions = actionsString.toLowerCase().split(LEXEM_OR);
                 if (splittedActions.length != 1) {
-                    return Optional.of(new TwoArgumentsValueGetter(checkerInfo, Arrays.asList(splittedActions)));
+                    return Optional.of(new TwoArgumentsRequestGenerator(checkerInfo, Arrays.asList(splittedActions)));
                 } else {
                     splittedActions = actionsString.toLowerCase().split(LEXEM_AND);
-                    return Optional.of(new TwoArgumentsValueGetter(checkerInfo, Arrays.asList(splittedActions)));
+                    return Optional.of(new TwoArgumentsRequestGenerator(checkerInfo, Arrays.asList(splittedActions)));
                 }
             }
         }
@@ -74,7 +74,7 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
                 if (checkerInfo.getResourceType().isAssignableFrom(parameterType) || checkerInfo.getActionType().isAssignableFrom(parameterType)) {
                     return;
                 } else {
-                    throw new UnsupportedPermissionCheckerMethodSignature(method, "Method signature expects no List or Map parameters. Try to use All or Any postfix");
+                    throw new UnsupportedDynamicMethodSignature(method, "Method signature expects no List or Map parameters. Try to use All or Any postfix");
                 }
             }
         } else {
@@ -91,7 +91,7 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
                     return;
                 }
             }
-            throw new UnsupportedPermissionCheckerMethodSignature(method, "NotExpectedResultException required for ensure* methods");
+            throw new UnsupportedDynamicMethodSignature(method, "NotExpectedResultException required for ensure* methods");
         }
     }
 
@@ -99,12 +99,12 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
         Class<?> returnType = method.getReturnType();
         if (methodType == MethodType.ENSURE) {
             if (!void.class.equals(returnType)) {
-                throw new UnsupportedPermissionCheckerMethodSignature(method, "void required for ensure* methods");
+                throw new UnsupportedDynamicMethodSignature(method, "void required for ensure* methods");
             }
             // ok
         } else if (methodType == MethodType.IS) {
             if (!boolean.class.equals(returnType) || Boolean.class.equals(returnType)) {
-                throw new UnsupportedPermissionCheckerMethodSignature(method, "boolean required for is* methods");
+                throw new UnsupportedDynamicMethodSignature(method, "boolean required for is* methods");
             }
         }
     }

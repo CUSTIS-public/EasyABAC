@@ -1,15 +1,12 @@
 package custis.easyabac.api.core.call.getters;
 
 import custis.easyabac.api.core.PermissionCheckerMetadata;
-import custis.easyabac.api.impl.AttributeValueExtractor;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.RequestId;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.util.Collections.singletonList;
 
 /**
  * Map<Entity, Action>
@@ -31,43 +28,25 @@ public class MapAttributeValueGetter extends AbstractRequestGenerator {
     }
 
     /**
-     * FIXME type-checking в момент вызова.... Можно попытаться что-то придумать
      * @param objects
      * @return
      */
     @Override
-    public Map<RequestId, List<AuthAttribute>> generate(List<Object> objects) {
-        HashMap<RequestId, List<AuthAttribute>> result = new HashMap<>();
+    public RequestWrapper generate(List<Object> objects) {
+        HashMap<RequestId, List<AuthAttribute>> requests = new HashMap<>();
+        Map<RequestId, ResourceActionPair> mapping = new HashMap<>();
+
         Map<?, ?> object = (Map) objects.get(0);
         for (Map.Entry<?, ?> entry : object.entrySet()) {
             Object key = entry.getKey();
             Object value = entry.getValue();
 
-            if (firstIsList && secondIsList) {
-                List<Object> first = (List<Object>) key;
-                List<Object> second = (List<Object>) value;
+            List<Object> first = wrapIfNeeded(key, firstIsList);
+            List<Object> second = wrapIfNeeded(value, secondIsList);
 
-                doResult(first, second, resourceIsFirst, result);
-
-            } else if (firstIsList) {
-                List<Object> first = (List<Object>) key;
-                doResult(first, singletonList(value), resourceIsFirst, result);
-            } else if (secondIsList) {
-                List<Object> second = (List<Object>) value;
-                doResult(singletonList(key), second, resourceIsFirst, result);
-            } else {
-                doResult(singletonList(key), singletonList(value), resourceIsFirst, result);
-            }
+            doResult(first, second, resourceIsFirst, requests, mapping);
         }
 
-        return result;
-    }
-
-    private void doResult(List<Object> first, List<Object> second, boolean resourceIsFirst, Map<RequestId, List<AuthAttribute>> result){
-        for (Object o : first) {
-            for (Object o1 : second) {
-                result.put(RequestId.newRandom(), AttributeValueExtractor.extract(resourceIsFirst ? o : o1, resourceIsFirst ? o1 : o));
-            }
-        }
+        return new RequestWrapper(requests, mapping);
     }
 }

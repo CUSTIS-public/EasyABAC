@@ -5,14 +5,14 @@ import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
 
 import java.util.List;
+import java.util.Map;
 
 public interface GettingMethods extends PermitAwarePermissionChecker<Order, OrderAction> {
 
-    List<OrderAction> getDeniedActions(Order order, OrderAction action);
+    List<OrderAction> getDeniedActions(Order order, List<OrderAction> action);
 
-    List<Order> getDeniedResources(Order order, OrderAction action);
+    Map<Order, List<OrderAction>> getDeniedActions_2(Order order, List<OrderAction> action);
 
-    List<OrderAction> getDeniedActions(OrderAction action, Order order);
+    Map<Order, List<OrderAction>> getDeniedActions(List<Order> orders, List<OrderAction> actions);
 
-    List<Order> getDeniedResources(OrderAction action, Order order);
 }

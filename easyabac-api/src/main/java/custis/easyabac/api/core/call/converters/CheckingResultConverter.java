@@ -4,10 +4,10 @@ import custis.easyabac.api.NotExpectedResultException;
 import custis.easyabac.api.core.call.ActionPatternType;
 import custis.easyabac.api.core.call.DecisionType;
 import custis.easyabac.api.core.call.MethodType;
+import custis.easyabac.api.core.call.getters.ResourceActionPair;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.RequestId;
 
-import java.util.List;
 import java.util.Map;
 
 public class CheckingResultConverter implements ResultConverter {
@@ -23,7 +23,24 @@ public class CheckingResultConverter implements ResultConverter {
     }
 
     @Override
-    public Object convert(List<Object> arguments, Map<RequestId, AuthResponse> responses) {
+    public Object convert(Map<RequestId, ResourceActionPair> mapping, Map<RequestId, AuthResponse> responses) {
+        boolean check = checkResponses(responses);
+
+        if (check && methodType == MethodType.IS) {
+            return true;
+        }
+
+        if (!check) {
+            if (methodType == MethodType.ENSURE) {
+                throw new NotExpectedResultException(decisionType.getDecision(), "Not expected");
+            } else {
+                return false;
+            }
+        }
+        return Void.class;
+    }
+
+    private boolean checkResponses(Map<RequestId, AuthResponse> responses) {
         boolean check = false;
         for (AuthResponse response : responses.values()) {
             if (response.getDecision().equals(decisionType.getDecision())) {
@@ -40,18 +57,6 @@ public class CheckingResultConverter implements ResultConverter {
                 }
             }
         }
-
-        if (check && methodType == MethodType.IS) {
-            return true;
-        }
-
-        if (!check) {
-            if (methodType == MethodType.ENSURE) {
-                throw new NotExpectedResultException(decisionType.getDecision(), "Not expected");
-            } else {
-                return false;
-            }
-        }
-        return Void.class;
+        return check;
     }
 }

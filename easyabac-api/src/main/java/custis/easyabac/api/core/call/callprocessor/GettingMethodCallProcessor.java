@@ -1,7 +1,7 @@
 package custis.easyabac.api.core.call.callprocessor;
 
 import custis.easyabac.api.core.PermissionCheckerInformation;
-import custis.easyabac.api.core.UnsupportedPermissionCheckerMethodSignature;
+import custis.easyabac.api.core.UnsupportedDynamicMethodSignature;
 import custis.easyabac.api.core.call.GettingReturnType;
 import custis.easyabac.api.core.call.MethodType;
 import custis.easyabac.api.core.call.converters.GettingResultConverter;
@@ -33,7 +33,7 @@ public class GettingMethodCallProcessor extends MethodCallProcessor {
             checkReturnType();
             checkParameters();
         } catch (ClassNotFoundException e) {
-            throw new UnsupportedPermissionCheckerMethodSignature(method, "ClassNotFound " + e.getMessage());
+            throw new UnsupportedDynamicMethodSignature(method, "ClassNotFound " + e.getMessage());
         }
     }
 
@@ -50,6 +50,23 @@ public class GettingMethodCallProcessor extends MethodCallProcessor {
 
     private void checkParameters() {
         // check generic types or List or Map
+        Class<?> returnType = method.getReturnType();
+        if (List.class.equals(returnType)) {
+            // must not have multiple params
+            boolean foundNotMultiple = false;
+            for (Class<?> parameterType : method.getParameterTypes()) {
+                if (checkerInfo.getResourceType().isAssignableFrom(parameterType) || checkerInfo.getActionType().isAssignableFrom(parameterType)) {
+                    foundNotMultiple = true;
+                    break;
+                }
+            }
+            if (!foundNotMultiple) {
+                throw new UnsupportedDynamicMethodSignature(method, "List<> for get* methods requires not multiple resource or action");
+            }
+        }
+        if (Map.class.equals(returnType)) {
+
+        }
     }
 
 
@@ -57,7 +74,7 @@ public class GettingMethodCallProcessor extends MethodCallProcessor {
         Class<?> returnType = method.getReturnType();
         Type genericReturnType = method.getGenericReturnType();
         if (!(genericReturnType instanceof ParameterizedType)) {
-            throw new UnsupportedPermissionCheckerMethodSignature(method, "List<> or Map<> required for get* methods as return");
+            throw new UnsupportedDynamicMethodSignature(method, "List<> or Map<> required for get* methods as return");
         }
         ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
 
@@ -68,29 +85,53 @@ public class GettingMethodCallProcessor extends MethodCallProcessor {
         if (List.class.equals(returnType)) {
             returningList = true;
             // first parameter is not list or map
-            Class<?> firstClass = Class.forName(parameterizedType.getActualTypeArguments()[0].getTypeName());
-
             if (gettingReturnType == GettingReturnType.RESOURCES) {
-                // returning objects
-               if (!checkerInfo.getResourceType().isAssignableFrom(firstClass)) {
-                   throw new UnsupportedPermissionCheckerMethodSignature(method, "List<" + checkerInfo.getResourceType() + "> required for get*Resources methods");
-               }
+                // returning resources
+                checkList(parameterizedType, checkerInfo.getResourceType());
             } else {
                 // returning actions
-                if (!checkerInfo.getActionType().isAssignableFrom(firstClass)) {
-                    throw new UnsupportedPermissionCheckerMethodSignature(method, "List<" + checkerInfo.getActionType() + "> required for get*Resources methods");
-                }
+                checkList(parameterizedType, checkerInfo.getActionType());
             }
         } else if (Map.class.equals(returnType)) {
             returningList = false;
             if (gettingReturnType == GettingReturnType.RESOURCES) {
                 // returning objects
-
+                // should be Map<Action, List<Resource>>
+                checkMap(parameterizedType, checkerInfo.getActionType(), checkerInfo.getResourceType());
             } else {
                 // returning actions
+                // should be Map<Resource, List<Action>>
+                checkMap(parameterizedType, checkerInfo.getResourceType(), checkerInfo.getActionType());
             }
         } else {
-            throw new UnsupportedPermissionCheckerMethodSignature(method, "List<> or Map<> required for get* methods as return");
+            throw new UnsupportedDynamicMethodSignature(method, "List<> or Map<> required for get* methods as return");
+        }
+    }
+
+    private void checkList(ParameterizedType parameterizedType, Class<?> value) throws ClassNotFoundException {
+        Class<?> genericClass = Class.forName(parameterizedType.getActualTypeArguments()[0].getTypeName());
+
+        if (!value.isAssignableFrom(genericClass)) {
+            throw new UnsupportedDynamicMethodSignature(method, "List<" + value.getSimpleName() + "> required for get* methods");
+        }
+    }
+
+    private void checkMap(ParameterizedType parameterizedType, Class<?> key, Class<?> listValue) throws ClassNotFoundException {
+        Type[] types = parameterizedType.getActualTypeArguments();
+        Type keyType = types[0];
+        Type listValueType = types[1];
+
+        if (!key.isAssignableFrom(Class.forName(keyType.getTypeName()))) {
+            throw new UnsupportedDynamicMethodSignature(method, "Map<" + key.getSimpleName() + ", List<" + listValue.getSimpleName() + ">> required for get* methods as return");
+        }
+
+        if (listValueType instanceof ParameterizedType) {
+            ParameterizedType listGeneric = (ParameterizedType) listValueType;
+            if (!List.class.isAssignableFrom(Class.forName(listGeneric.getRawType().getTypeName()))) {
+                throw new UnsupportedDynamicMethodSignature(method, "Map<" + key.getSimpleName() + ", List<" + listValue.getSimpleName() + ">> required for get* methods as return");
+            }
+        } else {
+            throw new UnsupportedDynamicMethodSignature(method, "Map<" + key.getSimpleName() + ", List<" + listValue.getSimpleName() + ">> required for get* methods as return");
         }
     }
 }

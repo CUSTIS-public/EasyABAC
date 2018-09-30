@@ -9,6 +9,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
 
 public class GettingMethodsTest {
 
@@ -17,15 +21,28 @@ public class GettingMethodsTest {
     private static GettingMethods checker;
 
     @Test
-    public void testSingleResourceAndAction() {
+    public void testSingleResourceAndActions() {
         Order order = new Order("1", BigDecimal.ZERO);
-        checker.getDeniedActions(order, OrderAction.APPROVE);
+        List<OrderAction> actions = checker.getDeniedActions(order, asList(OrderAction.APPROVE, OrderAction.VIEW));
 
-        checker.getDeniedResources(order, OrderAction.APPROVE);
+        System.out.println(actions);
 
-        checker.getDeniedActions(OrderAction.APPROVE, order);
+        Map<Order, List<OrderAction>> actionsMap = checker.getDeniedActions_2(order, asList(OrderAction.APPROVE, OrderAction.VIEW));
 
-        checker.getDeniedResources(OrderAction.APPROVE, order);
+        System.out.println(actionsMap);
+    }
+
+    @Test
+    public void testListAndList() {
+        Order order = new Order("1", BigDecimal.ZERO);
+        Order order2 = new Order("2", BigDecimal.ZERO);
+
+        Map<Order, List<OrderAction>> actions = checker.getDeniedActions(
+                asList(order, order2),
+                asList(OrderAction.APPROVE, OrderAction.VIEW)
+        );
+
+        System.out.println(actions);
     }
 
     @BeforeClass

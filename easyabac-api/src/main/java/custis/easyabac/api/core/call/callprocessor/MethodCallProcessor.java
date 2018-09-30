@@ -6,8 +6,8 @@ import custis.easyabac.api.core.call.MethodType;
 import custis.easyabac.api.core.call.converters.ResultConverter;
 import custis.easyabac.api.core.call.getters.AttributesValuesGetterFactory;
 import custis.easyabac.api.core.call.getters.RequestGenerator;
+import custis.easyabac.api.core.call.getters.RequestWrapper;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.RequestId;
 
@@ -35,13 +35,13 @@ public abstract class MethodCallProcessor {
 
     public Object execute(List<Object> arguments) {
         // preparing requests
-        Map<RequestId, List<AuthAttribute>> req = valuesGetter.generate(arguments);
+        RequestWrapper reqWrapper = valuesGetter.generate(arguments);
 
         // executing requests
-        Map<RequestId, AuthResponse> responses = attributiveAuthorizationService.authorizeMultiple(req);
+        Map<RequestId, AuthResponse> responses = attributiveAuthorizationService.authorizeMultiple(reqWrapper.getRequests());
 
         // processing result
-        return resultConverter.convert(arguments, responses);
+        return resultConverter.convert(reqWrapper.getMapping(), responses);
     }
 
     protected abstract Optional<RequestGenerator> prepareCustomAttributesValuesGetter();
