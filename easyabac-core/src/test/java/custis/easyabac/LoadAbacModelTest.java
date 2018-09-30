@@ -3,7 +3,7 @@ package custis.easyabac;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class LoadEasyPolicyTest {
+public class LoadAbacModelTest {
 
     @Test
     @Ignore
