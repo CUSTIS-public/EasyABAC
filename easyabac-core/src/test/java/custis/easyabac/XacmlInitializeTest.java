@@ -5,7 +5,6 @@ import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -23,7 +22,6 @@ public class XacmlInitializeTest {
 
 
     @Test
-    @Ignore
     public void authTest1() throws URISyntaxException {
 
         InputStream policy = getResourceAsStream("test1_policy.xacml");
@@ -51,7 +49,6 @@ public class XacmlInitializeTest {
 
 
     @Test
-    @Ignore
     public void authTest2() {
 
         InputStream policy = getResourceAsStream("test2_policy.xacml");

@@ -30,7 +30,7 @@ public class LoadAttributeTest {
 //        handler.getLastTrace();
 
 //        for (EasyAttribute attribute : easyAbac.getEasyAttributeModel().getModel().get("lesson").getAttributes()) {
-//            System.out.println(attribute.getCode());
+//            System.out.println(attribute.getId());
 //            System.out.println(attribute.getType());
 //        }
 

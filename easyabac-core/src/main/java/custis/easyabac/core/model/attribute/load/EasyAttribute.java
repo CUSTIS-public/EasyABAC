@@ -1,7 +1,5 @@
 package custis.easyabac.core.model.attribute.load;
 
-import custis.easyabac.core.model.attribute.Datasource;
-
 import java.util.Set;
 
 public class EasyAttribute {
@@ -10,7 +8,6 @@ public class EasyAttribute {
     private String type = "string";
     private boolean multiple = false;
     private Set<String> allowableValues;
-    private Datasource datasource;
 
     public String getCode() {
         return code;
@@ -50,13 +47,5 @@ public class EasyAttribute {
 
     public void setAllowableValues(Set<String> allowableValues) {
         this.allowableValues = allowableValues;
-    }
-
-    public Datasource getDatasource() {
-        return datasource;
-    }
-
-    public void setDatasource(Datasource datasource) {
-        this.datasource = datasource;
     }
 }
