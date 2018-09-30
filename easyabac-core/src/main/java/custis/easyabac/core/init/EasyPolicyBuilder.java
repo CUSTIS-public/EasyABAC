@@ -54,7 +54,6 @@ public class EasyPolicyBuilder {
         final List<TargetCondition> conditions = target.getConditions();
         if (target.getOperation() == Operation.OR) {
             allOfSelections = makeDisjunction(conditions);
-
         } else if (target.getOperation() == Operation.AND) {
             allOfSelections = makeConjunction(conditions);
         } else {

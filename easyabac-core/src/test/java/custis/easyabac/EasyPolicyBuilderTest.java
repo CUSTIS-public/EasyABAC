@@ -5,7 +5,6 @@ import custis.easyabac.core.model.policy.EasyPolicy;
 import org.junit.Before;
 import org.junit.Test;
 import org.wso2.balana.AbstractPolicy;
-import org.wso2.balana.TargetMatch;
 import org.wso2.balana.xacml3.AllOfSelection;
 import org.wso2.balana.xacml3.AnyOfSelection;
 import org.wso2.balana.xacml3.Target;
