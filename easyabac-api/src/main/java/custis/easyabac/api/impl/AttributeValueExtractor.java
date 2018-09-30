@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 public class AttributeValueExtractor {
 
-    public static <T, A> List<AuthAttribute> collectAttributes(T object, A action) {
+    public static <T, A> List<AuthAttribute> extract(T object, A action) {
         List<AuthAttribute> attributes = extractAttributesFromResource(object);
         attributes.addAll(extractAttributesFromAction(action));
         return attributes;

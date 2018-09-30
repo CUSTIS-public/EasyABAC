@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 @NoPermissionCheckerBean
-public interface PermitAwarePermissionChecker<T, A> extends PermissionCheckerWithReturn<T, A> {
+public interface PermitAwarePermissionChecker<T, A> extends PermissionChecker<T, A> {
 
     /**
      * проверить, что для сущности доступно действие
