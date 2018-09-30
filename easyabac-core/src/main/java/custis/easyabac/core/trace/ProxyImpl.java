@@ -1,7 +1,6 @@
 package custis.easyabac.core.trace;
 
-import custis.easyabac.core.trace.interceptors.AttributeFinderInterceptor;
-import custis.easyabac.core.trace.interceptors.RuleCombiningAlgorithmInterceptor;
+import custis.easyabac.core.trace.interceptors.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.balana.*;
@@ -14,7 +13,6 @@ import org.wso2.balana.finder.AttributeFinder;
 import org.wso2.balana.finder.AttributeFinderModule;
 import org.wso2.balana.finder.PolicyFinder;
 import org.wso2.balana.finder.PolicyFinderModule;
-import org.wso2.balana.xacml3.AdviceExpression;
 
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -47,7 +45,7 @@ public class ProxyImpl implements BalanaInterceptor {
     private PolicyFinder newPolicyFinder() {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(PolicyFinder.class);
-        enhancer.setCallback(new PolicyFinderInterceptor());
+        enhancer.setCallback(new PolicyFinderInterceptor(this));
         PolicyFinder policyFinder = (PolicyFinder) enhancer.create();
         return policyFinder;
     }
@@ -173,54 +171,10 @@ public class ProxyImpl implements BalanaInterceptor {
 
     }
 
-    private Rule createRule(Rule sourceRule) {
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(Rule.class);
-        Class[] constructorClasses = new Class[] {
-                URI.class, int.class, String.class, AbstractTarget.class,
-                Condition.class, Set.class, Set.class, int.class
-        };
-
-        Set<AbstractObligation> obligations = null;
-        try {
-            Field field = ReflectionUtils.findField(Rule.class, "obligationExpressions");
-            field.setAccessible(true);
-            obligations = (Set<AbstractObligation>) field.get(sourceRule);
-        } catch (Exception e) {
-            LOGGER.error("Ошибка при попытке получить значение поля obligationExpressions");
-        }
-
-        Set<AdviceExpression> advices = null;
-        try {
-            Field field = ReflectionUtils.findField(Rule.class, "adviceExpressions");
-            field.setAccessible(true);
-            advices = (Set<AdviceExpression>) field.get(sourceRule);
-        } catch (Exception e) {
-            LOGGER.error("Ошибка при попытке получить значение поля adviceExpressions");
-        }
-
-        Integer xacmlVersion = XACMLConstants.XACML_VERSION_3_0;
-        try {
-            Field field = ReflectionUtils.findField(Rule.class, "xacmlVersion");
-            field.setAccessible(true);
-            xacmlVersion = (Integer) field.get(sourceRule);
-        } catch (Exception e) {
-            LOGGER.error("Ошибка при попытке получить значение поля xacmlVersion");
-        }
-
-        Object[] constructorParameters = new Object[] {
-                sourceRule.getId(), sourceRule.getEffect(), sourceRule.getDescription(), sourceRule.getTarget(),
-                createCondition(sourceRule.getCondition()), obligations, advices, xacmlVersion
-
-        };
-        enhancer.setCallback(new RuleInterceptor());
-        return (Rule) enhancer.create(constructorClasses, constructorParameters);
-    }
-
     private PolicyFinderResult createPolicyFinderResult(PolicyFinderResult policyFinderResult, PolicyFinder policyFinder) {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(PolicyFinderResult.class);
-        enhancer.setCallback(new PolicyFinderResultInterceptor(policyFinder));
+        enhancer.setCallback(new PolicyFinderResultInterceptor(this, policyFinder));
         Object proxyObject = null;
         if (policyFinderResult.getPolicy() != null) {
             proxyObject = enhancer.create(new Class[]{AbstractPolicy.class}, new Object[]{policyFinderResult.getPolicy()});
@@ -233,153 +187,6 @@ public class ProxyImpl implements BalanaInterceptor {
         }
         PolicyFinderResult proxiedResult = (PolicyFinderResult) proxyObject;
         return proxiedResult;
-    }
-
-    private class PolicyFinderInterceptor implements MethodInterceptor {
-
-        /*@Override*/
-        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            if (method.getName().equals("findPolicy")) {
-                EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
-                handler.onFindPolicyStart();
-                Object invokeSuperResult = proxy.invokeSuper(obj, args);
-                PolicyFinderResult policyFinderResult = (PolicyFinderResult) invokeSuperResult;
-                handler.onFindPolicyEnd(policyFinderResult);
-                return createPolicyFinderResult(policyFinderResult, (PolicyFinder) obj);
-            } else {
-                return proxy.invokeSuper(obj, args);
-            }
-        }
-
-    }
-
-    private class PolicyFinderResultInterceptor implements MethodInterceptor {
-
-        private final PolicyFinder policyFinder;
-
-        public PolicyFinderResultInterceptor(PolicyFinder policyFinder) {
-            this.policyFinder = policyFinder;
-        }
-
-        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            if (method.getName().equals("getPolicy")) {
-                Object superInvoke = proxy.invokeSuper(obj, args);
-                AbstractPolicy policy = (AbstractPolicy) superInvoke;
-                return createAbstractPolicy(policy, policyFinder);
-            } else {
-                return proxy.invokeSuper(obj, args);
-            }
-        }
-
-    }
-
-    private static class AbstractPolicyInterceptor implements MethodInterceptor {
-
-        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            String methodName = method.getName();
-            AbstractPolicy abstractPolicy = (AbstractPolicy) obj;
-            Object realResult = null;
-
-            EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
-
-            if (methodName.equals("evaluate")) {
-                handler.onPolicyEvaluateStart(abstractPolicy);
-                realResult = proxy.invokeSuper(obj, args);
-                handler.onPolicyEvaluateEnd((AbstractResult) realResult);
-            } else if (methodName.equals("match")) {
-                handler.onPolicyMatchStart(abstractPolicy);
-                realResult = proxy.invokeSuper(obj, args);
-                handler.onPolicyMatchEnd((MatchResult) realResult);
-            } else {
-                realResult = proxy.invokeSuper(obj, args);
-            }
-
-            return realResult;
-        }
-
-    }
-
-    private static class ConditionInterceptor implements MethodInterceptor {
-
-        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            String methodName = method.getName();
-            Condition condition = (Condition) obj;
-            Object realResult = null;
-
-            EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
-
-            if (methodName.equals("evaluate")) {
-                handler.onConditionEvaluateStart(condition);
-                realResult = proxy.invokeSuper(obj, args);
-                handler.onConditionEvaluateEnd((EvaluationResult) realResult);
-            } else {
-                realResult = proxy.invokeSuper(obj, args);
-            }
-
-
-
-            return realResult;
-        }
-
-    }
-
-    private static class RuleInterceptor implements MethodInterceptor {
-
-        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            String methodName = method.getName();
-            Rule rule = (Rule) obj;
-            Object realResult = null;
-
-            EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
-
-            if (methodName.equals("evaluate")) {
-                handler.onRuleEvaluateStart(rule);
-                realResult = proxy.invokeSuper(obj, args);
-                handler.onRuleEvaluateEnd((AbstractResult) realResult);
-            } else if (methodName.equals("match")) {
-                handler.onRuleMatchStart(rule);
-                realResult = proxy.invokeSuper(obj, args);
-                handler.onRuleMatchEnd((MatchResult) realResult);
-            } else {
-                realResult = proxy.invokeSuper(obj, args);
-            }
-
-
-
-            return realResult;
-        }
-
-    }
-
-    private class PDPInterceptor implements MethodInterceptor {
-
-        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            boolean evaluationCall = method.getName().equals("evaluate") && args.length == 1 && args[0] instanceof EvaluationCtx;
-            if (evaluationCall) {
-                EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
-                handler.beforeProcess((EvaluationCtx) args[0]);
-                Object result = proxy.invokeSuper(obj, args);
-                handler.postProcess((ResponseCtx) result);
-                return result;
-            } else {
-                return proxy.invokeSuper(obj, args);
-            }
-        }
-    }
-
-    private static class PolicyCombiningAlgorithmInterceptor implements MethodInterceptor {
-
-        public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-            if (method.getName().equals("combine")) {
-                EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
-                handler.onPolicyCombineStart((PolicyCombiningAlgorithm) obj);
-                Object invokeSuperResult = proxy.invokeSuper(obj, args);
-                handler.onPolicyCombineEnd((AbstractResult) invokeSuperResult);
-                return invokeSuperResult;
-            } else {
-                return proxy.invokeSuper(obj, args);
-            }
-        }
     }
 
 }
