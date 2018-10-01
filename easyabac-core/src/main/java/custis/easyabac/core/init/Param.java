@@ -1,6 +1,6 @@
 package custis.easyabac.core.init;
 
-import custis.easyabac.core.model.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.Attribute;
 
 import java.util.Objects;
 

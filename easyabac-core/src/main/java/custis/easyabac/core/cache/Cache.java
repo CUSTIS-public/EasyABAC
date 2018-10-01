@@ -1,7 +1,7 @@
 package custis.easyabac.core.cache;
 
 import custis.easyabac.core.init.Param;
-import custis.easyabac.core.model.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.Attribute;
 
 import java.util.List;
 import java.util.Set;

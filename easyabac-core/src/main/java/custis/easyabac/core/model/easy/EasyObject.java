@@ -1,10 +1,10 @@
-package custis.easyabac.core.model.attribute.load;
+package custis.easyabac.core.model.easy;
 
 import java.util.List;
 
 public class EasyObject {
     private String title;
-    private List<EasyAttribute> actions;
+    private List<String> actions;
     private List<EasyAttribute> attributes;
 
     public String getTitle() {
@@ -15,11 +15,11 @@ public class EasyObject {
         this.title = title;
     }
 
-    public List<EasyAttribute> getActions() {
+    public List<String> getActions() {
         return actions;
     }
 
-    public void setActions(List<EasyAttribute> actions) {
+    public void setActions(List<String> actions) {
         this.actions = actions;
     }
 

@@ -1,8 +1,9 @@
-package custis.easyabac.core.model.policy;
+package custis.easyabac.core.model.abac;
 
 import java.util.List;
 
 public class Rule {
+    private String title;
     private Effect effect = Effect.Permit;
     private Operation operation = Operation.AND;
     private List<Condition> conditions;

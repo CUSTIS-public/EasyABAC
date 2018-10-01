@@ -54,12 +54,12 @@ public class InputStreamPolicyFinderModule extends PolicyFinderModule {
             factory.setNamespaceAware(true);
             factory.setValidating(false);
 
-            // create a builder based on the factory & try to load the policy
+            // create a builder based on the factory & try to dto the abac
             DocumentBuilder db = factory.newDocumentBuilder();
 
             Document doc = db.parse(policyXacmlStream);
 
-            // handle the policy, if it's a known type
+            // handle the abac, if it's a known type
             Element root = doc.getDocumentElement();
             String name = DOMHelper.getLocalName(root);
 
@@ -70,7 +70,7 @@ public class InputStreamPolicyFinderModule extends PolicyFinderModule {
             }
         } catch (Exception e) {
             // just only logs
-            log.error("Fail to load policy : " + policyXacmlStream, e);
+            log.error("Fail to dto abac : " + policyXacmlStream, e);
         } finally {
             if (policyXacmlStream != null) {
                 try {
@@ -130,7 +130,7 @@ public class InputStreamPolicyFinderModule extends PolicyFinderModule {
         switch (selectedPolicies.size()) {
             case 0:
                 if (log.isDebugEnabled()) {
-                    log.debug("No matching XACML policy found");
+                    log.debug("No matching XACML abac found");
                 }
                 return new PolicyFinderResult();
             case 1:

@@ -1,11 +1,11 @@
-package custis.easyabac.core.model.policy;
+package custis.easyabac.core.model.abac;
 
-import custis.easyabac.core.model.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.Attribute;
 
 import java.util.List;
 import java.util.Map;
 
-public class AbacModel {
+public class AbacAuthModel {
     private String combiningAlgorithm = "deny-unless-permit";
 
     private Map<String, Policy> policies;

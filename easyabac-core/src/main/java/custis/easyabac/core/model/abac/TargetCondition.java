@@ -1,6 +1,6 @@
-package custis.easyabac.core.model.policy;
+package custis.easyabac.core.model.abac;
 
-import custis.easyabac.core.model.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.Attribute;
 
 public class TargetCondition {
     private Attribute firstOperand;
