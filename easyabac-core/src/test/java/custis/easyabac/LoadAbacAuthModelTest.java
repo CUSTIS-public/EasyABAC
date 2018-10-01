@@ -10,7 +10,7 @@ import java.io.InputStream;
 public class LoadAbacAuthModelTest {
 
     @Test
-    public void loadEasyAuthModel() {
+    public void loadEasyAuthModel() throws Exception {
         InputStream policy = this.getClass()
                 .getClassLoader()
                 .getResourceAsStream("test_pip_policy.yaml");
@@ -19,7 +19,14 @@ public class LoadAbacAuthModelTest {
         Assert.assertNotNull(abacAuthModel);
 
         String reportFirstAction = abacAuthModel.getResources().get("report").getActions().get(0);
+        String reportId = abacAuthModel.getResources().get("report").getId();
+        String reportFirstAttrId = abacAuthModel.getResources().get("report").getAttributes().get(0).getId();
+
+        System.out.println(reportId);
+        System.out.println(reportFirstAttrId);
+        Assert.assertEquals("report", reportId);
         Assert.assertEquals("edit", reportFirstAction);
+        Assert.assertEquals("report.id", reportFirstAttrId);
 
     }
 }

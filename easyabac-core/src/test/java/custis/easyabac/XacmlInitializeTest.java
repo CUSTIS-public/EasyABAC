@@ -9,7 +9,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +24,11 @@ public class XacmlInitializeTest {
 
     @Test
     @Ignore
-    public void authTest1() throws URISyntaxException {
+    public void authTest1() throws Exception {
 
         InputStream policy = getResourceAsStream("test1_policy.xacml");
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, attributes, ModelType.XACML).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "ADMIN"));
@@ -53,12 +52,12 @@ public class XacmlInitializeTest {
 
     @Test
     @Ignore
-    public void authTest2() {
+    public void authTest2() throws Exception {
 
         InputStream policy = getResourceAsStream("test2_policy.xacml");
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml.yaml");
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, attributes, ModelType.XACML).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "USER"));
