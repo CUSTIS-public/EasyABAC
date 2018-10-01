@@ -27,6 +27,20 @@ public class Attribute {
         this.xacmlName = xacmlName;
     }
 
+    public static final Attribute ACTION_ID = new Attribute("action-id", Category.ACTION, DataType.STRING);
+    public static final Attribute RESOURCE_ID = new Attribute("resource-id", Category.RESOURCE, DataType.STRING);
+    public static final Attribute SUBJECT_ID = new Attribute("subject-id", Category.SUBJECT, DataType.STRING);
+
+    public Attribute(String id, Category category, DataType type) {
+        this.id = id;
+        this.title = id;
+        this.category = category;
+        this.type = type;
+        this.multiple = false;
+        this.allowableValues = Collections.emptySet();
+        this.xacmlName = id;
+    }
+
     public Attribute(String id) {
         this(id, DataType.STRING, Category.RESOURCE, false);
     }

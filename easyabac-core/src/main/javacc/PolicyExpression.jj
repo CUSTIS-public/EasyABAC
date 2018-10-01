@@ -12,11 +12,11 @@ options
 
 PARSER_BEGIN(PolicyExpressionParser)
 
-package custis.easyabac.core.model.policy;
+package custis.easyabac.core.model.abac;
 
 import java.util.Optional;
-import custis.easyabac.core.model.policy.*;
-import custis.easyabac.core.model.attribute.*;
+import custis.easyabac.core.model.abac.*;
+import custis.easyabac.core.model.abac.attribute.*;
 
 public class PolicyExpressionParser {
 

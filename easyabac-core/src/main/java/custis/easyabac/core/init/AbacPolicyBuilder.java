@@ -1,5 +1,6 @@
 package custis.easyabac.core.init;
 
+import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.Operation;
 import custis.easyabac.core.model.abac.TargetCondition;
@@ -20,33 +21,32 @@ import java.util.stream.Collectors;
 /**
  * Converts EasyPolicy to Balana policies
  */
-public class EasyPolicyBuilder {
+public class AbacPolicyBuilder {
 
     private static final String POLICY_NAMESPACE = "policy.namespace";
 
     private String policyNamespace;
 
-    public EasyPolicyBuilder(Properties properties) {
+    public AbacPolicyBuilder(Properties properties) {
         this.policyNamespace = properties.getProperty(POLICY_NAMESPACE);
     }
 
-    public Map<URI, AbstractPolicy> buildFrom(Policy easyPolicy) {
-        return easyPolicy.getPolicies().entrySet().stream()
-                .map(e -> buildBalanaPolicy(e.getValue(), e.getKey()))
+    public Map<URI, org.wso2.balana.Policy> buildFrom(AbacAuthModel abacAuthModel) {
+        return abacAuthModel.getPolicies().stream()
+                .map(this::buildBalanaPolicy)
                 .collect(Collectors.toMap(AbstractPolicy::getId, bp -> bp));
     }
 
-    private AbstractPolicy buildBalanaPolicy(custis.easyabac.core.model.policy.Policy easyPolicy, String policyKey) {
-
-        return new Policy(URI.create(policyNamespace + ":" + policyKey),
+    private org.wso2.balana.Policy buildBalanaPolicy(Policy abacPolicy) {
+        return new org.wso2.balana.Policy(URI.create(policyNamespace + ":" + abacPolicy.getId()),
                 null,
                 new DenyUnlessPermitRuleAlg(),
-                easyPolicy.getTitle(),
-                buildTarget(easyPolicy.getTarget()),
+                abacPolicy.getTitle(),
+                buildTarget(abacPolicy.getTarget()),
                 Collections.emptyList());
     }
 
-    private Target buildTarget(custis.easyabac.core.model.policy.Target target) {
+    private Target buildTarget(custis.easyabac.core.model.abac.Target target) {
 
         List<AllOfSelection> allOfSelections;
 

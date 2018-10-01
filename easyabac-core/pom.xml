@@ -70,7 +70,7 @@
                 <artifactId>javacc-maven-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <packageName>custis.easyabac.core.model.policy</packageName>
+                    <packageName>custis.easyabac.core.model.abac</packageName>
                 </configuration>
                 <executions>
                     <execution>

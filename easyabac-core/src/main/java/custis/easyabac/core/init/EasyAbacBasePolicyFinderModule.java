@@ -2,7 +2,6 @@ package custis.easyabac.core.init;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.MatchResult;
 import org.wso2.balana.PolicySet;
 import org.wso2.balana.combine.PolicyCombiningAlgorithm;
@@ -24,19 +23,19 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
 
     protected final static Log log = LogFactory.getLog(FileBasedPolicyFinderModule.class);
 
-    protected Map<URI, AbstractPolicy> policies;
+    protected Map<URI, org.wso2.balana.Policy> policies;
     protected PolicyCombiningAlgorithm combiningAlg;
 
 
     @Override
     public PolicyFinderResult findPolicy(EvaluationCtx context) {
-        ArrayList<AbstractPolicy> selectedPolicies = new ArrayList<>();
-        Set<Map.Entry<URI, AbstractPolicy>> entrySet = policies.entrySet();
+        ArrayList<org.wso2.balana.Policy> selectedPolicies = new ArrayList<>();
+        Set<Map.Entry<URI, org.wso2.balana.Policy>> entrySet = policies.entrySet();
 
         // iterate through all the policies we currently have loaded
-        for (Map.Entry<URI, AbstractPolicy> entry : entrySet) {
+        for (Map.Entry<URI, org.wso2.balana.Policy> entry : entrySet) {
 
-            AbstractPolicy policy = entry.getValue();
+            org.wso2.balana.Policy policy = entry.getValue();
             MatchResult match = policy.match(context);
             int result = match.getResult();
 
