@@ -3,7 +3,7 @@ package custis.easyabac.generation.test.model;
 import custis.easyabac.api.AuthorizationAttribute;
 import custis.easyabac.api.AuthorizationEntity;
 
-@AuthorizationEntity(name = "Report")
+@AuthorizationEntity(name = "report")
 public class Report {
 
     /**

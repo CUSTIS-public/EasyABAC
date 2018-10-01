@@ -14,6 +14,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -37,7 +38,11 @@ public class Main {
         for (EasyResource entry : model.getResources().values()) {
             EntityGenerator.createEntity(entry, bPackage + ".model", sourceRoot);
             ActionGenerator.createAction(entry, bPackage + ".model", sourceRoot);
-            TestGenerator.createTest(entry, bPackage, sourceRoot, model.getPolicies().values());
+            TestGenerator.createTest(entry, bPackage, sourceRoot,
+                    model.getPolicies()
+                            .values()
+                            .stream()
+                            .collect(Collectors.toList()));
         }
 
 

@@ -6,24 +6,17 @@ import custis.easyabac.api.AuthorizationActionId;
 @AuthorizationAction()
 public enum ReportAction {
 
-    EDIT("edit", "edit"), VIEW("view", "view"), REMOVE("remove", "remove");
+    EDIT("edit"), VIEW("view"), REMOVE("remove");
 
     @AuthorizationActionId()
     private String id;
 
-    private String title;
-
-    private ReportAction(String id, String title) {
+    private ReportAction(String id) {
         this.id = id;
-        this.title = title;
     }
 
     // Simple getters and setters
     public String getId() {
         return this.id;
-    }
-
-    public String getTitle() {
-        return this.title;
     }
 }

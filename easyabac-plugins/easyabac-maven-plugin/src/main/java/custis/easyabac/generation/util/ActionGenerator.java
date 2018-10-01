@@ -25,13 +25,13 @@ import java.util.List;
 import static custis.easyabac.generation.util.ModelGenerator.*;
 
 public class ActionGenerator {
-    public  static void createAction(String name, EasyResource easyResource, String packageName, SourceRoot sourceRoot) {
+    public  static void createAction(EasyResource easyResource, String packageName, SourceRoot sourceRoot) {
         if (easyResource.getActions() == null || easyResource.getActions().isEmpty()) {
             return;
         }
 
         CompilationUnit actionUnit = new CompilationUnit(packageName);
-        String enumName = name + "Action";
+        String enumName = easyResource.getId() + "Action";
 
         EnumDeclaration type = createEnum(actionUnit, enumName, easyResource);
 

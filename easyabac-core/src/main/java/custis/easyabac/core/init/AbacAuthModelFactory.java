@@ -3,15 +3,22 @@ package custis.easyabac.core.init;
 import custis.easyabac.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.easy.EasyAuthModel;
+import custis.easyabac.core.model.easy.EasyResource;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.util.Map;
 
 public class AbacAuthModelFactory {
 
     public AbacAuthModel getInstance(ModelType modelType, InputStream policy) {
         if (modelType == ModelType.EASY_YAML) {
             EasyAuthModel easyAuthModel = load(policy);
+
+            for (Map.Entry<String, EasyResource> entry : easyAuthModel.getResources().entrySet()) {
+                entry.getValue().setId(entry.getKey());
+            }
+
             return transform(easyAuthModel);
         }
         new RuntimeException("Ошипко");

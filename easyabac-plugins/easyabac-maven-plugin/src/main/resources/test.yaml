@@ -5,7 +5,7 @@ resources:
     - id: allowed-categories
       title: категории доступные субъекту
       multiple: true
-  report:
+  report:multiple
     title: Отчет
     actions:
     - edit
@@ -30,5 +30,5 @@ permissions:
       operation: OR #это здесь просто, что бы проверить загрузку. Возможные операции:  AND, OR, NAND, NOR
       conditions:
       - report.category == subject.allowed-categories
-  obligations:
+  returnAttributes:
     [subject.allowed-categories]

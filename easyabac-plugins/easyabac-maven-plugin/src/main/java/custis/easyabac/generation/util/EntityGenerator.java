@@ -61,7 +61,7 @@ public class EntityGenerator {
             targetPath = targetPath.resolve(aPackage);
         }
 
-        entityUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, name));
+        entityUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, easyResource.getId()));
         sourceRoot.add(entityUnit);
     }
 
