@@ -14,8 +14,8 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.api.NotPermittedException;
 import custis.easyabac.api.test.BaseTestClass;
-import custis.easyabac.core.model.easy.EasyObject;
 import custis.easyabac.core.model.easy.EasyPolicy;
+import custis.easyabac.core.model.easy.EasyResource;
 import custis.easyabac.core.model.easy.EasyRule;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.BeforeClass;
@@ -31,7 +31,7 @@ import static custis.easyabac.generation.util.ModelGenerator.resolvePathForSourc
 
 public class TestGenerator {
 
-    public static void createTest(String name, EasyObject easyObject, String packageName, SourceRoot sourceRoot, List<EasyPolicy> permissions) {
+    public static void createTest(String name, EasyResource easyObject, String packageName, SourceRoot sourceRoot, List<EasyPolicy> permissions) {
         if (easyObject.getActions() == null || easyObject.getActions().isEmpty()) {
             return;
         }
@@ -46,7 +46,7 @@ public class TestGenerator {
 
     }
 
-    private static ClassOrInterfaceDeclaration createType(CompilationUnit testUnit, String name, EasyObject easyObject, String packageName, String entityName, List<EasyPolicy> permissions) {
+    private static ClassOrInterfaceDeclaration createType(CompilationUnit testUnit, String name, EasyResource easyObject, String packageName, String entityName, List<EasyPolicy> permissions) {
         for (ImportDeclaration annotationImport : IMPORTS) {
             testUnit.addImport(annotationImport);
         }
@@ -73,7 +73,7 @@ public class TestGenerator {
         return type;
     }
 
-    private static void createTestsForCase(ClassOrInterfaceDeclaration type, EasyObject easyObject, String value, String entityName, List<EasyPolicy> permissions) {
+    private static void createTestsForCase(ClassOrInterfaceDeclaration type, EasyResource easyObject, String value, String entityName, List<EasyPolicy> permissions) {
         createPermitTest(type, value, entityName);
         for (EasyPolicy permission : permissions) {
             if (permission.getAccessToActions().contains(value)) {

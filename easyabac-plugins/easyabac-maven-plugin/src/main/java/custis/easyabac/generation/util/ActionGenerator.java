@@ -15,7 +15,7 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.api.AuthorizationAction;
 import custis.easyabac.api.AuthorizationActionId;
-import custis.easyabac.core.model.easy.EasyObject;
+import custis.easyabac.core.model.easy.EasyResource;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -25,20 +25,19 @@ import java.util.List;
 import static custis.easyabac.generation.util.ModelGenerator.*;
 
 public class ActionGenerator {
-    public  static void createAction(String name, EasyObject easyObject, String packageName, SourceRoot sourceRoot) {
-        if (easyObject.getActions() == null || easyObject.getActions().isEmpty()) {
+    public  static void createAction(String name, EasyResource easyResource, String packageName, SourceRoot sourceRoot) {
+        if (easyResource.getActions() == null || easyResource.getActions().isEmpty()) {
             return;
         }
 
         CompilationUnit actionUnit = new CompilationUnit(packageName);
         String enumName = name + "Action";
 
-        EnumDeclaration type = createEnum(actionUnit, enumName, easyObject);
+        EnumDeclaration type = createEnum(actionUnit, enumName, easyResource);
 
-        for (String val : easyObject.getActions()) {
+        for (String val : easyResource.getActions()) {
             EnumConstantDeclaration entry = new EnumConstantDeclaration();
             entry.setName(new SimpleName(StringUtils.upperCase(val)));
-            entry.addArgument("\"" + val + "\"");
             entry.addArgument("\"" + val + "\"");
 
 
@@ -48,21 +47,19 @@ public class ActionGenerator {
         FieldDeclaration field = type.addField(getTypeForModelType("string"), "id", Modifier.PRIVATE);
         field.addAndGetAnnotation(AuthorizationActionId.class.getSimpleName());
 
-        FieldDeclaration field2 = type.addField(getTypeForModelType("string"), "title", Modifier.PRIVATE);
-
         // all arguments constructor
         ConstructorDeclaration constructor = type.addConstructor(Modifier.PRIVATE);
 
         Comment comment = new LineComment("Simple getters and setters");
         type.addOrphanComment(comment);
 
-        generateFieldAccessors(type, constructor, Arrays.asList(field, field2), false);
+        generateFieldAccessors(type, constructor, Arrays.asList(field), false);
 
         actionUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, enumName));
         sourceRoot.add(actionUnit);
     }
 
-    private static EnumDeclaration createEnum(CompilationUnit actionUnit, String name, EasyObject easyObject) {
+    private static EnumDeclaration createEnum(CompilationUnit actionUnit, String name, EasyResource easyObject) {
         for (ImportDeclaration annotationImport : ANNOTATION_ENUM_IMPORTS) {
             actionUnit.addImport(annotationImport);
         }

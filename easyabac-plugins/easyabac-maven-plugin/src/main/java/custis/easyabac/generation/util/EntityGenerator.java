@@ -14,7 +14,7 @@ import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.api.AuthorizationAttribute;
 import custis.easyabac.api.AuthorizationEntity;
 import custis.easyabac.core.model.easy.EasyAttribute;
-import custis.easyabac.core.model.easy.EasyObject;
+import custis.easyabac.core.model.easy.EasyResource;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
@@ -24,14 +24,14 @@ import java.util.List;
 import static custis.easyabac.generation.util.ModelGenerator.*;
 
 public class EntityGenerator {
-    public static void createEntity(String name, EasyObject easyObject, String packageName, SourceRoot sourceRoot) {
+    public static void createEntity(EasyResource easyResource, String packageName, SourceRoot sourceRoot) {
         CompilationUnit entityUnit = new CompilationUnit(packageName);
 
 
-        ClassOrInterfaceDeclaration type = createType(entityUnit, name, easyObject);
+        ClassOrInterfaceDeclaration type = createType(entityUnit, easyResource);
         List<FieldDeclaration> fields = new ArrayList<>();
 
-        for (EasyAttribute easyAttribute : easyObject.getAttributes()) {
+        for (EasyAttribute easyAttribute : easyResource.getAttributes()) {
             Comment comment = new JavadocComment("Authorization attribute \"" + easyAttribute.getTitle() + "\"");
             type.addOrphanComment(comment);
 
@@ -65,12 +65,12 @@ public class EntityGenerator {
         sourceRoot.add(entityUnit);
     }
 
-    private static ClassOrInterfaceDeclaration createType(CompilationUnit entityUnit, String name, EasyObject easyObject) {
+    private static ClassOrInterfaceDeclaration createType(CompilationUnit entityUnit, EasyResource easyObject) {
         for (ImportDeclaration annotationImport : ANNOTATION_IMPORTS) {
             entityUnit.addImport(annotationImport);
         }
 
-        String javaName = StringUtils.capitalize(name);
+        String javaName = StringUtils.capitalize(easyObject.getId());
 
         Comment typeComment = new JavadocComment("Authorization entity \"" + easyObject.getTitle() + "\"");
         entityUnit.addOrphanComment(typeComment);
@@ -78,7 +78,7 @@ public class EntityGenerator {
         ClassOrInterfaceDeclaration type = entityUnit.addClass(javaName);
 
         NormalAnnotationExpr annotation = type.addAndGetAnnotation(AuthorizationEntity.class.getSimpleName());
-        annotation.addPair("name", "\"" + name + "\"");
+        annotation.addPair("name", "\"" + easyObject.getId() + "\"");
         return type;
     }
 
