@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>custis.easyabac</groupId>
-        <artifactId>easyabac-plugins</artifactId>
+        <artifactId>easyabac</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
@@ -13,7 +13,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Custis.EasyABACMaven</name>
-    <description>Плагин для генерации тестов</description>
+    <description>Maven plugin</description>
 
     <prerequisites>
         <maven>3.1</maven>
@@ -21,6 +21,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <javaparser.version>3.6.24</javaparser.version>
     </properties>
 
 
@@ -43,7 +44,14 @@
         <dependency>
             <groupId>custis.easyabac</groupId>
             <artifactId>easyabac-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
+            <version>3.6.24</version>
+        </dependency>
+
 
         <!-- dependencies to annotations -->
         <dependency>

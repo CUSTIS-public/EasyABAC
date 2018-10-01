@@ -20,7 +20,12 @@ public class AttributeValueExtractor {
 
     public static <T> List<AuthAttribute> extractAttributesFromResource(T object) {
         List<AuthAttribute> attributes = new ArrayList<>();
-        for (Field field : object.getClass().getDeclaredFields()) {
+
+        Field[] fields = object.getClass().getDeclaredFields();
+        if (fields == null) {
+            return attributes;
+        }
+        for (Field field : fields) {
             if (field.isAnnotationPresent(AuthorizationAttribute.class)) {
                 AuthorizationAttribute fieldAnnotation = field.getAnnotation(AuthorizationAttribute.class);
 

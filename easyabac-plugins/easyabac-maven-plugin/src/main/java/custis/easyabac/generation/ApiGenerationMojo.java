@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Mojo( name = "generate", requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo( name = "api.generate", requiresDependencyResolution = ResolutionScope.COMPILE)
 public class ApiGenerationMojo extends AbstractMojo {
 
     // input paramters

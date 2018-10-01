@@ -1,9 +1,16 @@
 package custis.easyabac.generation.test.model;
 
-/**
- * Autogenerating actions for Order
- * @see Order
- */
+import custis.easyabac.api.AuthorizationAction;
+import custis.easyabac.api.AuthorizationActionId;
+
+@AuthorizationAction()
 public enum OrderAction {
-    READ
+
+    WRITE;
+
+    /**
+     * Authorization attribute "Действие"
+     */
+    @AuthorizationActionId
+    private String action;
 }

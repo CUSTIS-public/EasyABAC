@@ -1,18 +1,8 @@
 package custis.easyabac.generation.test;
 
 
-import custis.easyabac.api.impl.EasyABACPermissionChecker;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthAttribute;
-import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.RequestId;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Testing entity Order
@@ -21,14 +11,17 @@ import java.util.Map;
 @RunWith(JUnit4.class)
 public class EasyABAC_Order_Test {
 
-    private static AttributiveAuthorizationService authorizationService;
+   /* private static AttributiveAuthorizationService authorizationService;
     private static EasyABACPermissionChecker<Order, OrderAction, Object> permissionChecker;
+    private static EasyAttributeModel model;
+    private static Policy policy;
 
 
-    /**
+    *//**
      * Test action OrderAction.READ
      * @see OrderAction
-     */
+     *//*
+    @Ignore
     @Test
     public void test_Read() {
         permissionChecker.ensurePermitted(getEntityForTest(), OrderAction.READ);
@@ -41,6 +34,11 @@ public class EasyABAC_Order_Test {
 
     @BeforeClass
     public static void initEasyABAC() {
+        model = new EasyAttributeModel();
+
+        policy = new Policy();
+
+
         authorizationService = new AttributiveAuthorizationService() {
             @Override
             public AuthResponse authorize(List<AuthAttribute> attributes) {
@@ -53,5 +51,5 @@ public class EasyABAC_Order_Test {
             }
         };
         permissionChecker  = new EasyABACPermissionChecker<>(authorizationService);
-    }
+    }*/
 }
