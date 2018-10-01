@@ -14,10 +14,4 @@ public @interface AuthorizationAttribute {
      */
     String id() default "";
 
-    /**
-     * (Optional) The type of the attribute.
-     * <p/>
-     * Defaults to the field type.
-     */
-    String type() default "";
 }
