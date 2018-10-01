@@ -1,4 +1,4 @@
-package custis.easyabac.core.model.attribute;
+package custis.easyabac.core.model.abac.attribute;
 
 public enum DataType {
     STRING("http://www.w3.org/2001/XMLSchema#string"),

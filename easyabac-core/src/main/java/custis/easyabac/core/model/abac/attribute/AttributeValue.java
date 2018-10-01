@@ -1,4 +1,4 @@
-package custis.easyabac.core.model.attribute;
+package custis.easyabac.core.model.abac.attribute;
 
 import java.util.List;
 

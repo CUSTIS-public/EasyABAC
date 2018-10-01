@@ -1,20 +1,20 @@
-package custis.easyabac.core.model.attribute.load;
+package custis.easyabac.core.model.easy;
 
 import java.util.Set;
 
 public class EasyAttribute {
-    private String code;
+    private String id;
     private String title;
     private String type = "string";
     private boolean multiple = false;
     private Set<String> allowableValues;
 
-    public String getCode() {
-        return code;
+    public String getId() {
+        return id;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {

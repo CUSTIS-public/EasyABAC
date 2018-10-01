@@ -1,4 +1,4 @@
-package custis.easyabac.core.model.policy;
+package custis.easyabac.core.model.abac;
 
 public enum Function {
     EQUAL("=="),

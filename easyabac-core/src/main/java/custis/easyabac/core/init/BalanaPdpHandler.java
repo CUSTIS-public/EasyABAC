@@ -1,9 +1,9 @@
 package custis.easyabac.core.init;
 
 import custis.easyabac.core.cache.Cache;
-import custis.easyabac.core.model.attribute.AttributeValue;
-import custis.easyabac.core.model.attribute.Category;
-import custis.easyabac.core.model.policy.AbacModel;
+import custis.easyabac.core.model.abac.AbacAuthModel;
+import custis.easyabac.core.model.abac.attribute.AttributeValue;
+import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.pdp.AuthResponse;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
@@ -83,7 +83,7 @@ public class BalanaPdpHandler implements PdpHandler {
         return new AuthResponse(decision);
     }
 
-    public static PdpHandler getInstance(AbacModel abacModel, List<SampleDatasource> datasources, Cache cache) {
+    public static PdpHandler getInstance(AbacAuthModel abacAuthModel, List<SampleDatasource> datasources, Cache cache) {
 
 
         Balana balana = Balana.getInstance();
