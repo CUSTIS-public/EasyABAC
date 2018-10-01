@@ -24,6 +24,10 @@ public enum ActionPatternType {
 
     public static ActionPatternType findByMethod(Method method, MethodType methodType, DecisionType decisionType) {
         String methodName = method.getName().toLowerCase();
+        int lastLine = methodName.lastIndexOf("_"); // на случай нескольких методов из-за erasure
+        if (lastLine != -1) {
+            methodName = methodName.substring(0, lastLine);
+        }
         methodName = methodName.substring(methodType.getCode().length() + decisionType.getSecondForm().length());
         if (methodName.isEmpty()) {
             return EMPTY;

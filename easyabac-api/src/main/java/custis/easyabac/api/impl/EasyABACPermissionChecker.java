@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static custis.easyabac.api.impl.AttributeValueExtractor.collectAttributes;
+import static custis.easyabac.api.impl.AttributeValueExtractor.extract;
 
 @Slf4j
 public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissionChecker<T, A, U> {
@@ -25,7 +25,7 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
 
     @Override
     public AuthResponse.Decision authorize(T object, A action) {
-        AuthResponse response = attributiveAuthorizationService.authorize(collectAttributes(object, action));
+        AuthResponse response = attributiveAuthorizationService.authorize(extract(object, action));
         return response.getDecision();
     }
 
@@ -39,7 +39,7 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
     @Override
     public void ensurePermittedAll(Map<T, A> operationsMap) throws NotPermittedException {
         Map<RequestId, List<AuthAttribute>> attributes = operationsMap.entrySet().stream()
-                .map(taEntry -> collectAttributes(taEntry.getKey(), taEntry.getValue()))
+                .map(taEntry -> extract(taEntry.getKey(), taEntry.getValue()))
                 .collect(Collectors.toMap(o -> RequestId.newRandom(), o -> o));
 
         Map<RequestId, AuthResponse> results = attributiveAuthorizationService.authorizeMultiple(attributes);
@@ -54,7 +54,7 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
     @Override
     public void ensurePermittedAll(T entity, List<A> operations) throws NotPermittedException {
         Map<RequestId, List<AuthAttribute>> attributes = operations.stream()
-                .map(operation -> collectAttributes(entity, operation))
+                .map(operation -> extract(entity, operation))
                 .collect(Collectors.toMap(o -> RequestId.newRandom(), o -> o));
 
         Map<RequestId, AuthResponse> results = attributiveAuthorizationService.authorizeMultiple(attributes);
@@ -68,7 +68,7 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
     @Override
     public void ensurePermittedAny(Map<T, A> operationsMap) throws NotPermittedException {
         Map<RequestId, List<AuthAttribute>> attributes = operationsMap.entrySet().stream()
-                .map(taEntry -> collectAttributes(taEntry.getKey(), taEntry.getValue()))
+                .map(taEntry -> extract(taEntry.getKey(), taEntry.getValue()))
                 .collect(Collectors.toMap(o -> RequestId.newRandom(), o -> o));
 
         Map<RequestId, AuthResponse> results = attributiveAuthorizationService.authorizeMultiple(attributes);
@@ -84,7 +84,7 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
     @Override
     public void ensurePermittedAny(T entity, List<A> operations) throws NotPermittedException {
         Map<RequestId, List<AuthAttribute>> attributes = operations.stream()
-                .map(operation -> collectAttributes(entity, operation))
+                .map(operation -> extract(entity, operation))
                 .collect(Collectors.toMap(o -> RequestId.newRandom(), o -> o));
 
         Map<RequestId, AuthResponse> results = attributiveAuthorizationService.authorizeMultiple(attributes);

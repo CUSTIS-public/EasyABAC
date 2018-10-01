@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class AttributiveAuthorizationServiceImpl implements AttributiveAuthorizationService {
 
-    private PDPHandler pdpHandler = new PDPHandler();
+    private SamplePDPHandler pdpHandler = new SamplePDPHandler();
 
     @Override
     public AuthResponse authorize(List<AuthAttribute> attributes) {

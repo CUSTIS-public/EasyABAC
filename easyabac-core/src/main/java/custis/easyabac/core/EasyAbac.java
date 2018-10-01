@@ -2,11 +2,10 @@ package custis.easyabac.core;
 
 import custis.easyabac.ModelType;
 import custis.easyabac.core.cache.Cache;
-import custis.easyabac.core.init.PolicyInitializer;
-import custis.easyabac.core.model.attribute.Category;
-import custis.easyabac.core.model.attribute.Datasource;
-import custis.easyabac.core.model.attribute.load.EasyAttributeModel;
-import custis.easyabac.core.model.policy.EasyPolicy;
+import custis.easyabac.core.init.*;
+import custis.easyabac.core.model.abac.AbacAuthModel;
+import custis.easyabac.core.model.abac.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.AttributeValue;
 import custis.easyabac.core.trace.Trace;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
@@ -14,77 +13,45 @@ import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.RequestId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.balana.PDP;
-import org.wso2.balana.attr.AttributeValue;
-import org.wso2.balana.attr.StringAttribute;
-import org.wso2.balana.ctx.AbstractResult;
-import org.wso2.balana.ctx.Attribute;
-import org.wso2.balana.ctx.ResponseCtx;
-import org.wso2.balana.ctx.Status;
-import org.wso2.balana.ctx.xacml3.RequestCtx;
-import org.wso2.balana.ctx.xacml3.Result;
-import org.wso2.balana.xacml3.Attributes;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 public class EasyAbac implements AttributiveAuthorizationService {
 
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
-    private final PDP pdpInstance;
+    private final PdpHandler pdpHandler;
+    private final Map<String, Attribute> attributeMap;
 
 
-    private EasyAbac(PDP pdpInstance) {
+    private EasyAbac(PdpHandler pdpHandler) {
+        this(pdpHandler, Collections.emptyMap());
+    }
 
-        this.pdpInstance = pdpInstance;
+    private EasyAbac(PdpHandler pdpHandler, Map<String, Attribute> attributeMap) {
+        this.pdpHandler = pdpHandler;
+        this.attributeMap = attributeMap;
     }
 
     @Override
-    public AuthResponse authorize(List<AuthAttribute> attributes) {
-        ResponseCtx responseCtx;
-        try {
-            Set<Attribute> balanaAttributes = new HashSet<>();
-            for (AuthAttribute attribute : attributes) {
-                //TODO: здесь определять тип и массив, подставлять префикс
+    public AuthResponse authorize(List<AuthAttribute> authAttributes) {
 
-                List<AttributeValue> attributeValues = new ArrayList<>();
+        List<Attribute> attributes = new ArrayList<>();
 
-                for (String attributeValue : attribute.getValues()) {
-                    attributeValues.add(new StringAttribute(attributeValue));
-                }
+        List<AttributeValue> attributeValueList = new ArrayList<>();
+        for (AuthAttribute authAttribute : authAttributes) {
+            Attribute attribute = attributeMap.get(authAttribute.getId());
 
-
-                Attribute newBalanaAttribute = new Attribute(new URI(attribute.getId()), new URI(StringAttribute.identifier), "", null, attributeValues, true, 3);
-                balanaAttributes.add(newBalanaAttribute);
-            }
-
-            Set<Attributes> attributesSet = new HashSet<>();
-            Attributes newBalanaAttributesSet = new Attributes(new URI(Category.RESOURCE.getXacmlName()), balanaAttributes);
-            attributesSet.add(newBalanaAttributesSet);
-
-            RequestCtx requestCtx = new RequestCtx(attributesSet, null);
-
-            requestCtx.encode(System.out);
-
-//            requestCtx = RequestCtxFactory.getFactory().getRequestCtx(request.getXacmlRequest().replaceAll(">\\s+<", "><"));
-            responseCtx = pdpInstance.evaluate(requestCtx);
-        } catch (URISyntaxException e) {
-            List<String> code = new ArrayList<>();
-            code.add(Status.STATUS_SYNTAX_ERROR);
-            String error = "Invalid request  : " + e.getMessage();
-            Status status = new Status(code, error);
-            responseCtx = new ResponseCtx(new Result(AbstractResult.DECISION_INDETERMINATE, status));
+            AttributeValue attributeValue = new AttributeValue(attribute, authAttribute.getValues());
+            attributeValueList.add(attributeValue);
         }
-        log.debug(responseCtx.encode());
 
-        AuthResponse.Decision decision = AuthResponse.Decision.getByIndex(responseCtx.getResults().iterator().next().getDecision());
 
-        return new AuthResponse(decision);
+        AuthResponse authResponse = pdpHandler.evaluate(attributeValueList);
+
+        return authResponse;
     }
 
     @Override
@@ -95,47 +62,31 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     public static class Builder {
         private final InputStream policy;
-        private final InputStream attributes;
         private final ModelType modelType;
 
-        private EasyPolicy easyPolicy;
-        private EasyAttributeModel easyAttributeModel;
-        private List<Datasource> datasources;
+        private PdpHandler pdpHandler;
+        private AbacAuthModel abacAuthModel;
+        private List<SampleDatasource> datasources = Collections.emptyList();
         private Cache cache;
         private Trace trace;
+        private PdpType pdpType = PdpType.BALANA;
 
         public Builder(String policy, String attributes, ModelType modelType) {
             this.policy = new ByteArrayInputStream(policy.getBytes());
-            this.attributes = new ByteArrayInputStream(attributes.getBytes());
             this.modelType = modelType;
         }
 
-        public Builder(InputStream policy, InputStream attributes, ModelType modelType) {
+        public Builder(InputStream policy, ModelType modelType) {
             this.policy = policy;
-            this.attributes = attributes;
             this.modelType = modelType;
         }
 
-//        public Builder(String policy, String attributes) {
-//
-//            Yaml yaml = new Yaml();
-//
-//            easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
-//
-//            easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
-//
-//        }
-//
-//        public Builder(InputStream policy, InputStream attributes) {
-//
-//            Yaml yaml = new Yaml();
-//
-//            easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
-//
-//            easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
-//        }
+        public Builder pdpType(PdpType pdpType) {
+            this.pdpType = pdpType;
+            return this;
+        }
 
-        public Builder datasources(List<Datasource> datasources) {
+        public Builder datasources(List<SampleDatasource> datasources) {
             this.datasources = datasources;
             return this;
         }
@@ -150,32 +101,32 @@ public class EasyAbac implements AttributiveAuthorizationService {
             return this;
         }
 
-        public AttributiveAuthorizationService build() {
+        public AttributiveAuthorizationService build() throws Exception {
+            PdpHandlerFactory pdpHandlerFactory = new PdpHandlerFactory();
+            Map<String, Attribute> attributeMap = Collections.emptyMap();
 
             switch (modelType) {
                 case XACML: {
-                    PolicyInitializer policyInitializer = new PolicyInitializer();
-                    PDP pdpInstance = policyInitializer.newPDPInstance(policy);
-
-                    return new EasyAbac(pdpInstance);
+                    PdpHandler pdpHandler = pdpHandlerFactory.getPdpHandler(pdpType, policy, datasources, cache);
                 }
                 case EASY_YAML: {
-                    Yaml yaml = new Yaml();
-
-                    easyPolicy = yaml.loadAs(policy, EasyPolicy.class);
-
-                    easyAttributeModel = yaml.loadAs(attributes, EasyAttributeModel.class);
+                    AbacAuthModel abacAuthModel = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, policy);
+                    PdpHandler pdpHandler = pdpHandlerFactory.getPdpHandler(pdpType, abacAuthModel, datasources, cache);
+                    attributeMap = getAttributeMap(abacAuthModel);
                 }
-
             }
 
-
-            PolicyInitializer policyInitializer = new PolicyInitializer();
-            PDP pdpInstance = policyInitializer.newPDPInstance(easyPolicy, easyAttributeModel, datasources);
-
-            return new EasyAbac(pdpInstance);
+            return new EasyAbac(pdpHandler, attributeMap);
         }
+
+
+        private Map<String, Attribute> getAttributeMap(AbacAuthModel abacAuthModel) {
+            Map<String, Attribute> attributeMap = new HashMap<>();
+            for (Attribute attribute : abacAuthModel.getAttributes()) {
+                attributeMap.put(attribute.getId(), attribute);
+            }
+            return attributeMap;
+        }
+
     }
-
-
 }

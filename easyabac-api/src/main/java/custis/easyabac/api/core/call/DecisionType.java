@@ -1,6 +1,6 @@
 package custis.easyabac.api.core.call;
 
-import custis.easyabac.api.core.UnsupportedPermissionCheckerMethodSignature;
+import custis.easyabac.api.core.UnsupportedDynamicMethodSignature;
 import custis.easyabac.pdp.AuthResponse;
 
 import java.lang.reflect.Method;
@@ -44,6 +44,6 @@ public enum DecisionType {
                 return value;
             }
         }
-        throw new UnsupportedPermissionCheckerMethodSignature(method, "Unknown Decision in method signature");
+        throw new UnsupportedDynamicMethodSignature(method, "Unknown Decision in method signature");
     }
 }

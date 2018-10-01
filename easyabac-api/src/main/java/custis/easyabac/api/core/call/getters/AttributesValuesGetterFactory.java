@@ -1,43 +1,52 @@
 package custis.easyabac.api.core.call.getters;
 
 import custis.easyabac.api.core.PermissionCheckerMetadata;
-import custis.easyabac.api.core.UnsupportedPermissionCheckerMethodSignature;
+import custis.easyabac.api.core.UnsupportedDynamicMethodSignature;
 import custis.easyabac.api.core.call.DecisionType;
 import custis.easyabac.api.core.call.MethodType;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
 public class AttributesValuesGetterFactory {
-    public static AttributesValuesGetter prepareDefault(Method method, PermissionCheckerMetadata permissionCheckerInformation, MethodType methodType, DecisionType decisionType) {
-        Class<?> resourceType = permissionCheckerInformation.getResourceType();
-        Class<?> actionType = permissionCheckerInformation.getActionType();
+    public static RequestGenerator prepareDefault(Method method, PermissionCheckerMetadata metadata, MethodType methodType, DecisionType decisionType) throws ClassNotFoundException {
         Class<?>[] classes = method.getParameterTypes();
+        checkOneOrTwoArguments(method, classes);
+
+        Class<?> resourceType = metadata.getResourceType();
+        Class<?> actionType = metadata.getActionType();
+
         Type[] types = method.getGenericParameterTypes();
-        if (classes.length == 0){
-            throw new UnsupportedPermissionCheckerMethodSignature(method, "Method require parameters!");
-        }
+
 
         Class<?> first = classes[0];
 
         if (classes.length == 1) {
             if (Map.class.isAssignableFrom(first)) {
-                return new MapAttributeValueGetter(permissionCheckerInformation);
+                Type firstType = ((ParameterizedType) types[0]).getActualTypeArguments()[0];
+                Type secondType = ((ParameterizedType) types[0]).getActualTypeArguments()[1];
+
+                boolean firstIsList = checkIsList(firstType);
+                boolean secondIsList = checkIsList(secondType);
+                boolean resourceIsFirst = isOfClassOrList(firstType, resourceType);
+
+                return new MapAttributeValueGetter(metadata, firstIsList, secondIsList, resourceIsFirst);
             }
 
-            throw new UnsupportedPermissionCheckerMethodSignature(method, "Unexpected type " + first);
+            throw new UnsupportedDynamicMethodSignature(method, "Expected Map");
         }
 
         Class<?> second = classes[1];
 
-
         if (resourceType.isAssignableFrom(first) && actionType.isAssignableFrom(second)) {
-            return new SingleResourceAndAction(permissionCheckerInformation, true);
+            return new TwoArgumentsRequestGenerator(metadata, false, false, true);
         }
 
         if (actionType.isAssignableFrom(first) && resourceType.isAssignableFrom(second)) {
-            return new SingleResourceAndAction(permissionCheckerInformation, false);
+            return new TwoArgumentsRequestGenerator(metadata, false, false,false);
         }
 
         if (List.class.isAssignableFrom(first)) {
@@ -45,7 +54,7 @@ public class AttributesValuesGetterFactory {
             boolean resourceIsFirst = firstGenericTypeName.equals(resourceType.getName());
             boolean actionIsFirst = firstGenericTypeName.equals(actionType.getName());
             if (!resourceIsFirst && !actionIsFirst) {
-                throw new UnsupportedPermissionCheckerMethodSignature(method, "Expected types " + resourceType + " or " + actionType + ". Found " + firstGenericTypeName);
+                throw new UnsupportedDynamicMethodSignature(method, "Expected types " + resourceType + " or " + actionType + ". Found " + firstGenericTypeName);
             }
 
             // contains resource or action
@@ -55,19 +64,19 @@ public class AttributesValuesGetterFactory {
 
                checkSecondGeneric(resourceType, actionType, resourceIsFirst, secondGenericTypeName, method);
 
-                return new ListAttributesValueGetter(permissionCheckerInformation, true, true, resourceIsFirst);
+                return new TwoArgumentsRequestGenerator(metadata, true, true, resourceIsFirst);
             } else {
                 if (resourceIsFirst) {
                     if (!actionType.isAssignableFrom(second)) {
-                        throw new UnsupportedPermissionCheckerMethodSignature(method, "Expected type " + actionType + " found " + second);
+                        throw new UnsupportedDynamicMethodSignature(method, "Expected type " + actionType + " found " + second);
                     }
                 } else {
                     // action first
                     if (!resourceType.isAssignableFrom(second)) {
-                        throw new UnsupportedPermissionCheckerMethodSignature(method, "Expected type " + resourceType + " found " + second);
+                        throw new UnsupportedDynamicMethodSignature(method, "Expected type " + resourceType + " found " + second);
                     }
                 }
-                return new ListAttributesValueGetter(permissionCheckerInformation, true, false, resourceIsFirst);
+                return new TwoArgumentsRequestGenerator(metadata, true, false, resourceIsFirst);
             }
         }
 
@@ -78,32 +87,54 @@ public class AttributesValuesGetterFactory {
             boolean actionIsFirst = actionType.isAssignableFrom(first);
 
             if (!resourceIsFirst && !actionIsFirst) {
-                throw new UnsupportedPermissionCheckerMethodSignature(method, "Expected types " + resourceType + " or " + actionType + ". Found " + first);
+                throw new UnsupportedDynamicMethodSignature(method, "Expected types " + resourceType + " or " + actionType + ". Found " + first);
             }
 
             checkSecondGeneric(resourceType, actionType, resourceIsFirst, secondGenericTypeName, method);
 
-            return new ListAttributesValueGetter(permissionCheckerInformation, false, true, resourceIsFirst);
+            return new TwoArgumentsRequestGenerator(metadata, false, true, resourceIsFirst);
         }
 
+        throw new UnsupportedDynamicMethodSignature(method, "Unexpected type " + first);
+    }
 
-        if (Map.class.isAssignableFrom(first)) {
-            // todo check generic
-            return new MapAttributeValueGetter(permissionCheckerInformation);
+    private static void checkOneOrTwoArguments(Method method, Class<?>[] classes) {
+        if (classes.length == 0){
+            throw new UnsupportedDynamicMethodSignature(method, "Method require parameters!");
         }
 
-        throw new UnsupportedPermissionCheckerMethodSignature(method, "Unexpected type " + first);
+        if (classes.length > 2){
+            throw new UnsupportedDynamicMethodSignature(method, "Method require less then 3 parameters!");
+        }
+    }
+
+    private static boolean isOfClassOrList(Type type, Class<?> clazz) throws ClassNotFoundException {
+        if (type instanceof ParameterizedType) {
+            return clazz.isAssignableFrom(Class.forName(((ParameterizedType) type).getActualTypeArguments()[0].getTypeName()));
+        } else {
+            return clazz.isAssignableFrom(Class.forName(type.getTypeName()));
+        }
+    }
+
+    private static boolean checkIsList(Type type) throws ClassNotFoundException {
+        if (type instanceof ParameterizedType) {
+            // first is generic
+            if (List.class.isAssignableFrom(Class.forName(((ParameterizedType) type).getRawType().getTypeName()))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void checkSecondGeneric(Class<?> resourceType, Class<?> actionType, boolean resourceIsFirst, String secondGenericTypeName, Method method) {
         if (resourceIsFirst) {
             if (!actionType.getName().equals(secondGenericTypeName)) {
-                throw new UnsupportedPermissionCheckerMethodSignature(method, "Expected type " + actionType + " found " + secondGenericTypeName);
+                throw new UnsupportedDynamicMethodSignature(method, "Expected type " + actionType + " found " + secondGenericTypeName);
             }
         } else {
             // action first
             if (!resourceType.getName().equals(secondGenericTypeName)) {
-                throw new UnsupportedPermissionCheckerMethodSignature(method, "Expected type " + resourceType + " found " + secondGenericTypeName);
+                throw new UnsupportedDynamicMethodSignature(method, "Expected type " + resourceType + " found " + secondGenericTypeName);
             }
         }
     }

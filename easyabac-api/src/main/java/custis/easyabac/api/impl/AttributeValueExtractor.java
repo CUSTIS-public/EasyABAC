@@ -1,18 +1,18 @@
 package custis.easyabac.api.impl;
 
+import custis.easyabac.api.AuthorizationActionId;
 import custis.easyabac.api.AuthorizationAttribute;
 import custis.easyabac.pdp.AuthAttribute;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
 public class AttributeValueExtractor {
 
-    public static <T, A> List<AuthAttribute> collectAttributes(T object, A action) {
+    public static <T, A> List<AuthAttribute> extract(T object, A action) {
         List<AuthAttribute> attributes = extractAttributesFromResource(object);
         attributes.addAll(extractAttributesFromAction(action));
         return attributes;
@@ -43,6 +43,21 @@ public class AttributeValueExtractor {
     }
 
     public static <T> List<AuthAttribute> extractAttributesFromAction(T object) {
-        return Arrays.asList(new AuthAttribute("actionId", object.toString()));
+        List<AuthAttribute> attributes = new ArrayList<>();
+        for (Field field : object.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(AuthorizationActionId.class)) {
+                AuthorizationActionId fieldAnnotation = field.getAnnotation(AuthorizationActionId.class);
+
+                try {
+                    field.setAccessible(true);
+                    Object value = field.get(object);
+
+                    attributes.add(new AuthAttribute("actionId", value.toString()));
+                } catch (IllegalAccessException e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
+        return attributes;
     }
 }
