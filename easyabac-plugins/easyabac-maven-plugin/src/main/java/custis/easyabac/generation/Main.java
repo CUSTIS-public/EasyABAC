@@ -5,7 +5,10 @@ import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.core.model.attribute.load.EasyAttribute;
 import custis.easyabac.core.model.attribute.load.EasyAttributeModel;
 import custis.easyabac.core.model.attribute.load.EasyObject;
+import custis.easyabac.generation.util.ActionGenerator;
+import custis.easyabac.generation.util.EntityGenerator;
 import custis.easyabac.generation.util.ModelGenerator;
+import custis.easyabac.generation.util.TestGenerator;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -59,9 +62,15 @@ public class Main {
         Path rootPath = CodeGenerationUtils.mavenModuleRoot(ModelGenerator.class).resolve("src/test/java");
         SourceRoot sourceRoot = new SourceRoot(rootPath);
 
+        String bPackage = "custis.easyabac.generation.test";
         for (Map.Entry<String, EasyObject> entry : easyAttributeModel.getModel().entrySet()) {
-            ModelGenerator.generate(entry.getKey(), entry.getValue(), "custis.easyabac.generation.test.model", sourceRoot);
+            EntityGenerator.createEntity(entry.getKey(), entry.getValue(), bPackage + ".model", sourceRoot);
+            ActionGenerator.createAction(entry.getKey(), entry.getValue(), bPackage + ".model", sourceRoot);
+            TestGenerator.createTest(entry.getKey(), entry.getValue(), bPackage, sourceRoot);
         }
+
+
+
         sourceRoot.saveAll();
 
 

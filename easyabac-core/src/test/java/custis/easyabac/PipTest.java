@@ -8,6 +8,7 @@ import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+@Ignore
 public class PipTest {
 
     private InputStream getResourceAsStream(String s) {

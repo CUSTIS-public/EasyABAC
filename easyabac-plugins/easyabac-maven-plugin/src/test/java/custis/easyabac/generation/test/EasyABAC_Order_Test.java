@@ -1,55 +1,51 @@
 package custis.easyabac.generation.test;
 
-
+import custis.easyabac.api.NotPermittedException;
+import custis.easyabac.api.test.BaseTestClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import custis.easyabac.generation.test.model.*;
+import static custis.easyabac.generation.test.model.OrderAction.*;
 
-/**
- * Testing entity Order
- * @see Order
- */
 @RunWith(JUnit4.class)
-public class EasyABAC_Order_Test {
+public class EasyABAC_Order_Test extends BaseTestClass {
 
-   /* private static AttributiveAuthorizationService authorizationService;
-    private static EasyABACPermissionChecker<Order, OrderAction, Object> permissionChecker;
-    private static EasyAttributeModel model;
-    private static Policy policy;
-
-
-    *//**
-     * Test action OrderAction.READ
-     * @see OrderAction
-     *//*
-    @Ignore
-    @Test
-    public void test_Read() {
-        permissionChecker.ensurePermitted(getEntityForTest(), OrderAction.READ);
+    @Test()
+    public void testREAD_Permit() {
+        permissionChecker.ensurePermitted(getDataForTestREAD_Permit(), READ);
     }
 
-    private Order getEntityForTest() {
-        return null;
+    private Order getDataForTestREAD_Permit() {
+        return;
     }
 
+    @Test(expected = NotPermittedException.class)
+    public void testREAD_Deny() {
+        permissionChecker.ensurePermitted(getDataForTestREAD_Deny(), READ);
+    }
 
-    @BeforeClass
-    public static void initEasyABAC() {
-        model = new EasyAttributeModel();
+    private Order getDataForTestREAD_Deny() {
+        return;
+    }
 
-        policy = new Policy();
+    @Test()
+    public void testWRITE_Permit() {
+        permissionChecker.ensurePermitted(getDataForTestWRITE_Permit(), WRITE);
+    }
 
+    private Order getDataForTestWRITE_Permit() {
+        return;
+    }
 
-        authorizationService = new AttributiveAuthorizationService() {
-            @Override
-            public AuthResponse authorize(List<AuthAttribute> attributes) {
-                return null;
-            }
+    @Test(expected = NotPermittedException.class)
+    public void testWRITE_Deny() {
+        permissionChecker.ensurePermitted(getDataForTestWRITE_Deny(), WRITE);
+    }
 
-            @Override
-            public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
-                return null;
-            }
-        };
-        permissionChecker  = new EasyABACPermissionChecker<>(authorizationService);
-    }*/
+    private Order getDataForTestWRITE_Deny() {
+        return;
+    }
 }
