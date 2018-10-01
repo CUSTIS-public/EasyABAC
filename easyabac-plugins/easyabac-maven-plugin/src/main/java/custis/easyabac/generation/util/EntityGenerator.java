@@ -13,8 +13,8 @@ import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.api.AuthorizationAttribute;
 import custis.easyabac.api.AuthorizationEntity;
-import custis.easyabac.core.model.attribute.load.EasyAttribute;
-import custis.easyabac.core.model.attribute.load.EasyObject;
+import custis.easyabac.core.model.easy.EasyAttribute;
+import custis.easyabac.core.model.easy.EasyObject;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
@@ -35,11 +35,11 @@ public class EntityGenerator {
             Comment comment = new JavadocComment("Authorization attribute \"" + easyAttribute.getTitle() + "\"");
             type.addOrphanComment(comment);
 
-            FieldDeclaration field = type.addField(getTypeForModelType(easyAttribute.getType()), easyAttribute.getCode(), Modifier.PRIVATE);
+            FieldDeclaration field = type.addField(getTypeForModelType(easyAttribute.getType()), ModelGenerator.escape(easyAttribute.getId()), Modifier.PRIVATE);
             fields.add(field);
 
             NormalAnnotationExpr annotation = field.addAndGetAnnotation(AuthorizationAttribute.class.getSimpleName());
-            annotation.addPair("id", "\"" + easyAttribute.getCode() + "\"");
+            annotation.addPair("id", "\"" + easyAttribute.getId() + "\"");
         }
 
 

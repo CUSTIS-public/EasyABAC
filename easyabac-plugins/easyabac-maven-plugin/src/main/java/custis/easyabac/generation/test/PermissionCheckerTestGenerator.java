@@ -1,6 +1,6 @@
 package custis.easyabac.generation.test;
 
-import custis.easyabac.core.model.policy.Policy;
+import custis.easyabac.core.model.abac.Policy;
 
 public class PermissionCheckerTestGenerator {
 

@@ -11,7 +11,6 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.utils.SourceRoot;
-import custis.easyabac.core.model.attribute.load.EasyObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,10 +73,6 @@ public class ModelGenerator {
         method.setBody(body);
     }
 
-    public static void populate(EasyObject easyObject, String packageName) {
-        LOGGER.info("Populating model for [{}]", easyObject.getTitle());
-    }
-
     public static Type getTypeForModelType(String type) {
         return TYPE_MAPPING.get(type);
     }
@@ -85,6 +80,11 @@ public class ModelGenerator {
     private static Map<String, Type> TYPE_MAPPING = new HashMap<String, Type>() {
         {
             put("string", new ClassOrInterfaceType("String"));
+            put("int", new ClassOrInterfaceType("Integer"));
         }
     };
+
+    public static String escape(String id) {
+        return id.replaceAll("-", "_");
+    }
 }

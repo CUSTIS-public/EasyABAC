@@ -15,8 +15,7 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.api.AuthorizationAction;
 import custis.easyabac.api.AuthorizationActionId;
-import custis.easyabac.core.model.attribute.load.EasyAttribute;
-import custis.easyabac.core.model.attribute.load.EasyObject;
+import custis.easyabac.core.model.easy.EasyObject;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -27,37 +26,37 @@ import static custis.easyabac.generation.util.ModelGenerator.*;
 
 public class ActionGenerator {
     public  static void createAction(String name, EasyObject easyObject, String packageName, SourceRoot sourceRoot) {
+        if (easyObject.getActions() == null || easyObject.getActions().isEmpty()) {
+            return;
+        }
+
         CompilationUnit actionUnit = new CompilationUnit(packageName);
         String enumName = name + "Action";
 
         EnumDeclaration type = createEnum(actionUnit, enumName, easyObject);
 
-        for (EasyAttribute easyAttribute : easyObject.getActions()) {
-            for (String val : easyAttribute.getAllowableValues()) {
-                EnumConstantDeclaration entry = new EnumConstantDeclaration();
-                entry.setName(new SimpleName(StringUtils.upperCase(val)));
-                entry.addArgument("\"" + val + "\"");
-                entry.addArgument("\"" + val + "\"");
+        for (String val : easyObject.getActions()) {
+            EnumConstantDeclaration entry = new EnumConstantDeclaration();
+            entry.setName(new SimpleName(StringUtils.upperCase(val)));
+            entry.addArgument("\"" + val + "\"");
+            entry.addArgument("\"" + val + "\"");
 
 
-                type.addEntry(entry);
-            }
-
-
-
-            FieldDeclaration field = type.addField(getTypeForModelType(easyAttribute.getType()), "id", Modifier.PRIVATE);
-            field.addAndGetAnnotation(AuthorizationActionId.class.getSimpleName());
-
-            FieldDeclaration field2 = type.addField(getTypeForModelType(easyAttribute.getType()), "title", Modifier.PRIVATE);
-
-            // all arguments constructor
-            ConstructorDeclaration constructor = type.addConstructor(Modifier.PRIVATE);
-
-            Comment comment = new LineComment("Simple getters and setters");
-            type.addOrphanComment(comment);
-
-            generateFieldAccessors(type, constructor, Arrays.asList(field, field2), false);
+            type.addEntry(entry);
         }
+
+        FieldDeclaration field = type.addField(getTypeForModelType("string"), "id", Modifier.PRIVATE);
+        field.addAndGetAnnotation(AuthorizationActionId.class.getSimpleName());
+
+        FieldDeclaration field2 = type.addField(getTypeForModelType("string"), "title", Modifier.PRIVATE);
+
+        // all arguments constructor
+        ConstructorDeclaration constructor = type.addConstructor(Modifier.PRIVATE);
+
+        Comment comment = new LineComment("Simple getters and setters");
+        type.addOrphanComment(comment);
+
+        generateFieldAccessors(type, constructor, Arrays.asList(field, field2), false);
 
         actionUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, enumName));
         sourceRoot.add(actionUnit);

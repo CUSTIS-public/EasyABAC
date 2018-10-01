@@ -18,12 +18,12 @@ public class AbacAuthModelFactory {
         return null;
     }
 
-    private EasyAuthModel load(InputStream policy) {
+    public EasyAuthModel load(InputStream policy) {
 
         Yaml yaml = new Yaml();
         EasyAuthModel easyAuthModel = yaml.loadAs(policy, EasyAuthModel.class);
 
-        return new EasyAuthModel();
+        return easyAuthModel;
     }
 
     private AbacAuthModel transform(EasyAuthModel easyAuthModel) {

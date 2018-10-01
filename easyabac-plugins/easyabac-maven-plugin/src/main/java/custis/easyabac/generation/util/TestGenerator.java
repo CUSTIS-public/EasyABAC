@@ -14,7 +14,9 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.api.NotPermittedException;
 import custis.easyabac.api.test.BaseTestClass;
-import custis.easyabac.core.model.attribute.load.EasyObject;
+import custis.easyabac.core.model.easy.EasyObject;
+import custis.easyabac.core.model.easy.EasyPolicy;
+import custis.easyabac.core.model.easy.EasyRule;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -29,18 +31,22 @@ import static custis.easyabac.generation.util.ModelGenerator.resolvePathForSourc
 
 public class TestGenerator {
 
-    public static void createTest(String name, EasyObject easyObject, String packageName, SourceRoot sourceRoot) {
+    public static void createTest(String name, EasyObject easyObject, String packageName, SourceRoot sourceRoot, List<EasyPolicy> permissions) {
+        if (easyObject.getActions() == null || easyObject.getActions().isEmpty()) {
+            return;
+        }
+
         CompilationUnit testUnit = new CompilationUnit(packageName);
 
         String testName = "EasyABAC_" + name + "_Test";
-        createType(testUnit, testName, easyObject, packageName, name);
+        createType(testUnit, testName, easyObject, packageName, name, permissions);
 
         testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
         sourceRoot.add(testUnit);
 
     }
 
-    private static ClassOrInterfaceDeclaration createType(CompilationUnit testUnit, String name, EasyObject easyObject, String packageName, String entityName) {
+    private static ClassOrInterfaceDeclaration createType(CompilationUnit testUnit, String name, EasyObject easyObject, String packageName, String entityName, List<EasyPolicy> permissions) {
         for (ImportDeclaration annotationImport : IMPORTS) {
             testUnit.addImport(annotationImport);
         }
@@ -59,36 +65,41 @@ public class TestGenerator {
 
 
         // creating tests
-        for (String value : easyObject.getActions().get(0).getAllowableValues()) {
-            createTestsForCase(type, easyObject, value, entityName);
+        for (String value : easyObject.getActions()) {
+            createTestsForCase(type, easyObject, StringUtils.upperCase(value), entityName, permissions);
         }
 
 
         return type;
     }
 
-    private static void createTestsForCase(ClassOrInterfaceDeclaration type, EasyObject easyObject, String value, String entityName) {
+    private static void createTestsForCase(ClassOrInterfaceDeclaration type, EasyObject easyObject, String value, String entityName, List<EasyPolicy> permissions) {
         createPermitTest(type, value, entityName);
-        createDenyTest(type, value, entityName);
+        for (EasyPolicy permission : permissions) {
+            if (permission.getAccessToActions().contains(value)) {
+                permission.getRules().forEach((s, easyRule) -> createDenyTest(type, value, entityName, s, easyRule));
+            }
+        }
+
 
     }
 
-    private static void createDenyTest(ClassOrInterfaceDeclaration type, String value, String entityName) {
-        MethodDeclaration method = type.addMethod("test" + value + "_Deny", Modifier.PUBLIC);
+    private static void createDenyTest(ClassOrInterfaceDeclaration type, String value, String entityName, String ruleId, EasyRule easyRule) {
+        MethodDeclaration method = type.addMethod("test" + value + "_Deny_" + ruleId, Modifier.PUBLIC);
         NormalAnnotationExpr annotation = method.addAndGetAnnotation(Test.class);
         annotation.addPair("expected", new ClassExpr(new ClassOrInterfaceType(NotPermittedException.class.getSimpleName())));
 
         BlockStmt body = new BlockStmt();
-        body.addStatement("permissionChecker.ensurePermitted(getDataForTest" + value + "_Deny(), " + value + ");");
+        body.addStatement("permissionChecker.ensurePermitted(getDataForTest" + value + "_Deny" + ruleId + "(), " + value + ");");
 
         method.setBody(body);
 
 
-        MethodDeclaration dataMethod = type.addMethod("getDataForTest" + value + "_Deny", Modifier.PRIVATE);
+        MethodDeclaration dataMethod = type.addMethod("getDataForTest" + value + "_Deny" + ruleId, Modifier.PRIVATE);
         dataMethod.setType(entityName);
 
         BlockStmt data = new BlockStmt();
-        data.addStatement("return;");
+        data.addStatement("return null;");
         dataMethod.setBody(data);
     }
 
@@ -105,7 +116,7 @@ public class TestGenerator {
         dataMethod.setType(entityName);
 
         BlockStmt data = new BlockStmt();
-        data.addStatement("return;");
+        data.addStatement("return null;");
         dataMethod.setBody(data);
     }
 
