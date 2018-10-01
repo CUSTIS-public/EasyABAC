@@ -2,7 +2,7 @@ package custis.easyabac.core.init;
 
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.model.attribute.load.EasyAttributeModel;
-import custis.easyabac.core.model.policy.EasyPolicy;
+import custis.easyabac.core.model.policy.AbacModel;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
 import org.wso2.balana.PDPConfig;
@@ -44,7 +44,7 @@ public class PolicyInitializer {
     }
 
 
-    public PDP newPDPInstance(EasyPolicy easyPolicy, EasyAttributeModel easyAttributeModel, List<SampleDatasource> datasources) {
+    public PDP newPDPInstance(AbacModel abacModel, EasyAttributeModel easyAttributeModel, List<SampleDatasource> datasources) {
         return null;
     }
 

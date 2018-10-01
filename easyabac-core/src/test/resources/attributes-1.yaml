@@ -1,17 +1,16 @@
 model:
   subject:
     attributes:
-    - code: id #по умолчанию тип строка, можно не задавать
-    - code: name
+    - id: id #по умолчанию тип строка, можно не задавать
+    - id: name
       title:
-    - code: role
+    - id: role
       multiple: true
-    - code: departmentId
+    - id: departmentId
       type: int
-      datasource: DB
-    - code: id
+    - id: id
       title: Идентификатор
-    - code: accessLevel
+    - id: accessLevel
       title: Уровень доступа
       allowableValues:  #Разрешенные значения, для валидации политики
       - A
@@ -20,31 +19,31 @@ model:
   course:
     title: Курс
     actions:
-    - code: edit
+    - id: edit
       title: редактировать курс
-    - code: view
-    - code: remove
+    - id: view
+    - id: remove
     attributes:
-    - code: id
+    - id: id
       type: int
-    - code: authorId
+    - id: authorId
       type: int
-    - code: departmentId
+    - id: departmentId
       type: int
       multiple: true
-    - code: name #по умолчанию строка, можно не задавать
+    - id: name #по умолчанию строка, можно не задавать
   lesson:
     title: Учебная встреча, УВ
     actions:
-    - code: edit
+    - id: edit
       title: редактировать курс
-    - code: view
-    - code: remove
-    - code: print
+    - id: view
+    - id: remove
+    - id: print
     attributes:
-    - code: id
+    - id: id
       title: Идентификатор
-    - code: accessLevel
+    - id: accessLevel
       title: Уровень доступа
       allowableValues:  #Разрешенные значения, для валидации политики
       - A

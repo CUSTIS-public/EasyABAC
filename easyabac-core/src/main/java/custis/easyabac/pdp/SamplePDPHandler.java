@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PDPHandler {
+public class SamplePDPHandler {
     public Map<RequestId, AuthResponse> execute(Map<RequestId, List<AuthAttribute>> attributes) {
         System.out.println("MDP request");
         return attributes.entrySet()
