@@ -21,13 +21,13 @@ public class PolicyExpressionParserTest {
     @Test
     public void shouldReadActionIdEqualsExpression() throws ParseException {
         PolicyExpressionParser parser =
-                new PolicyExpressionParser(new StringReader("action-id == \"CourseUnit.Edit\""));
+                new PolicyExpressionParser(new StringReader("action-id == CourseUnit.Edit"));
         TargetCondition condition = parser.parse();
         Assert.assertNotNull("Parsed condition", condition);
         assertEquals("Action ID","action-id", condition.getFirstOperand().getCode());
         assertEquals("Action Category", Category.ACTION, condition.getFirstOperand().getCategory());
 
-        assertEquals("Action value", "\"CourseUnit.Edit\"", condition.getSecondOperand());
+        assertEquals("Action value", "CourseUnit.Edit", condition.getSecondOperand());
 
         assertEquals("Operation", Function.EQUAL, condition.getFunction());
     }

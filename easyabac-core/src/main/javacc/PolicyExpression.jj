@@ -5,7 +5,9 @@ options
   IGNORE_CASE = false;
   JAVA_UNICODE_ESCAPE = true;
   UNICODE_INPUT = false;
-  DEBUG_TOKEN_MANAGER = false;
+  DEBUG_TOKEN_MANAGER = true;
+  FORCE_LA_CHECK = true;
+  LOOKAHEAD = 2;
 }
 
 PARSER_BEGIN(PolicyExpressionParser)
@@ -44,17 +46,11 @@ TOKEN :
     < ACTION_ID: "action-id" > |
     < SUBJECT_ID: "subject-id" > |
     < RESOURCE_ID: "resource-id" > |
+    < IN_OPERATOR: "in" > |
+    < SUBSET_OPERATOR: "subset"> |
     < DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* > |
-    < STRING_LITERAL : "\"" (   (~["\"","\\","\n","\r"])
-                               | ("\\"
-                                   ( ["n","t","b","r","f","\\","'","\""]
-                                   | ["0"-"7"] ( ["0"-"7"] )?
-                                   | ["0"-"3"] ["0"-"7"] ["0"-"7"]
-                                   )
-                                 )
-                             )* "\"" > |
-    < IDENTIFIER : "\\w+" > |
-    < OBJECT_PROPERTY : "object." <IDENTIFIER> ("." <IDENTIFIER>)? >
+    < STRING_LITERAL : (["A"-"Z"]|["a"-"z"]|["0"-"9"])+ > |
+    < OBJECT_PROPERTY : ["A"-"Z"](["A"-"Z"]|["a"-"z"])+"."(["a"-"z"]|["A"-"Z"])+ >
 }
 
 void Expression():
@@ -88,7 +84,7 @@ void Function():
   Token t;
 }
 {
-    (t = "==" | t = "!=" | t = ">=" | t = "<=" | t = ">" | t = "<" | t = "in" | t = "one-of" | t = "subset")
+    (t = "==" | t = "!=" | t = ">=" | t = "<=" | t = ">" | t = "<" | t = <IN_OPERATOR> | t = "one-of" | t = <SUBSET_OPERATOR>)
     {
         Optional<Function> f = Function.of(t.image);
         if (f.isPresent()) {
@@ -105,7 +101,7 @@ void AttributeValue():
 }
 {
   //TODO Add EasyObject.Actions support. Futher, action would be translated as string for XACML Policy
-   (t = <DECIMAL_LITERAL> | t = <STRING_LITERAL>)
+   (t = <STRING_LITERAL> | t = <DECIMAL_LITERAL> | t = <OBJECT_PROPERTY> )
    {
       this.attributeValue = t.image;
    }
