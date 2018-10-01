@@ -7,7 +7,7 @@ public class EasyPolicy {
     private String title;
     private List<String> accessToActions;
     private Map<String, EasyRule> rules;
-    private List<String> obligations;
+    private List<String> returnAttributes;
 
 
     public String getTitle() {
@@ -34,11 +34,11 @@ public class EasyPolicy {
         this.rules = rules;
     }
 
-    public List<String> getObligations() {
-        return obligations;
+    public List<String> getReturnAttributes() {
+        return returnAttributes;
     }
 
-    public void setObligations(List<String> obligations) {
-        this.obligations = obligations;
+    public void setReturnAttributes(List<String> returnAttributes) {
+        this.returnAttributes = returnAttributes;
     }
 }

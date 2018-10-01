@@ -14,7 +14,7 @@ public class Attribute {
     private final String xacmlName;
 
     public Attribute(String id, DataType type, Category category, boolean multiple) {
-        this(id, type, category, multiple, id, Collections.EMPTY_SET, id);
+        this(id, type, category, multiple, id, Collections.emptySet(), id);
     }
 
     public Attribute(String id, DataType type, Category category, boolean multiple, String title, Set<String> allowableValues, String xacmlName) {
