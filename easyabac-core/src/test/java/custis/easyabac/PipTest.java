@@ -32,10 +32,10 @@ public class PipTest {
 
     @Test
     @Ignore
-    public void TwoAttrEquelsTest() {
+    public void TwoAttrEquelsTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xacml");
         InputStream attributes = getResourceAsStream("attributes-1.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, attributes, ModelType.XACML).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
@@ -48,7 +48,7 @@ public class PipTest {
 
     @Test
     @Ignore
-    public void SamplePipTest() {
+    public void SamplePipTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xacml");
         InputStream attributes = getResourceAsStream("attributes-1.yaml");
 
@@ -58,7 +58,7 @@ public class PipTest {
 
         SampleDatasource sampleDatasource = new SampleDatasource(params, new Attribute(SUBJECT_ALLOWED_CATEGORIES));
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, attributes, ModelType.XACML).datasources(Arrays.asList(sampleDatasource)).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).datasources(Arrays.asList(sampleDatasource)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));

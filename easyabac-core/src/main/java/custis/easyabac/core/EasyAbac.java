@@ -62,7 +62,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     public static class Builder {
         private final InputStream policy;
-        private final InputStream attributes;
         private final ModelType modelType;
 
         private PdpHandler pdpHandler;
@@ -74,13 +73,11 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
         public Builder(String policy, String attributes, ModelType modelType) {
             this.policy = new ByteArrayInputStream(policy.getBytes());
-            this.attributes = new ByteArrayInputStream(attributes.getBytes());
             this.modelType = modelType;
         }
 
-        public Builder(InputStream policy, InputStream attributes, ModelType modelType) {
+        public Builder(InputStream policy, ModelType modelType) {
             this.policy = policy;
-            this.attributes = attributes;
             this.modelType = modelType;
         }
 
@@ -104,7 +101,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             return this;
         }
 
-        public AttributiveAuthorizationService build() {
+        public AttributiveAuthorizationService build() throws Exception {
             PdpHandlerFactory pdpHandlerFactory = new PdpHandlerFactory();
             Map<String, Attribute> attributeMap = Collections.emptyMap();
 
