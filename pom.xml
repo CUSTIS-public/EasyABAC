@@ -17,7 +17,7 @@
         <module>example-project</module>
         <module>easyabac-api</module>
         <module>easyabac-spring-boot-starter</module>
-        <module>easyabac-test-generation-plugin</module>
+        <module>easyabac-plugins</module>
     </modules>
 
     <properties>

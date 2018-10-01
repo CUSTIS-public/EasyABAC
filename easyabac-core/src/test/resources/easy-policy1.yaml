@@ -11,7 +11,7 @@ policies:
         operation: OR
         conditions:
         - not object.CourseUnit.author ==  user.personId
-        - object.CourseUnit.status in DRAFT, TEST
+        - object.CourseUnit.status in (DRAFT, TEST)
       rule2:
         conditions:
         - object.CourseUnit.count > 15
