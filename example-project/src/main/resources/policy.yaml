@@ -1,0 +1,56 @@
+resources:
+  subject:
+    attributes:
+    - id: id
+    - id: roles
+      title: Роль сотрудника "Менеджер" / Операционист
+      multiple: true
+      allowableValues:  #Разрешенные значения, для валидации политики
+        - OPERATOR
+        - MANAGER
+    - id: branchId
+      title: ИД филиала
+  order:
+    title: Заказ
+    actions:
+    - view
+    - create
+    - approve
+    - reject
+    attributes:
+    - id: id
+      title: ИД заказа
+    - id: amount
+      title: Сумма заказа
+    - id: branchId
+      title: ИД филиала
+    - id: customerId
+      title: ИД клиента
+  customer:
+    title: Клиент
+    attributes:
+    - id: id
+      title: ИД клиента
+    - id: branchId
+      title: ИД филиала
+
+permissions:
+- title: Операционист
+  accessToActions: [order.view, order.create]
+  rules:
+    rule1:
+      title: Доступ операциониста
+      operation: AND
+      conditions:
+      - MANAGER in subject.roles
+      - order.branchId == subject.branchId
+
+- title: Менеджер
+  accessToActions: [order.view, order.approve, order.reject]
+  rules:
+    rule1:
+      title: Доступ менеджера
+      operation: AND
+      conditions:
+      - MANAGER in subject.roles
+      - order.branchId == subject.branchId

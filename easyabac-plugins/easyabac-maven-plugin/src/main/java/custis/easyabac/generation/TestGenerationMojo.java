@@ -1,7 +1,14 @@
 package custis.easyabac.generation;
 
+import com.github.javaparser.utils.SourceRoot;
+import custis.easyabac.ModelType;
+import custis.easyabac.core.init.AbacAuthModelFactory;
+import custis.easyabac.core.model.abac.AbacAuthModel;
+import custis.easyabac.core.model.easy.EasyResource;
+import custis.easyabac.generation.util.ActionGenerator;
+import custis.easyabac.generation.util.EntityGenerator;
+import custis.easyabac.generation.util.TestGenerator;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -11,27 +18,26 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
-import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.RepositorySystemSession;
-import org.reflections.Reflections;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Mojo( name = "generate", requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo( name = "generatetest", requiresDependencyResolution = ResolutionScope.COMPILE)
 public class TestGenerationMojo extends AbstractMojo {
 
     // input paramters
 
-    @Parameter( property = "generate.testPath", defaultValue = "src/test/java" )
+    @Parameter( property = "generatetest.policyFile", defaultValue = "src/main/resources/policy.yaml" )
+    private String policyFile;
+
+    @Parameter( property = "generatetest.testPath", defaultValue = "src/test/java" )
     private String testPath;
 
-    @Parameter( property = "generate.testResourcePath", defaultValue = "src/test/resources" )
-    private String testResourcePath;
-
-    @Parameter( property = "generate.basePackage", defaultValue = "easyabac.autogen" )
+    @Parameter( property = "generatetest.basePackage", defaultValue = "easyabac.autogen" )
     private String basePackage;
 
 
@@ -54,10 +60,6 @@ public class TestGenerationMojo extends AbstractMojo {
     private String testResourceFolder;
 
 
-    /**
-     * Defines files in the source directories to include (all .java files by default).
-     */
-    private String[] includes = {"**/*.java"};
 
     /**
      * Defines which of the included files in the source directories to exclude (non by default).
@@ -66,85 +68,32 @@ public class TestGenerationMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        prepareParameters();
-
-        clearOld();
-
-        createTestStructure();
-
-        findAndCreateTests();
-    }
-
-    private void findAndCreateTests() {
-
         try {
-            System.out.println("compile");
-            for (String compileClasspathElement : project.getCompileClasspathElements()) {
-                System.out.println(compileClasspathElement);
-            }
-
-            System.out.println("test");
-            for(String element : project.getTestClasspathElements()){
-                System.out.println(element);
-            }
-
-            File basedir = project.getBasedir();
-            System.out.println(basedir.toPath());
-
-
-
-        } catch (DependencyResolutionRequiredException e) {
-            e.printStackTrace();
-        }
-
-
-        Reflections reflections = new Reflections("");
-        for (String allType : reflections.getAllTypes()) {
-            System.out.println(allType);
+            findAndCreateTests();
+        } catch (FileNotFoundException e) {
+            getLog().error(e.getMessage(), e);
         }
     }
 
-    private void createTestStructure() {
-        new File(testFolder).mkdirs();
-        new File(testResourceFolder).mkdirs();
+    private void findAndCreateTests() throws FileNotFoundException {
+        FileInputStream is = new FileInputStream(project.getBasedir() + "/" + policyFile);
+        AbacAuthModel model = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, is);
 
-        createTestForPolicies();
+        Path rootPath = project.getBasedir().toPath().resolve(testPath);
+        SourceRoot sourceRoot = new SourceRoot(rootPath);
 
-    }
-
-    private void createTestForPolicies() {
-
-    }
-
-    private void prepareParameters() {
-        List<String> paths = Arrays.asList(basePackage.split("\\."));
-
-        List<String> sourceFolderPath = new ArrayList<>();
-        sourceFolderPath.add(testPath);
-        sourceFolderPath.addAll(paths);
-
-        List<String> resourceFolderPath = new ArrayList<>();
-        resourceFolderPath.add(testResourcePath);
-        resourceFolderPath.addAll(paths);
-
-        this.testFolder = StringUtils.join(sourceFolderPath.iterator(), "/");
-        this.testResourceFolder = StringUtils.join(resourceFolderPath.iterator(), "/");
-    }
-
-    private void clearOld() {
-        deleteDirectory(new File(testFolder));
-        deleteDirectory(new File(testResourceFolder));
-
-
-    }
-
-    private static boolean deleteDirectory(File directoryToBeDeleted) {
-        File[] allContents = directoryToBeDeleted.listFiles();
-        if (allContents != null) {
-            for (File file : allContents) {
-                deleteDirectory(file);
-            }
+        for (EasyResource entry : model.getResources().values()) {
+            EntityGenerator.createEntity(entry, basePackage + ".model", sourceRoot);
+            ActionGenerator.createAction(entry, basePackage + ".model", sourceRoot);
+            TestGenerator.createTest(entry, basePackage, sourceRoot,
+                    model.getPolicies()
+                            .values()
+                            .stream()
+                            .collect(Collectors.toList()));
         }
-        return directoryToBeDeleted.delete();
+
+
+
+        sourceRoot.saveAll();
     }
 }

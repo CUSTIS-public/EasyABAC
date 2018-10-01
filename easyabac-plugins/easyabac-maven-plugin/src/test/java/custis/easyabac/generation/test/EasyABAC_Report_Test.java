@@ -2,6 +2,7 @@ package custis.easyabac.generation.test;
 
 import custis.easyabac.api.test.BaseTestClass;
 import custis.easyabac.generation.test.model.Report;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -12,6 +13,7 @@ import static custis.easyabac.generation.test.model.ReportAction.*;
 public class EasyABAC_Report_Test extends BaseTestClass {
 
     @Test()
+    @Ignore
     public void testEDIT_Permit() {
         permissionChecker.ensurePermitted(getDataForTestEDIT_Permit(), EDIT);
     }
@@ -21,6 +23,7 @@ public class EasyABAC_Report_Test extends BaseTestClass {
     }
 
     @Test()
+    @Ignore
     public void testVIEW_Permit() {
         permissionChecker.ensurePermitted(getDataForTestVIEW_Permit(), VIEW);
     }
@@ -30,6 +33,7 @@ public class EasyABAC_Report_Test extends BaseTestClass {
     }
 
     @Test()
+    @Ignore
     public void testREMOVE_Permit() {
         permissionChecker.ensurePermitted(getDataForTestREMOVE_Permit(), REMOVE);
     }

@@ -87,6 +87,7 @@ public class TestGenerator {
 
     private static void createDenyTest(ClassOrInterfaceDeclaration type, String value, String entityName, String ruleId, Rule rule) {
         MethodDeclaration method = type.addMethod("test" + value + "_Deny_" + ruleId, Modifier.PUBLIC);
+        method.addMarkerAnnotation(Ignore.class);
         NormalAnnotationExpr annotation = method.addAndGetAnnotation(Test.class);
         annotation.addPair("expected", new ClassExpr(new ClassOrInterfaceType(NotPermittedException.class.getSimpleName())));
 
@@ -106,7 +107,8 @@ public class TestGenerator {
 
     private static void createPermitTest(ClassOrInterfaceDeclaration type, String value, EasyResource easyObject) {
         MethodDeclaration method = type.addMethod("test" + value + "_Permit", Modifier.PUBLIC);
-        method.addAnnotation(Test.class);
+        method.addMarkerAnnotation(Ignore.class);
+        method.addMarkerAnnotation(Test.class);
 
         BlockStmt body = new BlockStmt();
         body.addStatement("permissionChecker.ensurePermitted(getDataForTest" + value + "_Permit(), " + value + ");");

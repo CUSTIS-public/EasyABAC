@@ -5,7 +5,7 @@ resources:
     - id: allowed-categories
       title: категории доступные субъекту
       multiple: true
-  report:multiple
+  report:
     title: Отчет
     actions:
     - edit
