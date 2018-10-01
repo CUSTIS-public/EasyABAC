@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with EvoSuite. If not, see <http://www.gnu.org/licenses/>.
  */
-package custis.easyabac.test.util;
+package custis.easyabac.generation.util;
 
 import org.codehaus.plexus.util.DirectoryScanner;
 

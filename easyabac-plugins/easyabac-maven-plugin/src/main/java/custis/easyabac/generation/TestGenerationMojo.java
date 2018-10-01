@@ -1,4 +1,4 @@
-package custis.easyabac.test;
+package custis.easyabac.generation;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;

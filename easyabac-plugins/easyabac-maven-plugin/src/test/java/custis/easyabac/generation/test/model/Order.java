@@ -1,4 +1,4 @@
-package custis.easyabac.test.model;
+package custis.easyabac.generation.test.model;
 
 import custis.easyabac.api.AuthorizationAttribute;
 import custis.easyabac.api.AuthorizationEntity;

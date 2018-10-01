@@ -1,4 +1,4 @@
-package custis.easyabac.test;
+package custis.easyabac.generation.test;
 
 
 import custis.easyabac.api.impl.EasyABACPermissionChecker;
@@ -6,8 +6,6 @@ import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.RequestId;
-import custis.easyabac.test.model.Order;
-import custis.easyabac.test.model.OrderAction;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
