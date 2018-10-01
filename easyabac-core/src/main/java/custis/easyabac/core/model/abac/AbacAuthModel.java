@@ -1,6 +1,7 @@
 package custis.easyabac.core.model.abac;
 
 import custis.easyabac.core.model.abac.attribute.Attribute;
+import custis.easyabac.core.model.easy.EasyResource;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,8 @@ public class AbacAuthModel {
     private String combiningAlgorithm = "deny-unless-permit";
 
     private Map<String, Policy> policies;
+
+    private Map<String, EasyResource> resources;
 
     private List<Attribute> attributes;
 
@@ -34,5 +37,13 @@ public class AbacAuthModel {
 
     public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public Map<String, EasyResource> getResources() {
+        return resources;
+    }
+
+    public void setResources(Map<String, EasyResource> resources) {
+        this.resources = resources;
     }
 }

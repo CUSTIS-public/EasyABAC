@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 public class EasyAuthModel {
-    private Map<String, EasyObject> resources;
+    private Map<String, EasyResource> resources;
     private List<EasyPolicy> permissions;
 
-    public Map<String, EasyObject> getResources() {
+    public Map<String, EasyResource> getResources() {
         return resources;
     }
 
-    public void setResources(Map<String, EasyObject> resources) {
+    public void setResources(Map<String, EasyResource> resources) {
         this.resources = resources;
     }
 
