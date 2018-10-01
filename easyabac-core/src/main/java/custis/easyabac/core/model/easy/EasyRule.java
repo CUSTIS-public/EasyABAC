@@ -8,7 +8,7 @@ import java.util.List;
 
 public class EasyRule {
     private String title;
-    private Effect effect = Effect.Permit;
+    private Effect effect = Effect.PERMIT;
     private Operation operation = Operation.AND;
     private List<Condition> conditions;
 

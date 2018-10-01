@@ -2,7 +2,7 @@ package custis.easyabac.core.model.easy;
 
 import java.util.List;
 
-public class EasyObject {
+public class EasyResource {
     private String title;
     private List<String> actions;
     private List<EasyAttribute> attributes;

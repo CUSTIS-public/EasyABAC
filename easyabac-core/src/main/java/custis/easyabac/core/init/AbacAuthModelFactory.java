@@ -28,6 +28,10 @@ public class AbacAuthModelFactory {
 
     private AbacAuthModel transform(EasyAuthModel easyAuthModel) {
 
-        return new AbacAuthModel();
+        AbacAuthModel abacAuthModel = new AbacAuthModel();
+
+        abacAuthModel.setResources(easyAuthModel.getResources());
+
+        return abacAuthModel;
     }
 }
