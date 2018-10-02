@@ -69,6 +69,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     /**
      * Generating optimizable request
+     *
      * @param attributes
      * @return
      */
@@ -77,7 +78,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
         MdpAuthRequest request = prepareSimpleMdpAuthRequest(attributes);
 
         // 1. clearing not used attributes in policies
-
 
 
         return request;
@@ -113,7 +113,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
         return attributeValueList;
     }
-
 
 
     public static class Builder {
@@ -170,11 +169,11 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             switch (modelType) {
                 case XACML: {
-                    PdpHandler pdpHandler = pdpHandlerFactory.getPdpHandler(pdpType, policy, datasources, cache);
+                    pdpHandler = pdpHandlerFactory.getPdpHandler(pdpType, policy, datasources, cache);
                 }
                 case EASY_YAML: {
                     AbacAuthModel abacAuthModel = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, policy);
-                    PdpHandler pdpHandler = pdpHandlerFactory.getPdpHandler(pdpType, abacAuthModel, datasources, cache);
+                    pdpHandler = pdpHandlerFactory.getPdpHandler(pdpType, abacAuthModel, datasources, cache);
                     attributeMap = getAttributeMap(abacAuthModel);
                 }
             }
