@@ -15,7 +15,8 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.api.AuthorizationAction;
 import custis.easyabac.api.AuthorizationActionId;
-import custis.easyabac.core.model.easy.EasyResource;
+import custis.easyabac.core.model.abac.attribute.DataType;
+import custis.easyabac.core.model.abac.attribute.Resource;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -25,17 +26,17 @@ import java.util.List;
 import static custis.easyabac.generation.util.ModelGenerator.*;
 
 public class ActionGenerator {
-    public  static void createAction(EasyResource easyResource, String packageName, SourceRoot sourceRoot) {
-        if (easyResource.getActions() == null || easyResource.getActions().isEmpty()) {
+    public  static void createAction(Resource resource, String packageName, SourceRoot sourceRoot) {
+        if (resource.getActions() == null || resource.getActions().isEmpty()) {
             return;
         }
 
         CompilationUnit actionUnit = new CompilationUnit(packageName);
-        String enumName = easyResource.getId() + "Action";
+        String enumName = resource.getId() + "Action";
 
-        EnumDeclaration type = createEnum(actionUnit, enumName, easyResource);
+        EnumDeclaration type = createEnum(actionUnit, enumName, resource);
 
-        for (String val : easyResource.getActions()) {
+        for (String val : resource.getActions()) {
             EnumConstantDeclaration entry = new EnumConstantDeclaration();
             entry.setName(new SimpleName(StringUtils.upperCase(val)));
             entry.addArgument("\"" + val + "\"");
@@ -44,7 +45,7 @@ public class ActionGenerator {
             type.addEntry(entry);
         }
 
-        FieldDeclaration field = type.addField(getTypeForModelType("string"), "id", Modifier.PRIVATE);
+        FieldDeclaration field = type.addField(getTypeForModelType(DataType.STRING), "id", Modifier.PRIVATE);
         field.addAndGetAnnotation(AuthorizationActionId.class.getSimpleName());
 
         // all arguments constructor
@@ -59,14 +60,14 @@ public class ActionGenerator {
         sourceRoot.add(actionUnit);
     }
 
-    private static EnumDeclaration createEnum(CompilationUnit actionUnit, String name, EasyResource easyObject) {
+    private static EnumDeclaration createEnum(CompilationUnit actionUnit, String name, Resource resource) {
         for (ImportDeclaration annotationImport : ANNOTATION_ENUM_IMPORTS) {
             actionUnit.addImport(annotationImport);
         }
 
         String javaName = StringUtils.capitalize(name);
 
-        Comment typeComment = new JavadocComment("Authorization enum \"" + easyObject.getTitle() + "\"");
+        Comment typeComment = new JavadocComment("Authorization enum \"" + resource.getTitle() + "\"");
         actionUnit.addOrphanComment(typeComment);
 
         EnumDeclaration type = actionUnit.addEnum(javaName);

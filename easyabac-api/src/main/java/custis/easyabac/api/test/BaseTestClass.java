@@ -5,8 +5,6 @@ import custis.easyabac.core.EasyAbac;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import org.junit.BeforeClass;
 
-import java.io.InputStream;
-
 public class BaseTestClass {
 
     protected static AttributiveAuthorizationService authService;
@@ -14,7 +12,7 @@ public class BaseTestClass {
 
     @BeforeClass
     public static void initEasyABAC() {
-        EasyAbac.Builder builder = new EasyAbac.Builder((InputStream) null, null, null); // FIXME
+        EasyAbac.Builder builder = new EasyAbac.Builder(null, null); // FIXME
 
         //authService = builder.build();
         //permissionChecker = new EasyABACPermissionChecker<>(authService);
