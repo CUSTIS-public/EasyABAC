@@ -1,5 +1,7 @@
 package custis.easyabac.core.model.abac;
 
+import custis.easyabac.core.init.EasyAbacInitException;
+
 public enum Function {
     EQUAL("=="),
     GREATER(">"),
@@ -9,10 +11,23 @@ public enum Function {
     IN("in"),
     ONE_OF("one-of"),
     SUBSET("subset");
-    private String functionName;
+    private String easyName;
 
-    Function(String functionName) {
-        this.functionName = functionName;
+    Function(String easyName) {
+        this.easyName = easyName;
     }
 
+    public String getEasyName() {
+        return easyName;
+    }
+
+    public static Function findByEasyName(String functionName) throws EasyAbacInitException {
+        for (Function value : Function.values()) {
+            if (functionName.equals(value.getEasyName())) {
+                return value;
+            }
+        }
+        throw new EasyAbacInitException("Type " + functionName + " not supported");
+
+    }
 }

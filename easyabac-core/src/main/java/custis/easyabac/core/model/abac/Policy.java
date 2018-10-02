@@ -3,7 +3,6 @@ package custis.easyabac.core.model.abac;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class Policy {
@@ -12,10 +11,10 @@ public class Policy {
     private final String combiningAlgorithm = "deny-unless-permit";
     ;
     private final Target target;
-    private final Map<String, Rule> rules;
+    private final List<Rule> rules;
     private final List<Attribute> returnAttributes;
 
-    public Policy(String id, String title, Target target, Map<String, Rule> rules, List<Attribute> returnAttributes) {
+    public Policy(String id, String title, Target target, List<Rule> rules, List<Attribute> returnAttributes) {
         this.id = id;
         this.title = title;
         this.target = target;
@@ -39,8 +38,12 @@ public class Policy {
         return target;
     }
 
-    public Map<String, Rule> getRules() {
+    public List<Rule> getRules() {
         return rules;
+    }
+
+    public List<Attribute> getReturnAttributes() {
+        return returnAttributes;
     }
 
     @Override

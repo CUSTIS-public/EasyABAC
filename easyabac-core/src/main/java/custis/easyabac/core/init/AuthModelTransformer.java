@@ -6,10 +6,7 @@ import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
 import custis.easyabac.core.model.abac.attribute.Resource;
-import custis.easyabac.core.model.easy.EasyAttribute;
-import custis.easyabac.core.model.easy.EasyAuthModel;
-import custis.easyabac.core.model.easy.EasyPolicy;
-import custis.easyabac.core.model.easy.EasyResource;
+import custis.easyabac.core.model.easy.*;
 
 import java.util.*;
 
@@ -46,11 +43,11 @@ public class AuthModelTransformer {
     private void transformPermissions(List<EasyPolicy> permissions) throws EasyAbacInitException {
         for (EasyPolicy permission : permissions) {
 
-            List<TargetCondition> conditions = transformConditions(permission.getAccessToActions());
+            List<TargetCondition> conditions = transformTargetConditions(permission.getAccessToActions());
 
             Target target = new Target(Operation.OR, conditions, permission.getAccessToActions());
 
-            Map<String, Rule> rules = transformRules(permission);
+            List<Rule> rules = transformRules(permission.getRules());
 
             List<Attribute> returnAttributes = transformReturnAttributes(permission.getReturnAttributes());
 
@@ -58,7 +55,7 @@ public class AuthModelTransformer {
         }
     }
 
-    private List<TargetCondition> transformConditions(List<String> accessToActions) throws EasyAbacInitException {
+    private List<TargetCondition> transformTargetConditions(List<String> accessToActions) throws EasyAbacInitException {
 
         List<TargetCondition> targetConditions = new ArrayList<>();
 
@@ -98,12 +95,53 @@ public class AuthModelTransformer {
         return resource;
     }
 
-    private List<Attribute> transformReturnAttributes(List<String> returnAttributes) {
-        return null;
+    private List<Attribute> transformReturnAttributes(List<String> easyReturnAttributes) throws EasyAbacInitException {
+        List<Attribute> returnAttributes = new ArrayList<>();
+        for (String easyReturnAttributeId : easyReturnAttributes) {
+            Attribute returnAttribute = findAttributeById(easyReturnAttributeId);
+            returnAttributes.add(returnAttribute);
+        }
+        return returnAttributes;
     }
 
-    private Map<String, Rule> transformRules(EasyPolicy permission) {
-        return null;
+    private List<Rule> transformRules(List<EasyRule> easyRules) throws EasyAbacInitException {
+        List<Rule> rules = new ArrayList<>();
+        for (EasyRule easyRule : easyRules) {
+            List<Condition> conditions = transformConditions(easyRule);
+            Rule rule = new Rule(IdGenerator.newId(), easyRule.getTitle(), easyRule.getOperation(), conditions);
+
+            rules.add(rule);
+        }
+
+        return rules;
+    }
+
+    private List<Condition> transformConditions(EasyRule easyRule) throws EasyAbacInitException {
+        List<Condition> conditions = new ArrayList<>();
+        for (String conditionExpression : easyRule.getConditions()) {
+            Condition condition = parseCondition(conditionExpression);
+            conditions.add(condition);
+        }
+
+        return conditions;
+    }
+
+    private Condition parseCondition(String conditionExpression) throws EasyAbacInitException {
+        boolean negation = false;
+        Attribute firstOperand = findAttributeById("report.category");
+        Attribute secondOperandAttribute = findAttributeById("subject.allowed-categories");
+        Function function = Function.findByEasyName("==");
+
+        return new Condition(IdGenerator.newId(), negation, firstOperand, secondOperandAttribute, function);
+    }
+
+    private Attribute findAttributeById(String id) throws EasyAbacInitException {
+        for (Attribute attribute : attributes) {
+            if (id.equals(attribute.getId())) {
+                return attribute;
+            }
+        }
+        throw new EasyAbacInitException("В модели не найден атрибут с кодом: " + id);
     }
 
     private List<Attribute> transformAttributes(Map<String, EasyResource> resources) throws EasyAbacInitException {

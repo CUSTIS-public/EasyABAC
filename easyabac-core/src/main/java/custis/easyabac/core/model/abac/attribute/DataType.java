@@ -32,7 +32,6 @@ public enum DataType {
                 return value;
             }
         }
-        // TODO придумать подходящий тип
         throw new EasyAbacInitException("Type " + easyName + " not supported");
 
     }

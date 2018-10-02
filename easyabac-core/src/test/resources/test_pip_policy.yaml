@@ -25,10 +25,9 @@ permissions:
   accessToActions:
     [report.edit, report.view]
   rules:
-    rule1:
-      title: проверяем возможность доступа к отчету в зависимости от категории
-      operation: OR #это здесь просто, что бы проверить загрузку. Возможные операции:  AND, OR, NAND, NOR
-      conditions:
-      - report.category == subject.allowed-categories
+  - title: проверяем возможность доступа к отчету в зависимости от категории
+    operation: OR #это здесь просто, что бы проверить загрузку. Возможные операции:  AND, OR, NAND, NOR
+    conditions:
+    - report.category == subject.allowed-categories
   returnAttributes:
     [subject.allowed-categories]
