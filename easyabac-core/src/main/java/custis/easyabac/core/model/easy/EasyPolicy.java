@@ -1,13 +1,14 @@
 package custis.easyabac.core.model.easy;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class EasyPolicy {
     private String title;
-    private List<String> accessToActions;
-    private Map<String, EasyRule> rules;
-    private List<String> returnAttributes;
+    private List<String> accessToActions = Collections.emptyList();
+    private Map<String, EasyRule> rules = Collections.emptyMap();
+    private List<String> returnAttributes = Collections.emptyList();
 
 
     public String getTitle() {

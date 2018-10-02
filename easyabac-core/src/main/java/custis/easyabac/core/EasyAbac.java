@@ -123,6 +123,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             return this;
         }
 
+
         public AttributiveAuthorizationService build() throws Exception {
             PdpHandlerFactory pdpHandlerFactory = new PdpHandlerFactory();
             Map<String, Attribute> attributeMap = Collections.emptyMap();
