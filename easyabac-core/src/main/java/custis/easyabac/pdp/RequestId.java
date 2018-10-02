@@ -8,10 +8,18 @@ import java.util.UUID;
  */
 public class RequestId {
 
-    private String id = UUID.randomUUID().toString();
+    private String id;
+
+    public RequestId(String id) {
+        this.id = id;
+    }
 
     public static RequestId newRandom() {
-        return new RequestId();
+        return new RequestId(UUID.randomUUID().toString());
+    }
+
+    public static RequestId of(String serialized) {
+        return new RequestId(serialized);
     }
 
     public String getId() {

@@ -76,11 +76,11 @@ public interface PermissionCheckerConfigurationSource {
 	Streamable<BeanDefinition> getCandidates(ResourceLoader loader);
 
 	/**
-	 * Returns the value for the {@link String} attribute with the given name. The name is expected to be handed in
+	 * Returns the value for the {@link String} stringAttribute with the given name. The name is expected to be handed in
 	 * camel-case.
 	 * 
 	 * @param name must not be {@literal null} or empty.
-	 * @return the attribute with the given name or {@link Optional#empty()} if not configured or empty.
+	 * @return the stringAttribute with the given name or {@link Optional#empty()} if not configured or empty.
 	 * @since 1.8
 	 */
 	Optional<String> getAttribute(String name);

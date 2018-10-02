@@ -5,12 +5,14 @@ import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.AttributeValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.MdpAuthRequest;
 import custis.easyabac.pdp.MdpAuthResponse;
+import custis.easyabac.pdp.RequestId;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
 import org.wso2.balana.PDPConfig;
-import org.wso2.balana.attr.StringAttribute;
 import org.wso2.balana.ctx.AbstractResult;
+import org.wso2.balana.ctx.Attribute;
 import org.wso2.balana.ctx.ResponseCtx;
 import org.wso2.balana.ctx.Status;
 import org.wso2.balana.ctx.xacml3.RequestCtx;
@@ -23,11 +25,11 @@ import org.wso2.balana.xacml3.Attributes;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
+import static custis.easyabac.core.init.AttributesFactory.stringAttribute;
+import static custis.easyabac.pdp.AuthResponse.Decision.getByIndex;
 
 public class BalanaPdpHandler implements PdpHandler {
 
@@ -45,23 +47,14 @@ public class BalanaPdpHandler implements PdpHandler {
             Set<org.wso2.balana.ctx.Attribute> balanaAttributes = new HashSet<>();
 
             for (AttributeValue attributeValue : attributeValues) {
+                org.wso2.balana.ctx.Attribute newBalanaAttribute = stringAttribute(attributeValue.getAttribute(), attributeValue.getValues());
 
-                List<org.wso2.balana.attr.AttributeValue> balanaAttributeValues = new ArrayList<>();
-
-                for (String value : attributeValue.getValues()) {
-                    balanaAttributeValues.add(new StringAttribute(value));
-                }
-
-
-                org.wso2.balana.ctx.Attribute newBalanaAttribute =
-                        new org.wso2.balana.ctx.Attribute(new URI(attributeValue.getAttribute().getId()), new URI(StringAttribute.identifier),
-                                "", null, balanaAttributeValues, false, 3);
                 balanaAttributes.add(newBalanaAttribute);
             }
 
             Set<Attributes> attributesSet = new HashSet<>();
             //TODO  жестко задана категория!!!
-            Attributes newBalanaAttributesSet = new Attributes(new URI(Category.RESOURCE.getXacmlName()), balanaAttributes);
+            Attributes newBalanaAttributesSet = new Attributes(URI.create(Category.RESOURCE.getXacmlName()), balanaAttributes);
             attributesSet.add(newBalanaAttributesSet);
 
             RequestCtx requestCtx = new RequestCtx(attributesSet, null);
@@ -70,7 +63,7 @@ public class BalanaPdpHandler implements PdpHandler {
 
 //            requestCtx = RequestCtxFactory.getFactory().getRequestCtx(request.getXacmlRequest().replaceAll(">\\s+<", "><"));
             responseCtx = pdp.evaluate(requestCtx);
-        } catch (URISyntaxException e) {
+        } catch (IllegalArgumentException e) {
             List<String> code = new ArrayList<>();
             code.add(Status.STATUS_SYNTAX_ERROR);
             String error = "Invalid request  : " + e.getMessage();
@@ -79,19 +72,34 @@ public class BalanaPdpHandler implements PdpHandler {
         }
 //        log.debug(responseCtx.encode());
 
-        AuthResponse.Decision decision = AuthResponse.Decision.getByIndex(responseCtx.getResults().iterator().next().getDecision());
+        AuthResponse.Decision decision = getByIndex(responseCtx.getResults().iterator().next().getDecision());
 
         return new AuthResponse(decision);
     }
 
     @Override
-    public MdpAuthResponse evaluate() {
+    public MdpAuthResponse evaluate(MdpAuthRequest mdpAuthRequest) {
         Set<Attributes> attributesSet = new HashSet<>();
         RequestCtx requestCtx = new RequestCtx(null, attributesSet, false, false, multi, null);
 
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
+        Map<RequestId, AuthResponse> results = new HashMap<>();
 
-        return null;
+        for (AbstractResult abstractResult : responseCtx.getResults()) {
+            Result result = (Result) abstractResult;
+
+            for (Attributes attributes : result.getAttributes()) {
+                for (Attribute attribute : attributes.getAttributes()) {
+                    if (attribute.getId().equals(ATTRIBUTE_REQUEST_ID)) {
+                        org.wso2.balana.attr.AttributeValue requestId = attribute.getValue();
+                        results.put(RequestId.of(requestId.encode()), new AuthResponse(getByIndex(abstractResult.getDecision())));
+                    }
+                }
+            }
+
+        }
+
+        return new MdpAuthResponse(results);
     }
 
     public static PdpHandler getInstance(AbacAuthModel abacAuthModel, List<SampleDatasource> datasources, Cache cache) {
@@ -119,7 +127,7 @@ public class BalanaPdpHandler implements PdpHandler {
         Balana balana = Balana.getInstance();
         PDPConfig pdpConfig = balana.getPdpConfig();
 
-        // registering new attribute finder. so default PDPConfig is needed to change
+        // registering new stringAttribute finder. so default PDPConfig is needed to change
         AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
 

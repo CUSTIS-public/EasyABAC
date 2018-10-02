@@ -175,7 +175,7 @@ public class AnnotationPermissionCheckerConfigurationSource extends BasePermissi
 	}
 
 	/**
-	 * Returns the {@link String} attribute with the given name and defaults it to {@literal Optional#empty()} in case
+	 * Returns the {@link String} stringAttribute with the given name and defaults it to {@literal Optional#empty()} in case
 	 * it's empty.
 	 * 
 	 * @param attributeName
@@ -299,8 +299,8 @@ public class AnnotationPermissionCheckerConfigurationSource extends BasePermissi
 	}
 
 	/**
-	 * Safely reads the {@code pattern} attribute from the given {@link AnnotationAttributes} and returns an empty list if
-	 * the attribute is not present.
+	 * Safely reads the {@code pattern} stringAttribute from the given {@link AnnotationAttributes} and returns an empty list if
+	 * the stringAttribute is not present.
 	 * 
 	 * @param filterAttributes must not be {@literal null}.
 	 * @return
