@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 public @interface AuthorizationAttribute {
 
     /**
-     * (Optional) The id of the stringAttribute.
+     * (Optional) The id of the attribute.
      * <p/>
      * Defaults to the field name.
      */

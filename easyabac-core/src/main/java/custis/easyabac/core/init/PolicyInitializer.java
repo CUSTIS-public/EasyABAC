@@ -30,7 +30,7 @@ public class PolicyInitializer {
         Balana balana = Balana.getInstance();
         PDPConfig pdpConfig = balana.getPdpConfig();
 
-        // registering new stringAttribute finder. so default PDPConfig is needed to change
+        // registering new attribute finder. so default PDPConfig is needed to change
         AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
 

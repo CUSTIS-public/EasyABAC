@@ -60,7 +60,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             preProcessor.preProcess();
         }
 
-        MdpAuthResponse result = pdpHandler.evaluate();
+        MdpAuthResponse result = pdpHandler.evaluate((MdpAuthRequest) null);
 
         for (ResponsePostProcessor postProcessor : postProcessors) {
             postProcessor.postProcess();

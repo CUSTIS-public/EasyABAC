@@ -35,7 +35,7 @@ public class AttributesFactory {
     }
 
     public static Attribute generalAttribute(String id, String type, List<AttributeValue> balanaAttributeValues, boolean includeInResult) {
-        new org.wso2.balana.ctx.Attribute(
+        return new org.wso2.balana.ctx.Attribute(
                 URI.create(id),
                 URI.create(type),
                 "", null, balanaAttributeValues, false, 3);
