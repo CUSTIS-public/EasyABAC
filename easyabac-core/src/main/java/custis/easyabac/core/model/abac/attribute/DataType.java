@@ -1,5 +1,7 @@
 package custis.easyabac.core.model.abac.attribute;
 
+import custis.easyabac.core.init.EasyAbacInitException;
+
 public enum DataType {
     STRING("string", "http://www.w3.org/2001/XMLSchema#string"),
     INT("int", "http://www.w3.org/2001/XMLSchema#integer"),
@@ -24,14 +26,14 @@ public enum DataType {
         return easyName;
     }
 
-    public static DataType findByEasyName(String easyName) throws Exception {
+    public static DataType findByEasyName(String easyName) throws EasyAbacInitException {
         for (DataType value : DataType.values()) {
             if (easyName.equals(value.getEasyName())) {
                 return value;
             }
         }
         // TODO придумать подходящий тип
-        throw new Exception("Type " + easyName + " not supported");
+        throw new EasyAbacInitException("Type " + easyName + " not supported");
 
     }
 }

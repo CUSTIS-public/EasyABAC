@@ -22,11 +22,15 @@ public class LoadAbacAuthModelTest {
         String reportId = abacAuthModel.getResources().get("report").getId();
         String reportFirstAttrId = abacAuthModel.getResources().get("report").getAttributes().get(0).getId();
 
-        System.out.println(reportId);
-        System.out.println(reportFirstAttrId);
         Assert.assertEquals("report", reportId);
         Assert.assertEquals("edit", reportFirstAction);
         Assert.assertEquals("report.id", reportFirstAttrId);
 
+
+        Assert.assertEquals(1, abacAuthModel.getPolicies().size());
+        Assert.assertEquals(2, abacAuthModel.getPolicies().get(0).getTarget().getConditions().size());
+        Assert.assertEquals("report.action", abacAuthModel.getPolicies().get(0).getTarget().getConditions().get(0).getFirstOperand().getId());
+        Assert.assertEquals("report.edit", abacAuthModel.getPolicies().get(0).getTarget().getConditions().get(0).getSecondOperand());
     }
+
 }

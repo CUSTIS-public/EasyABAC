@@ -5,33 +5,27 @@ import custis.easyabac.core.model.abac.attribute.Attribute;
 import java.util.List;
 
 public class Condition {
-    private String id;
-    private boolean negation;
-    private Attribute firstOperand;
-    private Attribute secondOperandAttribute;
-    private String secondOperandValue;
-    private List<String> secondOperandArray;
-    private Function function;
-    private String expression;
+    private final String id;
+    private final boolean negation;
+    private final Attribute firstOperand;
+    private final Attribute secondOperandAttribute;
+    private final String secondOperandValue;
+    private final List<String> secondOperandArray;
+    private final Function function;
+
+    public Condition(String id, boolean negation, Attribute firstOperand, Attribute secondOperandAttribute,
+                     String secondOperandValue, List<String> secondOperandArray, Function function) {
+        this.id = id;
+        this.negation = negation;
+        this.firstOperand = firstOperand;
+        this.secondOperandAttribute = secondOperandAttribute;
+        this.secondOperandValue = secondOperandValue;
+        this.secondOperandArray = secondOperandArray;
+        this.function = function;
+    }
 
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Condition(String expression) {
-        this.expression = expression;
-    }
-
-    public String getExpression() {
-        return expression;
-    }
-
-    public void setExpression(String expression) {
-        this.expression = expression;
     }
 
     public boolean isNegation() {

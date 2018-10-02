@@ -164,7 +164,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
 
 
-        public AttributiveAuthorizationService build() throws Exception {
+        public AttributiveAuthorizationService build() throws EasyAbacInitException {
             PdpHandlerFactory pdpHandlerFactory = new PdpHandlerFactory();
             Map<String, Attribute> attributeMap = Collections.emptyMap();
 

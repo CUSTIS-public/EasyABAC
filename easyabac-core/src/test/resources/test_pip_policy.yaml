@@ -23,7 +23,7 @@ resources:
 permissions:
 - title: политика редактирования отчета в зависимости от категории
   accessToActions:
-    [report.edit]
+    [report.edit, report.view]
   rules:
     rule1:
       title: проверяем возможность доступа к отчету в зависимости от категории
