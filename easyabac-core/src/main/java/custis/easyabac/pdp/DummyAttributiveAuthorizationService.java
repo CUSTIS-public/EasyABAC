@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AttributiveAuthorizationServiceImpl implements AttributiveAuthorizationService {
+public class DummyAttributiveAuthorizationService implements AttributiveAuthorizationService {
 
     private SamplePDPHandler pdpHandler = new SamplePDPHandler();
 

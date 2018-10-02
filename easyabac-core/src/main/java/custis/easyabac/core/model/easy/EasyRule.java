@@ -4,13 +4,14 @@ import custis.easyabac.core.model.abac.Condition;
 import custis.easyabac.core.model.abac.Effect;
 import custis.easyabac.core.model.abac.Operation;
 
+import java.util.Collections;
 import java.util.List;
 
 public class EasyRule {
     private String title;
     private Effect effect = Effect.PERMIT;
     private Operation operation = Operation.AND;
-    private List<Condition> conditions;
+    private List<Condition> conditions = Collections.emptyList();
 
     public Effect getEffect() {
         return effect;
