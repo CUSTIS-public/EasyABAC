@@ -1,5 +1,6 @@
 package custis.easyabac.core.model.easy;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class EasyAttribute {
@@ -7,7 +8,7 @@ public class EasyAttribute {
     private String title;
     private String type = "string";
     private boolean multiple = false;
-    private Set<String> allowableValues;
+    private Set<String> allowableValues = Collections.emptySet();
 
     public String getId() {
         return id;

@@ -18,7 +18,7 @@ public class LoadAbacAuthModelTest {
         AbacAuthModel abacAuthModel = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, policy);
         Assert.assertNotNull(abacAuthModel);
 
-        String reportFirstAction = abacAuthModel.getResources().get("report").getActions().get(0);
+        String reportFirstAction = abacAuthModel.getResources().get("report").getActions().iterator().next();
         String reportId = abacAuthModel.getResources().get("report").getId();
         String reportFirstAttrId = abacAuthModel.getResources().get("report").getAttributes().get(0).getId();
 
