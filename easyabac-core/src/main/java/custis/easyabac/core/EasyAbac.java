@@ -2,12 +2,16 @@ package custis.easyabac.core;
 
 import custis.easyabac.ModelType;
 import custis.easyabac.core.cache.Cache;
+import custis.easyabac.core.extend.RequestExtender;
+import custis.easyabac.core.extend.subject.DummySubjectAttributesProvider;
+import custis.easyabac.core.extend.subject.SubjectAttributesExtender;
+import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
 import custis.easyabac.core.init.*;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.AttributeGroup;
 import custis.easyabac.core.model.abac.attribute.AttributeValue;
-import custis.easyabac.core.processors.RequestPreProcessor;
-import custis.easyabac.core.processors.ResponsePostProcessor;
+import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.trace.Trace;
 import custis.easyabac.pdp.*;
 import org.apache.commons.logging.Log;
@@ -24,49 +28,79 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private final PdpHandler pdpHandler;
     private final Map<String, Attribute> attributeMap;
 
-    private final List<RequestPreProcessor> preProcessors = new ArrayList<>();
-    private final List<ResponsePostProcessor> postProcessors = new ArrayList<>();
+    private final List<RequestExtender> requestExtenders;
 
 
     private EasyAbac(PdpHandler pdpHandler) {
-        this(pdpHandler, Collections.emptyMap());
+        this(pdpHandler, Collections.emptyMap(), Collections.emptyList());
     }
 
-    private EasyAbac(PdpHandler pdpHandler, Map<String, Attribute> attributeMap) {
+    private EasyAbac(PdpHandler pdpHandler, Map<String, Attribute> attributeMap, List<RequestExtender> requestExtenders) {
         this.pdpHandler = pdpHandler;
         this.attributeMap = attributeMap;
+        this.requestExtenders = requestExtenders;
     }
 
     @Override
     public AuthResponse authorize(List<AuthAttribute> authAttributes) {
         List<AttributeValue> attributeValueList = computeAttributeValues(authAttributes);
 
-        for (RequestPreProcessor preProcessor : preProcessors) {
-            preProcessor.preProcess();
+        for (RequestExtender extender : requestExtenders) {
+            extender.extend(attributeValueList);
         }
 
         AuthResponse authResponse = pdpHandler.evaluate(attributeValueList);
-
-        for (ResponsePostProcessor postProcessor : postProcessors) {
-            postProcessor.postProcess();
-        }
 
         return authResponse;
     }
 
     @Override
     public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
-        for (RequestPreProcessor preProcessor : preProcessors) {
-            preProcessor.preProcess();
+        MdpAuthRequest requestContext = generate(attributes);
+
+        for (RequestExtender extender : requestExtenders) {
+            extender.extend(requestContext);
         }
 
-        MdpAuthResponse result = pdpHandler.evaluate((MdpAuthRequest) null);
-
-        for (ResponsePostProcessor postProcessor : postProcessors) {
-            postProcessor.postProcess();
-        }
+        MdpAuthResponse result = pdpHandler.evaluate(requestContext);
 
         return result.getResults();
+    }
+
+    /**
+     * Generating optimizable request
+     * @param attributes
+     * @return
+     */
+    private MdpAuthRequest generate(Map<RequestId, List<AuthAttribute>> attributes) {
+        // 0. simple request prepare
+        MdpAuthRequest request = prepareSimpleMdpAuthRequest(attributes);
+
+        // 1. clearing not used attributes in policies
+
+
+
+        return request;
+    }
+
+    private MdpAuthRequest prepareSimpleMdpAuthRequest(Map<RequestId, List<AuthAttribute>> attributes) {
+        MdpAuthRequest request = new MdpAuthRequest();
+        attributes.forEach((requestId, authAttributes) -> {
+
+            MdpAuthRequest.RequestReference reference = new MdpAuthRequest.RequestReference();
+            Map<Category, AttributeGroup> groupMap = new HashMap<>();
+
+            for (AuthAttribute authAttribute : authAttributes) {
+                Attribute attribute = attributeMap.get(authAttribute.getId());
+
+                AttributeGroup group = groupMap.computeIfAbsent(attribute.getCategory(), category -> new AttributeGroup(requestId + "#" + category, category, new ArrayList<>()));
+                group.addAttribute(new AttributeValue(attribute, authAttribute.getValues()));
+            }
+
+            request.addRequest(reference);
+        });
+
+        return request;
     }
 
     private List<AttributeValue> computeAttributeValues(List<AuthAttribute> authAttributes) {
@@ -92,6 +126,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
         private Cache cache;
         private Trace trace;
         private PdpType pdpType = PdpType.BALANA;
+        private SubjectAttributesProvider subjectAttributesProvider = DummySubjectAttributesProvider.INSTANCE;
 
         public Builder(String policy, String attributes, ModelType modelType) {
             this.policy = new ByteArrayInputStream(policy.getBytes());
@@ -123,6 +158,11 @@ public class EasyAbac implements AttributiveAuthorizationService {
             return this;
         }
 
+        public Builder subjectAttributesProvider(SubjectAttributesProvider subjectAttributesProvider) {
+            this.subjectAttributesProvider = subjectAttributesProvider;
+            return this;
+        }
+
 
         public AttributiveAuthorizationService build() throws Exception {
             PdpHandlerFactory pdpHandlerFactory = new PdpHandlerFactory();
@@ -139,7 +179,9 @@ public class EasyAbac implements AttributiveAuthorizationService {
                 }
             }
 
-            return new EasyAbac(pdpHandler, attributeMap);
+            List<RequestExtender> extenders = new ArrayList<>();
+            extenders.add(new SubjectAttributesExtender(subjectAttributesProvider));
+            return new EasyAbac(pdpHandler, attributeMap, extenders);
         }
 
 
