@@ -1,11 +1,15 @@
 package custis.easyabac.pdp;
 
+import java.util.Map;
+
 public class AuthResponse {
 
     private final Decision decision;
+    private final Map<String, String> returnValues;
 
-    public AuthResponse(Decision decision) {
+    public AuthResponse(Decision decision, Map<String, String> returnValues) {
         this.decision = decision;
+        this.returnValues = returnValues;
     }
 
 

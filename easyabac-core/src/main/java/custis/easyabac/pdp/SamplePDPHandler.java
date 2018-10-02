@@ -1,5 +1,6 @@
 package custis.easyabac.pdp;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,6 +19,6 @@ public class SamplePDPHandler {
             System.out.println(attribute.getId() + " = " + attribute.getValues());
         }
         System.out.println("--------------------------------");
-        return new AuthResponse(AuthResponse.Decision.DENY);
+        return new AuthResponse(AuthResponse.Decision.DENY, Collections.emptyMap());
     }
 }

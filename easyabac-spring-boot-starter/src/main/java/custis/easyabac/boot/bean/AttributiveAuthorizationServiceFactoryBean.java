@@ -1,7 +1,7 @@
 package custis.easyabac.boot.bean;
 
 import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AttributiveAuthorizationServiceImpl;
+import custis.easyabac.pdp.DummyAttributiveAuthorizationService;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class AttributiveAuthorizationServiceFactoryBean implements FactoryBean<AttributiveAuthorizationService> {
     @Override
     public AttributiveAuthorizationService getObject() throws Exception {
-        return new AttributiveAuthorizationServiceImpl();
+        return new DummyAttributiveAuthorizationService();
     }
 
     @Override
