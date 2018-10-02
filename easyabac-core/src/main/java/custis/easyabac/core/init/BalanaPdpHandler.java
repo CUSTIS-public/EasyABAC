@@ -12,20 +12,14 @@ import custis.easyabac.pdp.RequestId;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
 import org.wso2.balana.PDPConfig;
-import org.wso2.balana.ctx.AbstractResult;
-import org.wso2.balana.ctx.Attribute;
-import org.wso2.balana.ctx.ResponseCtx;
-import org.wso2.balana.ctx.Status;
+import org.wso2.balana.ctx.*;
 import org.wso2.balana.ctx.xacml3.RequestCtx;
 import org.wso2.balana.ctx.xacml3.Result;
 import org.wso2.balana.finder.AttributeFinder;
 import org.wso2.balana.finder.AttributeFinderModule;
 import org.wso2.balana.finder.PolicyFinder;
 import org.wso2.balana.finder.PolicyFinderModule;
-import org.wso2.balana.xacml3.Attributes;
-import org.wso2.balana.xacml3.AttributesReference;
-import org.wso2.balana.xacml3.MultiRequests;
-import org.wso2.balana.xacml3.RequestReference;
+import org.wso2.balana.xacml3.*;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -76,9 +70,7 @@ public class BalanaPdpHandler implements PdpHandler {
             responseCtx = new ResponseCtx(new Result(AbstractResult.DECISION_INDETERMINATE, status));
         }
 
-        AuthResponse.Decision decision = getByIndex(responseCtx.getResults().iterator().next().getDecision());
-
-        return new AuthResponse(decision);
+        return createResponse(responseCtx.getResults().iterator().next());
     }
 
     @Override
@@ -117,11 +109,27 @@ public class BalanaPdpHandler implements PdpHandler {
                 throw new RuntimeException("Not found requestId in response");
             }
 
-            results.put(RequestId.of(requestId.get().encode()), new AuthResponse(getByIndex(abstractResult.getDecision())));
+            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult));
 
         }
 
         return new MdpAuthResponse(results);
+    }
+
+    private AuthResponse createResponse(AbstractResult abstractResult) {
+        AuthResponse.Decision decision = getByIndex(abstractResult.getDecision());
+        Set<AttributeAssignment> assignments = abstractResult.getObligations()
+                .stream()
+                .filter(obligationResult -> obligationResult instanceof Obligation)
+                .flatMap(obligationResult -> ((Obligation) obligationResult).getAssignments().stream())
+                .collect(toSet());
+        Map<String, String> obligations = new HashMap<>();
+        for (AttributeAssignment assignment : assignments) {
+            obligations.put(assignment.getAttributeId().toString(), assignment.getContent());
+        }
+
+
+        return new AuthResponse(decision, obligations);
     }
 
     private Attributes transformGroup(AttributeGroup attributeGroup) {
