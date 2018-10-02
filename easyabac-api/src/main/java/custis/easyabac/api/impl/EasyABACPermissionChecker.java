@@ -1,7 +1,7 @@
 package custis.easyabac.api.impl;
 
-import custis.easyabac.api.ConcreteUserPermissionChecker;
 import custis.easyabac.api.NotPermittedException;
+import custis.easyabac.api.PermitAwarePermissionChecker;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static custis.easyabac.api.impl.AttributeValueExtractor.extract;
 
 @Slf4j
-public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissionChecker<T, A, U> {
+public class EasyABACPermissionChecker<T, A> implements PermitAwarePermissionChecker<T, A> {
 
     private AttributiveAuthorizationService attributiveAuthorizationService;
 
@@ -114,43 +114,4 @@ public class EasyABACPermissionChecker<T, A, U> implements ConcreteUserPermissio
     }
 
 
-    @Override
-    public void ensurePermittedForUser(T entity, A operation, U user) throws NotPermittedException {
-
-    }
-
-    @Override
-    public void ensurePermittedAnyForUser(T entity, List<A> operations, U user) throws NotPermittedException {
-
-    }
-
-    @Override
-    public void ensurePermittedAllForUser(T entity, List<A> operations, U user) throws NotPermittedException {
-
-    }
-
-    @Override
-    public void ensurePermittedAllForUser(Map<T, A> operationsMap, U user) throws NotPermittedException {
-
-    }
-
-    @Override
-    public void ensurePermittedAnyForUser(Map<T, A> operationsMap, U user) throws NotPermittedException {
-
-    }
-
-    @Override
-    public List<A> getPermittedActionsForUser(T entity, List<A> operations, U user) {
-        return null;
-    }
-
-    @Override
-    public Map<T, List<A>> getPermittedActionsForUser(Map<T, List<A>> operationsMap, U user) {
-        return null;
-    }
-
-    @Override
-    public Map<T, List<A>> getPermittedActionsForUser(List<T> entities, List<A> operations, U user) {
-        return null;
-    }
 }

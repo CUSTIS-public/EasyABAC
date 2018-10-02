@@ -6,11 +6,10 @@ import custis.easyabac.core.init.*;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.AttributeValue;
+import custis.easyabac.core.processors.RequestPreProcessor;
+import custis.easyabac.core.processors.ResponsePostProcessor;
 import custis.easyabac.core.trace.Trace;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthAttribute;
-import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.RequestId;
+import custis.easyabac.pdp.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,6 +24,9 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private final PdpHandler pdpHandler;
     private final Map<String, Attribute> attributeMap;
 
+    private final List<RequestPreProcessor> preProcessors = new ArrayList<>();
+    private final List<ResponsePostProcessor> postProcessors = new ArrayList<>();
+
 
     private EasyAbac(PdpHandler pdpHandler) {
         this(pdpHandler, Collections.emptyMap());
@@ -37,9 +39,37 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public AuthResponse authorize(List<AuthAttribute> authAttributes) {
+        List<AttributeValue> attributeValueList = computeAttributeValues(authAttributes);
 
-        List<Attribute> attributes = new ArrayList<>();
+        for (RequestPreProcessor preProcessor : preProcessors) {
+            preProcessor.preProcess();
+        }
 
+        AuthResponse authResponse = pdpHandler.evaluate(attributeValueList);
+
+        for (ResponsePostProcessor postProcessor : postProcessors) {
+            postProcessor.postProcess();
+        }
+
+        return authResponse;
+    }
+
+    @Override
+    public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
+        for (RequestPreProcessor preProcessor : preProcessors) {
+            preProcessor.preProcess();
+        }
+
+        MdpAuthResponse result = pdpHandler.evaluate();
+
+        for (ResponsePostProcessor postProcessor : postProcessors) {
+            postProcessor.postProcess();
+        }
+
+        return result.getResults();
+    }
+
+    private List<AttributeValue> computeAttributeValues(List<AuthAttribute> authAttributes) {
         List<AttributeValue> attributeValueList = new ArrayList<>();
         for (AuthAttribute authAttribute : authAttributes) {
             Attribute attribute = attributeMap.get(authAttribute.getId());
@@ -47,17 +77,9 @@ public class EasyAbac implements AttributiveAuthorizationService {
             AttributeValue attributeValue = new AttributeValue(attribute, authAttribute.getValues());
             attributeValueList.add(attributeValue);
         }
-
-
-        AuthResponse authResponse = pdpHandler.evaluate(attributeValueList);
-
-        return authResponse;
+        return attributeValueList;
     }
 
-    @Override
-    public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
-        return null;
-    }
 
 
     public static class Builder {

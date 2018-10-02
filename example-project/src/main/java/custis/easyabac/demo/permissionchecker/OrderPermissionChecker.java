@@ -1,13 +1,11 @@
 package custis.easyabac.demo.permissionchecker;
 
-import custis.easyabac.api.ConcreteUserPermissionChecker;
 import custis.easyabac.api.NotExpectedResultException;
 import custis.easyabac.api.PermitAwarePermissionChecker;
 import custis.easyabac.demo.authz.abac.OrderAction;
 import custis.easyabac.demo.model.Order;
 
 import java.util.List;
-import java.util.Map;
 
 public interface OrderPermissionChecker extends PermitAwarePermissionChecker<Order, OrderAction> {
 

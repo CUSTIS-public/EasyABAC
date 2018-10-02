@@ -5,6 +5,7 @@ import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.AttributeValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.MdpAuthResponse;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
 import org.wso2.balana.PDPConfig;
@@ -54,7 +55,7 @@ public class BalanaPdpHandler implements PdpHandler {
 
                 org.wso2.balana.ctx.Attribute newBalanaAttribute =
                         new org.wso2.balana.ctx.Attribute(new URI(attributeValue.getAttribute().getId()), new URI(StringAttribute.identifier),
-                                "", null, balanaAttributeValues, true, 3);
+                                "", null, balanaAttributeValues, false, 3);
                 balanaAttributes.add(newBalanaAttribute);
             }
 
@@ -81,6 +82,16 @@ public class BalanaPdpHandler implements PdpHandler {
         AuthResponse.Decision decision = AuthResponse.Decision.getByIndex(responseCtx.getResults().iterator().next().getDecision());
 
         return new AuthResponse(decision);
+    }
+
+    @Override
+    public MdpAuthResponse evaluate() {
+        Set<Attributes> attributesSet = new HashSet<>();
+        RequestCtx requestCtx = new RequestCtx(null, attributesSet, false, false, multi, null);
+
+        ResponseCtx responseCtx = pdp.evaluate(requestCtx);
+
+        return null;
     }
 
     public static PdpHandler getInstance(AbacAuthModel abacAuthModel, List<SampleDatasource> datasources, Cache cache) {
