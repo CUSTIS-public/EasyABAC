@@ -73,4 +73,9 @@ public class PipTest {
         Assert.assertEquals(AuthResponse.Decision.DENY, authResponse.getDecision());
 
     }
+
+    @Test
+    public void shouldBreakCIPipeline() throws Exception {
+        throw new Exception("GitLab CI, die, die...");
+    }
 }
