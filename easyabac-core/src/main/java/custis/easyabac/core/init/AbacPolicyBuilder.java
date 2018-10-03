@@ -1,12 +1,16 @@
 package custis.easyabac.core.init;
 
 import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.Operation;
+import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.TargetCondition;
 import org.wso2.balana.AbstractPolicy;
+import org.wso2.balana.Rule;
 import org.wso2.balana.TargetMatch;
+import org.wso2.balana.XACMLConstants;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
+import org.wso2.balana.cond.*;
+import org.wso2.balana.ctx.xacml3.Result;
 import org.wso2.balana.xacml3.AllOfSelection;
 import org.wso2.balana.xacml3.AnyOfSelection;
 import org.wso2.balana.xacml3.Target;
@@ -25,6 +29,7 @@ public class AbacPolicyBuilder {
 
     private static final String POLICY_NAMESPACE = "policy.namespace";
 
+    //TODO create default app namespace instead of configured one
     private String policyNamespace;
 
     public AbacPolicyBuilder(Properties properties) {
@@ -42,11 +47,35 @@ public class AbacPolicyBuilder {
                 null,
                 new DenyUnlessPermitRuleAlg(),
                 abacPolicy.getTitle(),
-                buildTarget(abacPolicy.getTarget()),
-                Collections.emptyList());
+                buildBalanaTarget(abacPolicy.getTarget()),
+                buildBalanaRules(abacPolicy.getRules(), abacPolicy.getId()));
     }
 
-    private Target buildTarget(custis.easyabac.core.model.abac.Target target) {
+    private List<Rule> buildBalanaRules(List<custis.easyabac.core.model.abac.Rule> rules, String policyId) {
+        return rules.stream()
+                .map(r -> buildBalanaRule(r, policyId))
+                .collect(Collectors.toList());
+    }
+
+    private Rule buildBalanaRule(custis.easyabac.core.model.abac.Rule rule, String policyId) {
+        return new Rule(URI.create(policyNamespace + ":" + policyId + ":" + rule.getId()),
+                Result.DECISION_PERMIT,
+                rule.getTitle(),
+                null,
+                buildBalanaCondition(rule.getConditions(), rule.getOperation()),
+                null,
+                null,
+                XACMLConstants.XACML_VERSION_3_0
+                );
+    }
+
+    private Condition buildBalanaCondition(List<custis.easyabac.core.model.abac.Condition> conditions,
+                                           Operation operation) {
+        //TODO implement
+        return new Condition(new ComparisonFunction("urn:oasis:names:tc:xacml:1.0:function:integer-greater-than"));
+    }
+
+    private Target buildBalanaTarget(custis.easyabac.core.model.abac.Target target) {
 
         List<AllOfSelection> allOfSelections;
 
@@ -79,8 +108,8 @@ public class AbacPolicyBuilder {
     }
 
     private TargetMatch makeTargetMatch(TargetCondition targetCondition) {
+        //TODO implement
 //        TargetMatch match = new TargetMatch()
         return null;
     }
-
 }

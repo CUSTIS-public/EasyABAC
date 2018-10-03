@@ -113,6 +113,16 @@ public class AbacPolicyBuilderTest {
         assertEquals("Policy target allOf size", 2, allOfSelections.size());
     }
 
+    @Test
+    public void buildRules_whenGiven() {
+        org.wso2.balana.Policy policy = pickSinglePolicy();
+
+        long rulesCount = policy.getChildren().stream()
+                .filter(e -> e instanceof org.wso2.balana.Rule)
+                .count();
+        assertEquals("Rules count", 2, rulesCount);
+    }
+
     private org.wso2.balana.Policy pickSinglePolicy() {
         Map<URI, org.wso2.balana.Policy> policies = abacPolicyBuilder.buildFrom(authModel);
 
