@@ -2,31 +2,34 @@ package custis.easyabac.core.init;
 
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.model.abac.AbacAuthModel;
+import custis.easyabac.core.model.abac.attribute.AttributeGroup;
 import custis.easyabac.core.model.abac.attribute.AttributeValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.MdpAuthRequest;
+import custis.easyabac.pdp.MdpAuthResponse;
+import custis.easyabac.pdp.RequestId;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
 import org.wso2.balana.PDPConfig;
-import org.wso2.balana.attr.StringAttribute;
-import org.wso2.balana.ctx.AbstractResult;
-import org.wso2.balana.ctx.ResponseCtx;
-import org.wso2.balana.ctx.Status;
+import org.wso2.balana.ctx.*;
 import org.wso2.balana.ctx.xacml3.RequestCtx;
 import org.wso2.balana.ctx.xacml3.Result;
 import org.wso2.balana.finder.AttributeFinder;
 import org.wso2.balana.finder.AttributeFinderModule;
 import org.wso2.balana.finder.PolicyFinder;
 import org.wso2.balana.finder.PolicyFinderModule;
-import org.wso2.balana.xacml3.Attributes;
+import org.wso2.balana.xacml3.*;
 
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
+
+import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
+import static custis.easyabac.core.init.AttributesFactory.stringAttribute;
+import static custis.easyabac.pdp.AuthResponse.Decision.getByIndex;
+import static java.util.stream.Collectors.toSet;
 
 public class BalanaPdpHandler implements PdpHandler {
 
@@ -41,46 +44,122 @@ public class BalanaPdpHandler implements PdpHandler {
 
         ResponseCtx responseCtx;
         try {
-            Set<org.wso2.balana.ctx.Attribute> balanaAttributes = new HashSet<>();
+            Map<Category, Attributes> attributesSet = new HashMap<>();
 
             for (AttributeValue attributeValue : attributeValues) {
-
-                List<org.wso2.balana.attr.AttributeValue> balanaAttributeValues = new ArrayList<>();
-
-                for (String value : attributeValue.getValues()) {
-                    balanaAttributeValues.add(new StringAttribute(value));
-                }
+                Category cat = attributeValue.getAttribute().getCategory();
+                Attributes attributes = attributesSet.computeIfAbsent(cat,
+                        category -> new Attributes(URI.create(category.getXacmlName()), new HashSet<>())
+                );
 
 
-                org.wso2.balana.ctx.Attribute newBalanaAttribute =
-                        new org.wso2.balana.ctx.Attribute(new URI(attributeValue.getAttribute().getId()), new URI(StringAttribute.identifier),
-                                "", null, balanaAttributeValues, true, 3);
-                balanaAttributes.add(newBalanaAttribute);
+                org.wso2.balana.ctx.Attribute newBalanaAttribute = stringAttribute(attributeValue.getAttribute(), attributeValue.getValues());
+                attributes.getAttributes().add(newBalanaAttribute);
             }
 
-            Set<Attributes> attributesSet = new HashSet<>();
-            //TODO  жестко задана категория!!!
-            Attributes newBalanaAttributesSet = new Attributes(new URI(Category.RESOURCE.getXacmlName()), balanaAttributes);
-            attributesSet.add(newBalanaAttributesSet);
-
-            RequestCtx requestCtx = new RequestCtx(attributesSet, null);
+            RequestCtx requestCtx = new RequestCtx(new HashSet<>(attributesSet.values()), null);
 
             requestCtx.encode(System.out);
 
-//            requestCtx = RequestCtxFactory.getFactory().getRequestCtx(request.getXacmlRequest().replaceAll(">\\s+<", "><"));
             responseCtx = pdp.evaluate(requestCtx);
-        } catch (URISyntaxException e) {
+        } catch (IllegalArgumentException e) {
             List<String> code = new ArrayList<>();
             code.add(Status.STATUS_SYNTAX_ERROR);
             String error = "Invalid request  : " + e.getMessage();
             Status status = new Status(code, error);
             responseCtx = new ResponseCtx(new Result(AbstractResult.DECISION_INDETERMINATE, status));
         }
-//        log.debug(responseCtx.encode());
 
-        AuthResponse.Decision decision = AuthResponse.Decision.getByIndex(responseCtx.getResults().iterator().next().getDecision());
+        return createResponse(responseCtx.getResults().iterator().next());
+    }
 
-        return new AuthResponse(decision);
+    @Override
+    public MdpAuthResponse evaluate(MdpAuthRequest mdpAuthRequest) {
+        Set<RequestReference> requestReferences = mdpAuthRequest.getRequests()
+                .stream()
+                .map(this::transformReference)
+                .collect(toSet());
+
+        Set<Attributes> attributesSet = mdpAuthRequest.getAttributeGroups()
+                        .stream()
+                        .map(this::transformGroup)
+                        .collect(toSet());
+
+        MultiRequests multiRequests = new MultiRequests(requestReferences);
+
+
+        RequestCtx requestCtx = new RequestCtx(null, attributesSet, false, false, multiRequests, null);
+
+        ResponseCtx responseCtx = pdp.evaluate(requestCtx);
+
+        Map<RequestId, AuthResponse> results = new HashMap<>();
+
+        for (AbstractResult abstractResult : responseCtx.getResults()) {
+            Result result = (Result) abstractResult;
+
+            Stream<Attributes> envAttributes = result.getAttributes()
+                    .stream()
+                    .filter(attributes -> attributes.getCategory().toString().equals(Category.ENV.getXacmlName()));
+
+            Optional<Attribute> requestId = envAttributes.flatMap(attributes -> attributes.getAttributes().stream())
+                    .filter(attribute -> attribute.getId().equals(ATTRIBUTE_REQUEST_ID))
+                    .findFirst();
+
+            if (!requestId.isPresent()) {
+                throw new RuntimeException("Not found requestId in response");
+            }
+
+            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult));
+
+        }
+
+        return new MdpAuthResponse(results);
+    }
+
+    private AuthResponse createResponse(AbstractResult abstractResult) {
+        AuthResponse.Decision decision = getByIndex(abstractResult.getDecision());
+        Set<AttributeAssignment> assignments = abstractResult.getObligations()
+                .stream()
+                .filter(obligationResult -> obligationResult instanceof Obligation)
+                .flatMap(obligationResult -> ((Obligation) obligationResult).getAssignments().stream())
+                .collect(toSet());
+        Map<String, String> obligations = new HashMap<>();
+        for (AttributeAssignment assignment : assignments) {
+            obligations.put(assignment.getAttributeId().toString(), assignment.getContent());
+        }
+
+
+        return new AuthResponse(decision, obligations);
+    }
+
+    private Attributes transformGroup(AttributeGroup attributeGroup) {
+        Set<Attribute> attributeSet = attributeGroup.getAttributes()
+                .stream()
+                .map(this::transformAttributeValue)
+                .collect(toSet());
+
+        URI catUri = URI.create(attributeGroup.getCategory().getXacmlName());
+        Attributes attributes = new Attributes(catUri, null, attributeSet, attributeGroup.getId());
+        return attributes;
+    }
+
+    private Attribute transformAttributeValue(AttributeValue attributeValue) {
+        return stringAttribute(attributeValue.getAttribute(), attributeValue.getValues());
+    }
+
+    private RequestReference transformReference(MdpAuthRequest.RequestReference requestReference) {
+        Set<AttributesReference> references = requestReference.getRequestIds()
+                .stream()
+                .map(r -> {
+                    AttributesReference ar = new AttributesReference();
+                    ar.setId(r);
+                    return ar;
+                })
+                .collect(toSet());
+
+        RequestReference ref = new RequestReference();
+        ref.setReferences(references);
+        return ref;
     }
 
     public static PdpHandler getInstance(AbacAuthModel abacAuthModel, List<SampleDatasource> datasources, Cache cache) {
