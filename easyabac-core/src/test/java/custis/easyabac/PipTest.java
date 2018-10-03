@@ -31,19 +31,17 @@ public class PipTest {
     }
 
     @Test
-    @Ignore
     public void TwoAttrEquelsTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xacml");
-        InputStream attributes = getResourceAsStream("attributes-1.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
+        InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
-        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
-        authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
-        authAttrList.add(new AuthAttribute(SUBJECT_ALLOWED_CATEGORIES, Arrays.asList("iod", "dsp")));
+        authAttrList.add(new AuthAttribute("report.action", "edit"));
+        authAttrList.add(new AuthAttribute("report.category", "iod"));
+        authAttrList.add(new AuthAttribute("subject.allowed-categories", Arrays.asList("iod", "dsp")));
         AuthResponse authResponse = authorizationService.authorize(authAttrList);
         Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
-
     }
 
     @Test

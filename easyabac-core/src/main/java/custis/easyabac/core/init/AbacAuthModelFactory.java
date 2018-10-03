@@ -10,7 +10,7 @@ import java.io.InputStream;
 public class AbacAuthModelFactory {
 
     public AbacAuthModel getInstance(ModelType modelType, InputStream policy) throws EasyAbacInitException {
-        if (modelType == ModelType.EASY_YAML) {
+        if (modelType == ModelType.EASY_YAML || modelType == ModelType.XACML) {
             EasyAuthModel easyAuthModel = load(policy);
             AbacAuthModel abacAuthModel = new AuthModelTransformer(easyAuthModel).transform();
 

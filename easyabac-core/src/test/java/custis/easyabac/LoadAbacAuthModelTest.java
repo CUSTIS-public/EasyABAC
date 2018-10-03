@@ -42,4 +42,25 @@ public class LoadAbacAuthModelTest {
         Assert.assertEquals("subject.allowed-categories", abacAuthModel.getPolicies().get(0).getReturnAttributes().get(0).getId());
     }
 
+
+    @Test
+    public void loadAttributeOnly() throws Exception {
+        InputStream policy = this.getClass()
+                .getClassLoader()
+                .getResourceAsStream("test_init_xacml.yaml");
+
+        AbacAuthModel abacAuthModel = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, policy);
+        Assert.assertNotNull(abacAuthModel);
+
+//        resources
+        String reportFirstAction = abacAuthModel.getResources().get("report").getActions().iterator().next();
+        String reportId = abacAuthModel.getResources().get("report").getId();
+        String reportFirstAttrId = abacAuthModel.getResources().get("report").getAttributes().get(0).getId();
+
+        Assert.assertEquals("report", reportId);
+        Assert.assertEquals("edit", reportFirstAction);
+        Assert.assertEquals("report.id", reportFirstAttrId);
+
+    }
+
 }
