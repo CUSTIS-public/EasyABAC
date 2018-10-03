@@ -7,7 +7,7 @@ public class TargetCondition {
     private Attribute firstOperand;
     private String secondOperand;
     private Function function;
-    private final String expression;
+    private String expression;
 
     public String getId() {
         return id;
@@ -46,7 +46,4 @@ public class TargetCondition {
         return function;
     }
 
-    public String getExpression() {
-        return expression;
-    }
 }

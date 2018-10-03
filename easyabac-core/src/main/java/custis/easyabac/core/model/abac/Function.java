@@ -36,7 +36,7 @@ public enum Function {
 
     public static Optional<Function> of(String name) {
         return Stream.of(Function.values())
-                .filter(v -> v.functionName.equals(name))
+                .filter(v -> v.easyName.equals(name))
                 .findFirst();
     }
 }

@@ -2,6 +2,9 @@ package custis.easyabac;
 
 import custis.easyabac.core.init.AbacPolicyBuilder;
 import custis.easyabac.core.model.abac.*;
+import custis.easyabac.core.model.abac.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.Category;
+import custis.easyabac.core.model.abac.attribute.DataType;
 import org.junit.Before;
 import org.junit.Test;
 import org.wso2.balana.AbstractPolicy;
@@ -15,10 +18,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -44,36 +46,36 @@ public class AbacPolicyBuilderTest {
     }
 
     private AbacAuthModel buildAbacAuthModel() {
-        Policy abacPolicy = new Policy();
-        abacPolicy.setId("policy1");
-        abacPolicy.setTitle("Sample policy");
-
-        Target t = new Target();
         TargetCondition tc1 = new TargetCondition("action-id == CourseUnit.Edit");
         TargetCondition tc2 = new TargetCondition("action-id == CourseUnit.Delete");
-        t.setConditions(asList(tc1, tc2));
-        t.setOperation(Operation.OR);
+        Target target = new Target(Operation.OR, asList(tc1, tc2), emptyList());
 
-        abacPolicy.setTarget(t);
+        Rule rule1 = new Rule("rule1", "First rule", Operation.AND, asList(
+                new Condition("r1c1", false,
+                        new Attribute("object.CourseUnit.authorId", DataType.STRING, Category.RESOURCE, false),
+                        new Attribute("user.personId", DataType.STRING, Category.SUBJECT, false),
+                        Function.EQUAL),
+                new Condition("r1c2", true,
+                        new Attribute("object.CourseUnit.status", DataType.STRING, Category.RESOURCE, false),
+                        singletonList("DRAFT"),
+                        Function.EQUAL)));
 
-        Rule rule1 = new Rule();
-        rule1.setId("rule1");
-        rule1.setOperation(Operation.AND);
-        rule1.setTitle("First rule");
-        rule1.setConditions(asList(
-                new Condition("object.CourseUnit.authorId in user.personId"),
-                new Condition("not object.CourseUnit.status == 'DRAFT'")));
+        Rule rule2 = new Rule("rule2", "Second rule", Operation.NAND, asList(
+                new Condition("r2c1", false,
+                        new Attribute("object.CourseUnit.curatorId", DataType.STRING, Category.RESOURCE, false),
+                        new Attribute("user.personId", DataType.STRING, Category.SUBJECT, false),
+                        Function.EQUAL),
+                new Condition("r2c2", false,
+                        new Attribute("object.CourseUnit.count", DataType.INT, Category.RESOURCE, false),
+                        singletonList("15"),
+                        Function.GREATER),
+                new Condition("r2c3", false,
+                        new Attribute("object.CourseUnit.status", DataType.STRING, Category.RESOURCE, false),
+                        asList("DRAFT", "TEST"),
+                        Function.IN)));
 
-        Rule rule2 = new Rule();
-        rule2.setId("rule2");
-        rule2.setOperation(Operation.NAND);
-        rule2.setTitle("Second rule");
-        rule2.setConditions(asList(
-                new Condition("object.CourseUnit.curatorId == user.personId"),
-                new Condition("object.CourseUnit.count > 15"),
-                new Condition("object.CourseUnit.status == ['DRAFT', 'TEST']")));
+        Policy abacPolicy = new Policy("policy1", "Sample policy", target, asList(rule1, rule2), emptyList());
 
-        abacPolicy.setRules(Stream.of(rule1, rule2).collect(Collectors.toMap(Rule::getId, r -> r)));
         return new AbacAuthModel(singletonList(abacPolicy), Collections.emptyMap(), Collections.emptyList());
     }
 
