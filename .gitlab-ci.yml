@@ -1,0 +1,9 @@
+build-jar:
+    stage: build
+    image: docker:latest
+    services:
+    - name: docker:dind
+    script:
+      - docker run --rm --name easyabac-maven-project -v "$PWD":/usr/src/easyabac -w /usr/src/easyabac maven:3.3.9-jdk-8 mvn package --batch-mode --fail-at-end --settings /usr/src/easyabac/maven-docker-settings.xml
+stages:
+    - build
