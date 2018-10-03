@@ -29,5 +29,5 @@ policies:
         # типы атрибутов: строка, целое, логический, дата, время, датавремя
         # функции: строка: equal, contains, regex-match, is-in
         #          целое, дата, время, датавремя: equal, greater-than,  less-than, greater-than-or-equal, less-than-or-equal, is-in
-        #          логическое:  equals
-        #          массив строка, целое, дата, время, датавремя: set-equals, subset, at-least-one-member-of
+        #          логическое:  equal
+        #          массив строка, целое, дата, время, датавремя: set-equal, subset, at-least-one-member-of

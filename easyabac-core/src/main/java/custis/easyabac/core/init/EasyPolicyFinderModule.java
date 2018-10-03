@@ -21,6 +21,6 @@ public class EasyPolicyFinderModule extends EasyAbacBasePolicyFinderModule {
     @Override
     public void init(PolicyFinder policyFinder) {
         //TODO pass properties for builder
-        this.policies = new AbacPolicyBuilder(new Properties()).buildFrom(abacAuthModel);
+        this.policies = new BalanaPolicyBuilder(new Properties()).buildFrom(abacAuthModel);
     }
 }

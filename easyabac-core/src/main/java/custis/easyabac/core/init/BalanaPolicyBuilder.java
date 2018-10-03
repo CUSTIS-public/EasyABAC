@@ -1,5 +1,7 @@
 package custis.easyabac.core.init;
 
+import custis.easyabac.core.init.functions.BalanaFunctions;
+import custis.easyabac.core.init.functions.BalanaFunctionsFactory;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.Operation;
 import custis.easyabac.core.model.abac.Policy;
@@ -8,6 +10,7 @@ import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.Rule;
 import org.wso2.balana.TargetMatch;
 import org.wso2.balana.XACMLConstants;
+import org.wso2.balana.attr.xacml3.AttributeDesignator;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
 import org.wso2.balana.cond.*;
 import org.wso2.balana.ctx.xacml3.Result;
@@ -23,16 +26,16 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Converts EasyPolicy to Balana policies
+ * Converts domain model Policy to Balana policies
  */
-public class AbacPolicyBuilder {
+public class BalanaPolicyBuilder {
 
     private static final String POLICY_NAMESPACE = "policy.namespace";
 
     //TODO create default app namespace instead of configured one
     private String policyNamespace;
 
-    public AbacPolicyBuilder(Properties properties) {
+    public BalanaPolicyBuilder(Properties properties) {
         this.policyNamespace = properties.getProperty(POLICY_NAMESPACE);
     }
 
@@ -80,12 +83,13 @@ public class AbacPolicyBuilder {
         List<AllOfSelection> allOfSelections;
 
         final List<TargetCondition> conditions = target.getConditions();
-        if (target.getOperation() == Operation.OR) {
+        Operation targetOperation = target.getOperation() == null ? Operation.OR : target.getOperation();
+        if (targetOperation == Operation.OR) {
             allOfSelections = makeDisjunction(conditions);
-        } else if (target.getOperation() == Operation.AND) {
+        } else if (targetOperation == Operation.AND) {
             allOfSelections = makeConjunction(conditions);
         } else {
-            throw new EasyPolicyBuildException("Unsupported target operation: " + target.getOperation());
+            throw new EasyPolicyBuildException("Unsupported target operation: " + targetOperation);
         }
 
         return new Target(Collections.singletonList(new AnyOfSelection(allOfSelections)));
@@ -109,7 +113,9 @@ public class AbacPolicyBuilder {
 
     private TargetMatch makeTargetMatch(TargetCondition targetCondition) {
         //TODO implement
-//        TargetMatch match = new TargetMatch()
-        return null;
+        BalanaFunctions balanaFunctions = BalanaFunctionsFactory.getFunctions(targetCondition.getFirstOperand().getType());
+//        AttributeDesignator attributeDesignator = new AttributeDesignator();
+        TargetMatch match = new TargetMatch(balanaFunctions.pick(targetCondition.getFunction()), null, null);
+        return match;
     }
 }
