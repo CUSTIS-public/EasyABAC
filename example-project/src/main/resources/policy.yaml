@@ -9,6 +9,15 @@ resources:
         - MANAGER
     - id: branchId
       title: ИД филиала
+    - id: maxOrderAmount
+      title: Максимальный заказ
+  customer:
+    title: Клиент
+    attributes:
+    - id: id
+      title: ИД клиента
+    - id: branchId
+      title: ИД филиала
   order:
     title: Заказ
     actions:
@@ -25,31 +34,43 @@ resources:
       title: ИД филиала
     - id: customerId
       title: ИД клиента
-  customer:
-    title: Клиент
-    attributes:
-    - id: id
-      title: ИД клиента
-    - id: branchId
-      title: ИД филиала
+
 
 permissions:
+- title: Ограничение на изменение заказа
+  accessToActions: [order.create, order.approve, order.reject]
+  rules:
+    rule1:
+      title: Только в рабочее время
+      operation: AND
+      conditions:
+        - env.time >= 09:00
+        - env.time <= 17:00
+
+- title: Работа только с заказами своего филиала
+  accessToActions: [order.create, order.approve, order.reject, order.view]
+  rules:
+    rule1:
+      title: Только свой филиал
+      operation: AND
+      conditions:
+      - order.branchId == subject.branchId
+
 - title: Операционист
-  accessToActions: [order.view, order.create]
+  accessToActions: [order.create]
   rules:
     rule1:
       title: Доступ операциониста
       operation: AND
       conditions:
       - subject.role == 'OPERATOR'
-      - order.branchId == subject.branchId
 
 - title: Менеджер
-  accessToActions: [order.view, order.approve, order.reject]
+  accessToActions: [order.approve, order.reject]
   rules:
     rule1:
       title: Доступ менеджера
       operation: AND
       conditions:
       - subject.role == 'MANAGER'
-      - order.branchId == subject.branchId
+      - subject.maxOrderAmount > order.amount
