@@ -3,7 +3,7 @@ package custis.easyabac.demo.authz;
 import custis.easyabac.api.NotPermittedException;
 import custis.easyabac.demo.model.Order;
 
-public interface DummyPermissionChecker {
+public interface DemoPermissionChecker {
 
     void сanView(Order order) throws NotPermittedException;
 

@@ -2,9 +2,8 @@ resources:
   subject:
     attributes:
     - id: id
-    - id: roles
+    - id: role
       title: Роль сотрудника "Менеджер" / Операционист
-      multiple: true
       allowableValues:  #Разрешенные значения, для валидации политики
         - OPERATOR
         - MANAGER
@@ -42,7 +41,7 @@ permissions:
       title: Доступ операциониста
       operation: AND
       conditions:
-      - MANAGER in subject.roles
+      - subject.role == 'OPERATOR'
       - order.branchId == subject.branchId
 
 - title: Менеджер
@@ -52,5 +51,5 @@ permissions:
       title: Доступ менеджера
       operation: AND
       conditions:
-      - MANAGER in subject.roles
+      - subject.role == 'MANAGER'
       - order.branchId == subject.branchId
