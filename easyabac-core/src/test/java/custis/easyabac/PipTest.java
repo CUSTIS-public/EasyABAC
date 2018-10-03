@@ -71,11 +71,5 @@ public class PipTest {
         authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "alice"));
         authResponse = authorizationService.authorize(authAttrList);
         Assert.assertEquals(AuthResponse.Decision.DENY, authResponse.getDecision());
-
-    }
-
-    @Test
-    public void shouldBreakCIPipeline() throws Exception {
-        throw new Exception("GitLab CI, die, die...");
     }
 }
