@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.List;
 
 public class PdpHandlerFactory {
-    public PdpHandler getPdpHandler(PdpType pdpType, ModelType modelType, AbacAuthModel abacAuthModel, InputStream policyXacml, List<SampleDatasource> datasources, Cache cache) throws EasyAbacInitException {
+    public static PdpHandler getPdpHandler(PdpType pdpType, ModelType modelType, AbacAuthModel abacAuthModel, InputStream policyXacml, List<Datasource> datasources, Cache cache) throws EasyAbacInitException {
 
         switch (modelType) {
             case XACML: {

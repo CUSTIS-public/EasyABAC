@@ -19,7 +19,7 @@ public class AttributesFactory {
     }
 
     public static Attribute stringAttribute(custis.easyabac.core.model.abac.attribute.Attribute attribute, List<String> values) {
-        return stringAttributeWithReturn(attribute, values, true);
+        return stringAttributeWithReturn(attribute, values, false);
 
     }
 
@@ -38,6 +38,6 @@ public class AttributesFactory {
         return new org.wso2.balana.ctx.Attribute(
                 URI.create(id),
                 URI.create(type),
-                "", null, balanaAttributeValues, false, 3);
+                "", null, balanaAttributeValues, includeInResult, 3);
     }
 }

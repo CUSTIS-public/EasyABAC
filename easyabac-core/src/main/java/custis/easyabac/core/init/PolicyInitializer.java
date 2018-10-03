@@ -17,7 +17,7 @@ import java.util.Set;
 
 public class PolicyInitializer {
 
-    public PDP newPDPInstance(InputStream policyXacml, List<SampleDatasource> datasources, Cache cache) {
+    public PDP newPDPInstance(InputStream policyXacml, List<Datasource> datasources, Cache cache) {
 
         PolicyFinder policyFinder = new PolicyFinder();
 
@@ -34,7 +34,7 @@ public class PolicyInitializer {
         AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
 
-        for (SampleDatasource datasource : datasources) {
+        for (Datasource datasource : datasources) {
             finderModules.add(new SampleAttributeFinderModule(datasource, cache));
         }
         attributeFinder.setModules(finderModules);
@@ -43,7 +43,7 @@ public class PolicyInitializer {
     }
 
 
-    public PDP newPDPInstance(AbacAuthModel abacAuthModel, List<SampleDatasource> datasources, Cache cache) {
+    public PDP newPDPInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache) {
         return null;
     }
 
