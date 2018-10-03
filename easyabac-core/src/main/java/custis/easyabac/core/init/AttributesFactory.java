@@ -19,7 +19,7 @@ public class AttributesFactory {
     }
 
     public static Attribute stringAttribute(custis.easyabac.core.model.abac.attribute.Attribute attribute, List<String> values) {
-        return stringAttributeWithReturn(attribute, values, false);
+        return stringAttributeWithReturn(attribute, values, true);
 
     }
 
@@ -30,7 +30,7 @@ public class AttributesFactory {
             balanaAttributeValues.add(stringValue(value));
         }
 
-        return generalAttribute(attribute.getId(), StringAttribute.identifier, balanaAttributeValues, includeInResult);
+        return generalAttribute(attribute.getXacmlName(), StringAttribute.identifier, balanaAttributeValues, includeInResult);
 
     }
 

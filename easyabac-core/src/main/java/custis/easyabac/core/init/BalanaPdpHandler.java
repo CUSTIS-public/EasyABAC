@@ -1,5 +1,6 @@
 package custis.easyabac.core.init;
 
+import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.AttributeGroup;
@@ -9,6 +10,8 @@ import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.MdpAuthRequest;
 import custis.easyabac.pdp.MdpAuthResponse;
 import custis.easyabac.pdp.RequestId;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
 import org.wso2.balana.PDPConfig;
@@ -32,6 +35,8 @@ import static custis.easyabac.pdp.AuthResponse.Decision.getByIndex;
 import static java.util.stream.Collectors.toSet;
 
 public class BalanaPdpHandler implements PdpHandler {
+
+    private final static Log log = LogFactory.getLog(EasyAbac.class);
 
     private final PDP pdp;
 
@@ -62,6 +67,9 @@ public class BalanaPdpHandler implements PdpHandler {
             requestCtx.encode(System.out);
 
             responseCtx = pdp.evaluate(requestCtx);
+
+            log.debug(responseCtx.encode());
+
         } catch (IllegalArgumentException e) {
             List<String> code = new ArrayList<>();
             code.add(Status.STATUS_SYNTAX_ERROR);
@@ -191,10 +199,10 @@ public class BalanaPdpHandler implements PdpHandler {
         AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
 
-        for (SampleDatasource datasource : datasources) {
-            finderModules.add(new SampleAttributeFinderModule(datasource, cache));
-        }
-        attributeFinder.setModules(finderModules);
+//        for (SampleDatasource datasource : datasources) {
+//            finderModules.add(new SampleAttributeFinderModule(datasource, cache));
+//        }
+//        attributeFinder.setModules(finderModules);
 
         PDP pdp = new PDP(new PDPConfig(attributeFinder, policyFinder, null, true));
 

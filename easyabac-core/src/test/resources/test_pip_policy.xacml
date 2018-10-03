@@ -14,9 +14,9 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">edit</AttributeValue>
-                        <AttributeDesignator AttributeId="urn:s_tst2:attr:01:action:operation"
+                        <AttributeDesignator AttributeId="urn:attr:report.action"
                                              DataType="http://www.w3.org/2001/XMLSchema#string"
-                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
                                              MustBePresent="false"/>
                     </Match>
                 </AllOf>
@@ -28,14 +28,14 @@
                 <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
                     <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
                         <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
-                            <AttributeDesignator AttributeId="urn:s_tst2:attr:01:resource:category"
+                            <AttributeDesignator AttributeId="urn:attr:report.category"
                                                  DataType="http://www.w3.org/2001/XMLSchema#string"
                                                  Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
                                                  MustBePresent="false"/>
                         </Apply>
-                        <AttributeDesignator AttributeId="urn:s_tst2:attr:01:subject:allowed-categories"
+                        <AttributeDesignator AttributeId="urn:attr:subject.allowed-categories"
                                              DataType="http://www.w3.org/2001/XMLSchema#string"
-                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                             Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                                              MustBePresent="false"/>
                     </Apply>
                 </Apply>
