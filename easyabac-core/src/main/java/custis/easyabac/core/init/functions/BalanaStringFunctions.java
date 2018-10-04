@@ -22,7 +22,6 @@ public class BalanaStringFunctions implements BalanaFunctions {
     @Override
     public Function greaterOrEqual() {
         return new ComparisonFunction(ComparisonFunction.NAME_STRING_GREATER_THAN_OR_EQUAL);
-
     }
 
     @Override
@@ -32,7 +31,7 @@ public class BalanaStringFunctions implements BalanaFunctions {
 
     @Override
     public Function in() {
-        return null;
+        return new ConditionBagFunction("urn:oasis:names:tc:xacml:1.0:function:string-is-in");
     }
 
     @Override

@@ -6,13 +6,14 @@ import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.Operation;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.TargetCondition;
-import org.wso2.balana.AbstractPolicy;
-import org.wso2.balana.Rule;
-import org.wso2.balana.TargetMatch;
-import org.wso2.balana.XACMLConstants;
+import custis.easyabac.core.model.abac.attribute.Attribute;
+import org.wso2.balana.*;
+import org.wso2.balana.attr.AttributeValue;
+import org.wso2.balana.attr.StandardAttributeFactory;
 import org.wso2.balana.attr.xacml3.AttributeDesignator;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
-import org.wso2.balana.cond.*;
+import org.wso2.balana.cond.ComparisonFunction;
+import org.wso2.balana.cond.Condition;
 import org.wso2.balana.ctx.xacml3.Result;
 import org.wso2.balana.xacml3.AllOfSelection;
 import org.wso2.balana.xacml3.AnyOfSelection;
@@ -89,7 +90,7 @@ public class BalanaPolicyBuilder {
         } else if (targetOperation == Operation.AND) {
             allOfSelections = makeConjunction(conditions);
         } else {
-            throw new EasyPolicyBuildException("Unsupported target operation: " + targetOperation);
+            throw new BalanaPolicyBuildException("Unsupported target operation: " + targetOperation);
         }
 
         return new Target(Collections.singletonList(new AnyOfSelection(allOfSelections)));
@@ -112,10 +113,27 @@ public class BalanaPolicyBuilder {
     }
 
     private TargetMatch makeTargetMatch(TargetCondition targetCondition) {
-        //TODO implement
-        BalanaFunctions balanaFunctions = BalanaFunctionsFactory.getFunctions(targetCondition.getFirstOperand().getType());
-//        AttributeDesignator attributeDesignator = new AttributeDesignator();
-        TargetMatch match = new TargetMatch(balanaFunctions.pick(targetCondition.getFunction()), null, null);
-        return match;
+        final Attribute firstOperand = targetCondition.getFirstOperand();
+        BalanaFunctions balanaFunctions = BalanaFunctionsFactory.getFunctions(firstOperand.getType());
+
+        final URI dataType = URI.create(firstOperand.getType().getXacmlName());
+        AttributeDesignator attributeDesignator = new AttributeDesignator(
+                dataType,
+                URI.create(firstOperand.getId()),
+                true,
+                URI.create(firstOperand.getCategory().getXacmlName()));
+
+        //TODO when functions are 'in', 'oneOf', 'subset' -> create complex attribute
+        AttributeValue attributeValue;
+        try {
+             attributeValue = StandardAttributeFactory.getFactory().createValue(dataType, targetCondition.getSecondOperand());
+        } catch (UnknownIdentifierException | ParsingException e) {
+            throw new BalanaPolicyBuildException(String.format(
+                    "Failed to create Balana attribute value from [%s] in target condition id=%s: %s",
+                    targetCondition.getSecondOperand(), targetCondition.getId(), e.getMessage()));
+        }
+
+        return new TargetMatch(balanaFunctions.pick(targetCondition.getFunction()),
+                attributeDesignator, attributeValue);
     }
 }

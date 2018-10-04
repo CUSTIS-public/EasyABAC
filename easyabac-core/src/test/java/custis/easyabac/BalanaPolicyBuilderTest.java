@@ -122,7 +122,7 @@ public class BalanaPolicyBuilderTest {
 
         TargetMatch targetMatch = actionSelection.getMatches().get(0);
         assertEquals("Match function",
-                "urn:oasis:names:tc:xacml:1.0:function:string-equal",
+                "urn:oasis:names:tc:xacml:1.0:function:string-one-and-only",
                 targetMatch.getMatchFunction().getIdentifier().toString());
 
         assertEquals("Match value", "CourseUnit.Edit", targetMatch.getMatchValue().encode());

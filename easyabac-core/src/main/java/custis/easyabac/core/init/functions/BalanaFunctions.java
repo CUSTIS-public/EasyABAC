@@ -1,6 +1,6 @@
 package custis.easyabac.core.init.functions;
 
-import custis.easyabac.core.init.EasyPolicyBuildException;
+import custis.easyabac.core.init.BalanaPolicyBuildException;
 import org.wso2.balana.cond.Function;
 
 public interface BalanaFunctions {
@@ -36,7 +36,7 @@ public interface BalanaFunctions {
             case SUBSET:
                 return subset();
             default:
-                throw new EasyPolicyBuildException("Unsupported function: " + f);
+                throw new BalanaPolicyBuildException("Unsupported function: " + f);
         }
     }
 }
