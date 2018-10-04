@@ -10,9 +10,9 @@ public class AbacAuthModel {
     private final String combiningAlgorithm = "deny-unless-permit";
     private final List<Policy> policies;
     private final Map<String, Resource> resources;
-    private final List<Attribute> attributes;
+    private final Map<String, Attribute> attributes;
 
-    public AbacAuthModel(List<Policy> policies, Map<String, Resource> resources, List<Attribute> attributes) {
+    public AbacAuthModel(List<Policy> policies, Map<String, Resource> resources, Map<String, Attribute> attributes) {
         this.policies = policies;
         this.resources = resources;
         this.attributes = attributes;
@@ -30,7 +30,7 @@ public class AbacAuthModel {
         return resources;
     }
 
-    public List<Attribute> getAttributes() {
+    public Map<String, Attribute> getAttributes() {
         return attributes;
     }
 }

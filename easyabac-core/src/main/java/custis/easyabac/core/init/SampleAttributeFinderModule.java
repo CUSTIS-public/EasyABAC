@@ -21,10 +21,10 @@ public class SampleAttributeFinderModule extends AttributeFinderModule {
 
     private final static Log log = LogFactory.getLog(SampleAttributeFinderModule.class);
 
-    private final SampleDatasource datasource;
+    private final Datasource datasource;
     private final Cache cache;
 
-    public SampleAttributeFinderModule(SampleDatasource datasource, Cache cache) {
+    public SampleAttributeFinderModule(Datasource datasource, Cache cache) {
 
         this.datasource = datasource;
         this.cache = cache;
@@ -32,15 +32,15 @@ public class SampleAttributeFinderModule extends AttributeFinderModule {
 
     @Override
     public Set<String> getSupportedCategories() {
-        Set<String> categories = new HashSet<String>();
+        Set<String> categories = new HashSet<>();
         categories.add(datasource.getRequiredAttribute().getCategory().getXacmlName());
         return categories;
     }
 
     @Override
     public Set getSupportedIds() {
-        Set<String> ids = new HashSet<String>();
-        ids.add(datasource.getRequiredAttribute().getId());
+        Set<String> ids = new HashSet<>();
+        ids.add(datasource.getRequiredAttribute().getXacmlName());
         return ids;
     }
 
@@ -60,13 +60,13 @@ public class SampleAttributeFinderModule extends AttributeFinderModule {
                 cache.set(datasource.getParams(), datasource.getRequiredAttribute(), datasource.getExpire(), value);
             }
         }
-
+        // TODO Что делать если не нашли?
         BagAttribute bagAttribute = packToBag(attributeType, value);
         return new EvaluationResult(bagAttribute);
     }
 
     private BagAttribute packToBag(URI attributeType, List<String> foundValues) {
-        List<AttributeValue> attributeValues = new ArrayList<AttributeValue>();
+        List<AttributeValue> attributeValues = new ArrayList<>();
 
         if (foundValues != null) {
             for (String allowedCategory : foundValues) {
@@ -83,7 +83,7 @@ public class SampleAttributeFinderModule extends AttributeFinderModule {
 
             EvaluationResult result;
             try {
-                result = context.getAttribute(new URI(param.getAttributeParam().getType().getXacmlName()), new URI(param.getAttributeParam().getId()),
+                result = context.getAttribute(new URI(param.getAttributeParam().getType().getXacmlName()), new URI(param.getAttributeParam().getXacmlName()),
                         null, new URI(param.getAttributeParam().getCategory().getXacmlName()));
             } catch (URISyntaxException e) {
                 log.error(e);

@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 public class AbacAuthModelFactory {
 
-    public AbacAuthModel getInstance(ModelType modelType, InputStream policy) throws EasyAbacInitException {
+    public static AbacAuthModel getInstance(ModelType modelType, InputStream policy) throws EasyAbacInitException {
         if (modelType == ModelType.EASY_YAML || modelType == ModelType.XACML) {
             EasyAuthModel easyAuthModel = load(policy);
             AbacAuthModel abacAuthModel = new AuthModelTransformer(easyAuthModel).transform();
@@ -20,7 +20,7 @@ public class AbacAuthModelFactory {
         }
     }
 
-    private EasyAuthModel load(InputStream policy) {
+    private static EasyAuthModel load(InputStream policy) {
 
         Yaml yaml = new Yaml();
         EasyAuthModel easyAuthModel = yaml.loadAs(policy, EasyAuthModel.class);
