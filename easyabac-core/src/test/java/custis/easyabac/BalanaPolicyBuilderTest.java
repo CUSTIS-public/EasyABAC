@@ -81,7 +81,7 @@ public class BalanaPolicyBuilderTest {
 
         Policy abacPolicy = new Policy("policy1", "Sample policy", target, asList(rule1, rule2), emptyList());
 
-        return new AbacAuthModel(singletonList(abacPolicy), Collections.emptyMap(), Collections.emptyList());
+        return new AbacAuthModel(singletonList(abacPolicy), Collections.emptyMap(), Collections.emptyMap());
     }
 
     @Test
