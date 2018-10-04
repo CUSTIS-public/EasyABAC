@@ -71,7 +71,7 @@ public class AuthModelTransformer {
     private Attribute findAttributeByAction(String action) throws EasyAbacInitException {
         Resource resource = findResource(action);
         String actionAttributeName = makeAttributeId(resource.getId(), ACTION);
-        return findAttributeById(action);
+        return findAttributeById(actionAttributeName);
     }
 
     private Resource findResource(String action) throws EasyAbacInitException {
