@@ -147,8 +147,7 @@ public class BalanaPdpHandler implements PdpHandler {
                 .collect(toSet());
 
         URI catUri = URI.create(attributeGroup.getCategory().getXacmlName());
-        Attributes attributes = new Attributes(catUri, null, attributeSet, attributeGroup.getId());
-        return attributes;
+        return new Attributes(catUri, null, attributeSet, attributeGroup.getId());
     }
 
     private Attribute transformAttributeValue(AttributeValue attributeValue) {
@@ -170,7 +169,7 @@ public class BalanaPdpHandler implements PdpHandler {
         return ref;
     }
 
-    public static PdpHandler getInstance(AbacAuthModel abacAuthModel, List<SampleDatasource> datasources, Cache cache) {
+    public static PdpHandler getInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache) {
 
 
         Balana balana = Balana.getInstance();
@@ -183,7 +182,7 @@ public class BalanaPdpHandler implements PdpHandler {
     }
 
 
-    public static PdpHandler getInstance(InputStream policyXacml, List<SampleDatasource> datasources, Cache cache) {
+    public static PdpHandler getInstance(InputStream policyXacml, List<Datasource> datasources, Cache cache) {
         PolicyFinder policyFinder = new PolicyFinder();
 
         PolicyFinderModule stringPolicyFinderModule = new InputStreamPolicyFinderModule(policyXacml);
@@ -199,10 +198,10 @@ public class BalanaPdpHandler implements PdpHandler {
         AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
 
-//        for (SampleDatasource datasource : datasources) {
-//            finderModules.add(new SampleAttributeFinderModule(datasource, cache));
-//        }
-//        attributeFinder.setModules(finderModules);
+        for (Datasource datasource : datasources) {
+            finderModules.add(new SampleAttributeFinderModule(datasource, cache));
+        }
+        attributeFinder.setModules(finderModules);
 
         PDP pdp = new PDP(new PDPConfig(attributeFinder, policyFinder, null, true));
 

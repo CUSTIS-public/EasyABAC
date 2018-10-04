@@ -16,7 +16,7 @@ public class LoadAbacAuthModelTest {
                 .getClassLoader()
                 .getResourceAsStream("test_pip_policy.yaml");
 
-        AbacAuthModel abacAuthModel = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, policy);
+        AbacAuthModel abacAuthModel = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML, policy);
         Assert.assertNotNull(abacAuthModel);
 
         String reportFirstAction = abacAuthModel.getResources().get("report").getActions().iterator().next();
@@ -49,7 +49,7 @@ public class LoadAbacAuthModelTest {
                 .getClassLoader()
                 .getResourceAsStream("test_init_xacml.yaml");
 
-        AbacAuthModel abacAuthModel = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, policy);
+        AbacAuthModel abacAuthModel = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML, policy);
         Assert.assertNotNull(abacAuthModel);
 
 //        resources

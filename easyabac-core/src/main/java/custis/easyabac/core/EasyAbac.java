@@ -26,18 +26,14 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
     private final PdpHandler pdpHandler;
-    private final Map<String, Attribute> attributeMap;
-
+    private final AbacAuthModel abacAuthModel;
+    private final List<Datasource> datasources;
     private final List<RequestExtender> requestExtenders;
 
-
-    private EasyAbac(PdpHandler pdpHandler) {
-        this(pdpHandler, Collections.emptyMap(), Collections.emptyList());
-    }
-
-    private EasyAbac(PdpHandler pdpHandler, Map<String, Attribute> attributeMap, List<RequestExtender> requestExtenders) {
+    private EasyAbac(PdpHandler pdpHandler, AbacAuthModel abacAuthModel, List<Datasource> datasources, List<RequestExtender> requestExtenders) {
         this.pdpHandler = pdpHandler;
-        this.attributeMap = attributeMap;
+        this.abacAuthModel = abacAuthModel;
+        this.datasources = datasources;
         this.requestExtenders = requestExtenders;
     }
 
@@ -49,9 +45,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             extender.extend(attributeValueList);
         }
 
-        AuthResponse authResponse = pdpHandler.evaluate(attributeValueList);
-
-        return authResponse;
+        return pdpHandler.evaluate(attributeValueList);
     }
 
     @Override
@@ -91,7 +85,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             Map<Category, AttributeGroup> groupMap = new HashMap<>();
 
             for (AuthAttribute authAttribute : authAttributes) {
-                Attribute attribute = attributeMap.get(authAttribute.getId());
+                Attribute attribute = abacAuthModel.getAttributes().get(authAttribute.getId());
 
                 AttributeGroup group = groupMap.computeIfAbsent(attribute.getCategory(), category -> new AttributeGroup(requestId + "#" + category, category, new ArrayList<>()));
                 group.addAttribute(new AttributeValue(attribute, authAttribute.getValues()));
@@ -106,7 +100,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private List<AttributeValue> computeAttributeValues(List<AuthAttribute> authAttributes) {
         List<AttributeValue> attributeValueList = new ArrayList<>();
         for (AuthAttribute authAttribute : authAttributes) {
-            Attribute attribute = attributeMap.get(authAttribute.getId());
+            Attribute attribute = abacAuthModel.getAttributes().get(authAttribute.getId());
             if (attribute == null) {
                 throw new EasyAbacAuthException("Атрибут " + authAttribute.getId() + " не найден в модели");
             }
@@ -123,7 +117,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
         private PdpHandler pdpHandler;
         private AbacAuthModel abacAuthModel;
-        private List<SampleDatasource> datasources = Collections.emptyList();
+        private List<Datasource> datasources = Collections.emptyList();
         private Cache cache;
         private Trace trace;
         private PdpType pdpType = PdpType.BALANA;
@@ -145,7 +139,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             return this;
         }
 
-        public Builder datasources(List<SampleDatasource> datasources) {
+        public Builder datasources(List<Datasource> datasources) {
             this.datasources = datasources;
             return this;
         }
@@ -172,32 +166,45 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
 
         public AttributiveAuthorizationService build() throws EasyAbacInitException {
-            PdpHandlerFactory pdpHandlerFactory = new PdpHandlerFactory();
-            AbacAuthModel abacAuthModel = new AbacAuthModelFactory().getInstance(modelType, easyModel);
 
-            pdpHandler = pdpHandlerFactory.getPdpHandler(pdpType, modelType, abacAuthModel, xacmlPolicy, datasources, cache);
+            abacAuthModel = AbacAuthModelFactory.getInstance(modelType, easyModel);
+
+            enrichDatasources(datasources, abacAuthModel);
+
+            pdpHandler = PdpHandlerFactory.getPdpHandler(pdpType, modelType, abacAuthModel, xacmlPolicy, datasources, cache);
 
             List<RequestExtender> extenders = new ArrayList<>();
             extenders.add(new SubjectAttributesExtender(subjectAttributesProvider));
-            Map<String, Attribute> attributeMap = getAttributeMap(abacAuthModel);
+
 
             if (log.isDebugEnabled()) {
-                for (Attribute attribute : abacAuthModel.getAttributes()) {
+                for (Attribute attribute : abacAuthModel.getAttributes().values()) {
                     log.debug(attribute.getId() + "  ->  " + attribute.getXacmlName() + "  ->  " + attribute.getType().getXacmlName() + "  ->  " + attribute.getCategory().getXacmlName());
                 }
 
             }
 
-            return new EasyAbac(pdpHandler, attributeMap, extenders);
+            return new EasyAbac(pdpHandler, abacAuthModel, datasources, extenders);
         }
 
+        private void enrichDatasources(List<Datasource> datasources, AbacAuthModel abacAuthModel) throws EasyAbacInitException {
+            for (Datasource datasource : datasources) {
+                for (Param param : datasource.getParams()) {
+                    Attribute attributeParam = findAttribute(abacAuthModel.getAttributes(), param.getAttributeParamId());
+                    param.setAttributeParam(attributeParam);
+                }
 
-        private Map<String, Attribute> getAttributeMap(AbacAuthModel abacAuthModel) {
-            Map<String, Attribute> attributeMap = new HashMap<>();
-            for (Attribute attribute : abacAuthModel.getAttributes()) {
-                attributeMap.put(attribute.getId(), attribute);
+                Attribute requiredAttribute = findAttribute(abacAuthModel.getAttributes(), datasource.getRequiredAttributeId());
+                datasource.setRequiredAttribute(requiredAttribute);
             }
-            return attributeMap;
+        }
+
+        private Attribute findAttribute(Map<String, Attribute> attributeMap, String attributeParamId) throws EasyAbacInitException {
+            Attribute attributeParam = attributeMap.get(attributeParamId);
+            if (attributeParam == null) {
+                throw new EasyAbacInitException("Attribute " + attributeParamId + " not found in model");
+            }
+            return attributeParam;
         }
 
     }

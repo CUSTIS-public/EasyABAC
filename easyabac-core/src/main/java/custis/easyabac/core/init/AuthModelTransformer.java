@@ -18,9 +18,9 @@ public class AuthModelTransformer {
 
     private final EasyAuthModel easyAuthModel;
 
-    private Map<String, Resource> resourceMap = new HashMap<>();
+    private Map<String, Resource> resources = new HashMap<>();
 
-    private List<Attribute> attributes = new ArrayList<>();
+    private Map<String, Attribute> attributes = new HashMap<>();
 
     private List<Policy> policyList = new ArrayList<>();
 
@@ -35,9 +35,7 @@ public class AuthModelTransformer {
 
         transformPermissions(easyAuthModel.getPermissions());
 
-        AbacAuthModel abacAuthModel = new AbacAuthModel(policyList, resourceMap, attributes);
-
-        return abacAuthModel;
+        return new AbacAuthModel(policyList, resources, attributes);
     }
 
     private void transformPermissions(List<EasyPolicy> permissions) throws EasyAbacInitException {
@@ -73,12 +71,7 @@ public class AuthModelTransformer {
     private Attribute findAttributeByAction(String action) throws EasyAbacInitException {
         Resource resource = findResource(action);
         String actionAttributeName = makeAttributeId(resource.getId(), ACTION);
-        for (Attribute attribute : attributes) {
-            if (actionAttributeName.equals(attribute.getId())) {
-                return attribute;
-            }
-        }
-        throw new EasyAbacInitException("В модели не найден атрибут: " + actionAttributeName);
+        return findAttributeById(actionAttributeName);
     }
 
     private Resource findResource(String action) throws EasyAbacInitException {
@@ -87,7 +80,7 @@ public class AuthModelTransformer {
             throw new EasyAbacInitException("Дейстие " + action + " заданно без указания объекта");
         }
         String resourceId = split[0];
-        Resource resource = resourceMap.get(resourceId);
+        Resource resource = resources.get(resourceId);
         if (resource == null) {
             throw new EasyAbacInitException("В моделе не найден ресурс: " + resourceId);
         }
@@ -127,6 +120,8 @@ public class AuthModelTransformer {
     }
 
     private Condition parseCondition(String conditionExpression) throws EasyAbacInitException {
+
+
         boolean negation = false;
         //TODO attach parser to extract attributes
         Attribute firstOperand = findAttributeById("report.category");
@@ -137,43 +132,40 @@ public class AuthModelTransformer {
     }
 
     private Attribute findAttributeById(String id) throws EasyAbacInitException {
-        for (Attribute attribute : attributes) {
-            if (id.equals(attribute.getId())) {
-                return attribute;
-            }
+        Attribute attribute = attributes.get(id);
+        if (attribute == null) {
+            throw new EasyAbacInitException("Attribute " + id + " not found in model");
         }
-        throw new EasyAbacInitException("В модели не найден атрибут с кодом: " + id);
+        return attribute;
     }
 
-    private List<Attribute> transformAttributes(Map<String, EasyResource> resources) throws EasyAbacInitException {
+    private void transformAttributes(Map<String, EasyResource> easyResources) throws EasyAbacInitException {
 
-        for (String resourceName : resources.keySet()) {
+        for (String resourceName : easyResources.keySet()) {
 
             List<Attribute> resourceAttributes = new ArrayList<>();
 
-            EasyResource easyResource = resources.get(resourceName);
+            EasyResource easyResource = easyResources.get(resourceName);
 
             if (easyResource.getAttributes().size() > 0) {
                 for (EasyAttribute ea : easyResource.getAttributes()) {
                     Attribute attribute = transformAttribute(resourceName, ea);
 
                     resourceAttributes.add(attribute);
-                    attributes.add(attribute);
+                    attributes.put(attribute.getId(), attribute);
                 }
             }
             if (easyResource.getActions().size() > 0) {
                 Attribute attribute = transformActions(resourceName, easyResource.getActions());
 
                 resourceAttributes.add(attribute);
-                attributes.add(attribute);
+                attributes.put(attribute.getId(), attribute);
             }
 
             Resource resource = new Resource(resourceName, easyResource.getTitle(), easyResource.getActions(), resourceAttributes);
 
-            resourceMap.put(resourceName, resource);
+            this.resources.put(resourceName, resource);
         }
-
-        return attributes;
     }
 
     private Attribute transformActions(String resourceName, Set<String> actions) {

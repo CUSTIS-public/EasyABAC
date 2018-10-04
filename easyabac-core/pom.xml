@@ -9,13 +9,12 @@
         <artifactId>easyabac</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    
+
     <artifactId>easyabac-core</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <properties>
         <argLine>-Dfile.encoding=UTF-8 -Duser.timezone=UTC</argLine>
     </properties>
-
 
     <dependencies>
         <dependency>
