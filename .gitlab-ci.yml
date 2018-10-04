@@ -1,4 +1,4 @@
-build-jar:
+build-and-test:
     stage: build
     image: docker:latest
     services:
