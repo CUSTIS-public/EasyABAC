@@ -30,7 +30,7 @@ public class AttributesFactory {
             balanaAttributeValues.add(stringValue(value));
         }
 
-        return generalAttribute(attribute.getId(), StringAttribute.identifier, balanaAttributeValues, includeInResult);
+        return generalAttribute(attribute.getXacmlName(), StringAttribute.identifier, balanaAttributeValues, includeInResult);
 
     }
 
@@ -38,6 +38,6 @@ public class AttributesFactory {
         return new org.wso2.balana.ctx.Attribute(
                 URI.create(id),
                 URI.create(type),
-                "", null, balanaAttributeValues, false, 3);
+                "", null, balanaAttributeValues, includeInResult, 3);
     }
 }

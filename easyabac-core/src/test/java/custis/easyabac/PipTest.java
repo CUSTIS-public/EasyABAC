@@ -1,29 +1,24 @@
 package custis.easyabac;
 
 import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.Param;
-import custis.easyabac.core.init.SampleDatasource;
-import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Ignore
 public class PipTest {
 
-    public static final String ACTION_OPERATION = "urn:s_tst2:attr:01:action:operation";
-    public static final String RESOURCE_CATEGORY = "urn:s_tst2:attr:01:resource:category";
-    public static final String SUBJECT_SUBJECT_ID = "urn:oasis:names:tc:xacml:1.0:subject:subject-id";
-    public static final String SUBJECT_ALLOWED_CATEGORIES = "urn:s_tst2:attr:01:subject:allowed-categories";
+    private static final String ACTION_OPERATION = "report.action";
+    private static final String RESOURCE_CATEGORY = "report.category";
+    private static final String SUBJECT_SUBJECT_ID = "subject.id";
+    private static final String SUBJECT_ALLOWED_CATEGORIES = "subject.allowed-categories";
 
     private InputStream getResourceAsStream(String s) {
         return this.getClass()
@@ -32,11 +27,10 @@ public class PipTest {
     }
 
     @Test
-    @Ignore
     public void TwoAttrEquelsTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xacml");
-        InputStream attributes = getResourceAsStream("attributes-1.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
+        InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
@@ -44,22 +38,20 @@ public class PipTest {
         authAttrList.add(new AuthAttribute(SUBJECT_ALLOWED_CATEGORIES, Arrays.asList("iod", "dsp")));
         AuthResponse authResponse = authorizationService.authorize(authAttrList);
         Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
-
     }
 
     @Test
-    @Ignore
     public void SamplePipTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xacml");
-        InputStream attributes = getResourceAsStream("attributes-1.yaml");
+        InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
 
         HashSet<Param> params = new HashSet<>();
-        Param userName = new Param("userName", new Attribute(SUBJECT_SUBJECT_ID));
+        Param userName = new Param("userName", SUBJECT_SUBJECT_ID);
         params.add(userName);
 
-        SampleDatasource sampleDatasource = new SampleDatasource(params, new Attribute(SUBJECT_ALLOWED_CATEGORIES));
+        Datasource datasource = new SampleDatasource(params, SUBJECT_ALLOWED_CATEGORIES);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).datasources(Arrays.asList(sampleDatasource)).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy).datasources(Collections.singletonList(datasource)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
@@ -76,4 +68,42 @@ public class PipTest {
         Assert.assertEquals(AuthResponse.Decision.DENY, authResponse.getDecision());
 
     }
+
+
+    class SampleDatasource extends Datasource {
+
+        public SampleDatasource(Set<Param> params, String requiredAttributeId) {
+            super(params, requiredAttributeId);
+        }
+
+        public SampleDatasource(Set<Param> params, String requiredAttributeId, Long expire) {
+            super(params, requiredAttributeId, expire);
+        }
+
+        @Override
+        public List<String> find() {
+            {
+                String userName = null;
+                for (Param param : getParams()) {
+                    if (param.getName().equals("userName")) {
+                        userName = param.getValue();
+                    }
+                }
+
+                if (userName != null) {
+                    switch (userName) {
+                        case "bob":
+                            return Arrays.asList("iod", "dsp");
+                        case "alice":
+                            return Arrays.asList("dsp");
+                        case "peter":
+                            return Arrays.asList("iod");
+                    }
+                }
+                return null;
+            }
+        }
+    }
+
+
 }

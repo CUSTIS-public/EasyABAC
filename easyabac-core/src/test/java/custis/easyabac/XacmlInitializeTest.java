@@ -27,7 +27,7 @@ public class XacmlInitializeTest {
     public void authTest1() throws Exception {
 
         InputStream policy = getResourceAsStream("test1_policy.xacml");
-        InputStream attributes = getResourceAsStream("test_pip_policy.yaml.yaml");
+        InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
@@ -55,7 +55,7 @@ public class XacmlInitializeTest {
     public void authTest2() throws Exception {
 
         InputStream policy = getResourceAsStream("test2_policy.xacml");
-        InputStream attributes = getResourceAsStream("test_pip_policy.yaml.yaml");
+        InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
 
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
 
@@ -76,6 +76,35 @@ public class XacmlInitializeTest {
         authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:object", "report2"));
         authResponse = authorizationService.authorize(authAttrList);
         Assert.assertEquals(AuthResponse.Decision.DENY, authResponse.getDecision());
+
+    }
+
+
+    @Test
+    @Ignore
+    public void authTest3() throws Exception {
+
+        InputStream policy = getResourceAsStream("test_pip_policy.yaml");
+
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.EASY_YAML).build();
+
+//        List<AuthAttribute> authAttrList = new ArrayList<>();
+//        authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "USER"));
+//        authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:object", "report"));
+//        AuthResponse authResponse = authorizationService.authorize(authAttrList);
+//        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+//
+//        authAttrList = new ArrayList<>();
+//        authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "ADMIN"));
+//        authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:object", "report"));
+//        authResponse = authorizationService.authorize(authAttrList);
+//        Assert.assertEquals(AuthResponse.Decision.DENY, authResponse.getDecision());
+//
+//        authAttrList = new ArrayList<>();
+//        authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "ADMIN"));
+//        authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:object", "report2"));
+//        authResponse = authorizationService.authorize(authAttrList);
+//        Assert.assertEquals(AuthResponse.Decision.DENY, authResponse.getDecision());
 
     }
 }

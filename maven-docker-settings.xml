@@ -1,0 +1,65 @@
+<settings>
+    <localRepository>/usr/maven/repository</localRepository>
+
+    <servers>
+        <server>
+            <id>CustisNexusSnapshots</id>
+            <username>gitlabci</username>
+            <password>ZF4aaHXAwqOu</password>
+        </server>
+        <server>
+            <id>CustisNexusThirdParty</id>
+            <username>gitlabci</username>
+            <password>ZF4aaHXAwqOu</password>
+        </server>
+        <server>
+            <id>CustisCentral</id>
+            <username>gitlabci</username>
+            <password>ZF4aaHXAwqOu</password>
+        </server>
+    </servers>
+
+    <profiles>
+        <profile>
+            <id>use-custis-nexus</id>
+            <repositories>
+                <repository>
+                    <id>CustisNexusSnapshots</id>
+                    <name>Custis Snapshots</name>
+                    <url>https://nexus.custis.ru/repository/custis-snapshots/</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>CustisNexusThirdParty</id>
+                    <name>Custis ThirdParty</name>
+                    <url>https://nexus.custis.ru/repository/custis-thirdparty/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>CustisCentral</id>
+                    <name>Custis Central Mirror</name>
+                    <url>https://nexus.custis.ru/repository/maven-central/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>use-custis-nexus</activeProfile>
+    </activeProfiles>
+</settings>
