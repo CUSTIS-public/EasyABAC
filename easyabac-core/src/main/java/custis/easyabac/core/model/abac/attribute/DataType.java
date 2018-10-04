@@ -32,7 +32,7 @@ public enum DataType {
                 return value;
             }
         }
-        throw new EasyAbacInitException("Type " + easyName + " not supported");
+        throw new EasyAbacInitException("Type " + easyName + " is not supported");
 
     }
 }

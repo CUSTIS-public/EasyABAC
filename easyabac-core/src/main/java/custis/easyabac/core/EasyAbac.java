@@ -39,7 +39,12 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public AuthResponse authorize(List<AuthAttribute> authAttributes) {
-        List<AttributeValue> attributeValueList = computeAttributeValues(authAttributes);
+        List<AttributeValue> attributeValueList = null;
+        try {
+            attributeValueList = computeAttributeValues(authAttributes);
+        } catch (EasyAbacInitException e) {
+            //TODO return result indeterminate
+        }
 
         for (RequestExtender extender : requestExtenders) {
             extender.extend(attributeValueList);
@@ -97,19 +102,25 @@ public class EasyAbac implements AttributiveAuthorizationService {
         return request;
     }
 
-    private List<AttributeValue> computeAttributeValues(List<AuthAttribute> authAttributes) {
+    private List<AttributeValue> computeAttributeValues(List<AuthAttribute> authAttributes) throws EasyAbacInitException {
         List<AttributeValue> attributeValueList = new ArrayList<>();
         for (AuthAttribute authAttribute : authAttributes) {
-            Attribute attribute = abacAuthModel.getAttributes().get(authAttribute.getId());
-            if (attribute == null) {
-                throw new EasyAbacAuthException("Атрибут " + authAttribute.getId() + " не найден в модели");
-            }
+            Attribute attribute = findAttribute(abacAuthModel.getAttributes(), authAttribute.getId());
+
+
             AttributeValue attributeValue = new AttributeValue(attribute, authAttribute.getValues());
             attributeValueList.add(attributeValue);
         }
         return attributeValueList;
     }
 
+    public static Attribute findAttribute(Map<String, Attribute> attributeMap, String attributeId) throws EasyAbacInitException {
+        Attribute attributeParam = attributeMap.get(attributeId);
+        if (attributeParam == null) {
+            throw new EasyAbacInitException("Attribute " + attributeId + " is not found in the model");
+        }
+        return attributeParam;
+    }
 
     public static class Builder {
         private final InputStream easyModel;
@@ -197,14 +208,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
                 Attribute requiredAttribute = findAttribute(abacAuthModel.getAttributes(), datasource.getRequiredAttributeId());
                 datasource.setRequiredAttribute(requiredAttribute);
             }
-        }
-
-        private Attribute findAttribute(Map<String, Attribute> attributeMap, String attributeParamId) throws EasyAbacInitException {
-            Attribute attributeParam = attributeMap.get(attributeParamId);
-            if (attributeParam == null) {
-                throw new EasyAbacInitException("Attribute " + attributeParamId + " not found in model");
-            }
-            return attributeParam;
         }
 
     }

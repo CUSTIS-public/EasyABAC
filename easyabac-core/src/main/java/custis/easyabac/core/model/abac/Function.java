@@ -27,7 +27,7 @@ public enum Function {
                 return value;
             }
         }
-        throw new EasyAbacInitException("Type " + functionName + " not supported");
+        throw new EasyAbacInitException("Function " + functionName + " is not supported");
 
     }
 }

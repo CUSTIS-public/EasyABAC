@@ -69,20 +69,20 @@ public class AuthModelTransformer {
     }
 
     private Attribute findAttributeByAction(String action) throws EasyAbacInitException {
-        Resource resource = findResource(action);
+        Resource resource = findResourceByAction(action);
         String actionAttributeName = makeAttributeId(resource.getId(), ACTION);
         return findAttributeById(actionAttributeName);
     }
 
-    private Resource findResource(String action) throws EasyAbacInitException {
+    private Resource findResourceByAction(String action) throws EasyAbacInitException {
         String[] split = action.split("\\.");
         if (split.length == 0) {
-            throw new EasyAbacInitException("Дейстие " + action + " заданно без указания объекта");
+            throw new EasyAbacInitException("Action " + action + " is specified without specifying a resource");
         }
         String resourceId = split[0];
         Resource resource = resources.get(resourceId);
         if (resource == null) {
-            throw new EasyAbacInitException("В моделе не найден ресурс: " + resourceId);
+            throw new EasyAbacInitException("Resource " + resourceId + " is not found in the model");
         }
 
         return resource;
@@ -133,7 +133,7 @@ public class AuthModelTransformer {
     private Attribute findAttributeById(String id) throws EasyAbacInitException {
         Attribute attribute = attributes.get(id);
         if (attribute == null) {
-            throw new EasyAbacInitException("Attribute " + id + " not found in model");
+            throw new EasyAbacInitException("Attribute " + id + " is not found in the model");
         }
         return attribute;
     }

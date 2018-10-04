@@ -18,7 +18,7 @@ public class PdpHandlerFactory {
                 return BalanaPdpHandler.getInstance(abacAuthModel, datasources, cache);
             }
         }
-        throw new EasyAbacInitException("Модель " + modelType.name() + " не поддерживается");
+        throw new EasyAbacInitException("Model " + modelType.name() + " is not supported");
 
     }
 
