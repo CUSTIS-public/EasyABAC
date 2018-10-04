@@ -42,14 +42,13 @@ public class EasyAbac implements AttributiveAuthorizationService {
         List<AttributeValue> attributeValueList = null;
         try {
             attributeValueList = computeAttributeValues(authAttributes);
-        } catch (EasyAbacInitException e) {
-            //TODO return result indeterminate
+            for (RequestExtender extender : requestExtenders) {
+                extender.extend(attributeValueList);
+            }
+        } catch (Exception e) {
+            log.error(e);
+            return new AuthResponse(e.getMessage());
         }
-
-        for (RequestExtender extender : requestExtenders) {
-            extender.extend(attributeValueList);
-        }
-
         return pdpHandler.evaluate(attributeValueList);
     }
 

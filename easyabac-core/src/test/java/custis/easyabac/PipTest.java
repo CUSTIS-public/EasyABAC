@@ -1,6 +1,7 @@
 package custis.easyabac;
 
 import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacDatasourceException;
 import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.Param;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
@@ -80,13 +81,17 @@ public class PipTest {
         }
 
         @Override
-        public List<String> find() {
+        public List<String> find() throws EasyAbacDatasourceException {
             {
                 String userName = null;
                 for (Param param : getParams()) {
                     if (param.getName().equals("userName")) {
                         userName = param.getValue();
                     }
+                }
+
+                if (userName == null) {
+                    throw new EasyAbacDatasourceException("userName not found");
                 }
 
                 if (userName != null) {
@@ -99,7 +104,7 @@ public class PipTest {
                             return Arrays.asList("iod");
                     }
                 }
-                return null;
+                return Collections.emptyList();
             }
         }
     }

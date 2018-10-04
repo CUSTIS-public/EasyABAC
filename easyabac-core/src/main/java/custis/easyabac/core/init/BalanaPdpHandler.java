@@ -15,7 +15,10 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
 import org.wso2.balana.PDPConfig;
-import org.wso2.balana.ctx.*;
+import org.wso2.balana.ctx.AbstractResult;
+import org.wso2.balana.ctx.Attribute;
+import org.wso2.balana.ctx.AttributeAssignment;
+import org.wso2.balana.ctx.ResponseCtx;
 import org.wso2.balana.ctx.xacml3.RequestCtx;
 import org.wso2.balana.ctx.xacml3.Result;
 import org.wso2.balana.finder.AttributeFinder;
@@ -48,34 +51,28 @@ public class BalanaPdpHandler implements PdpHandler {
     public AuthResponse evaluate(List<AttributeValue> attributeValues) {
 
         ResponseCtx responseCtx;
-        try {
-            Map<Category, Attributes> attributesSet = new HashMap<>();
 
-            for (AttributeValue attributeValue : attributeValues) {
-                Category cat = attributeValue.getAttribute().getCategory();
-                Attributes attributes = attributesSet.computeIfAbsent(cat,
-                        category -> new Attributes(URI.create(category.getXacmlName()), new HashSet<>())
-                );
+        Map<Category, Attributes> attributesSet = new HashMap<>();
+
+        for (AttributeValue attributeValue : attributeValues) {
+            Category cat = attributeValue.getAttribute().getCategory();
+            Attributes attributes = attributesSet.computeIfAbsent(cat,
+                    category -> new Attributes(URI.create(category.getXacmlName()), new HashSet<>())
+            );
 
 
-                org.wso2.balana.ctx.Attribute newBalanaAttribute = stringAttribute(attributeValue.getAttribute(), attributeValue.getValues());
-                attributes.getAttributes().add(newBalanaAttribute);
-            }
+            org.wso2.balana.ctx.Attribute newBalanaAttribute = stringAttribute(attributeValue.getAttribute(), attributeValue.getValues());
+            attributes.getAttributes().add(newBalanaAttribute);
+        }
 
-            RequestCtx requestCtx = new RequestCtx(new HashSet<>(attributesSet.values()), null);
+        RequestCtx requestCtx = new RequestCtx(new HashSet<>(attributesSet.values()), null);
 
-            requestCtx.encode(System.out);
+        requestCtx.encode(System.out);
 
-            responseCtx = pdp.evaluate(requestCtx);
+        responseCtx = pdp.evaluate(requestCtx);
 
+        if (log.isDebugEnabled()) {
             log.debug(responseCtx.encode());
-
-        } catch (IllegalArgumentException e) {
-            List<String> code = new ArrayList<>();
-            code.add(Status.STATUS_SYNTAX_ERROR);
-            String error = "Invalid request  : " + e.getMessage();
-            Status status = new Status(code, error);
-            responseCtx = new ResponseCtx(new Result(AbstractResult.DECISION_INDETERMINATE, status));
         }
 
         return createResponse(responseCtx.getResults().iterator().next());
@@ -89,9 +86,9 @@ public class BalanaPdpHandler implements PdpHandler {
                 .collect(toSet());
 
         Set<Attributes> attributesSet = mdpAuthRequest.getAttributeGroups()
-                        .stream()
-                        .map(this::transformGroup)
-                        .collect(toSet());
+                .stream()
+                .map(this::transformGroup)
+                .collect(toSet());
 
         MultiRequests multiRequests = new MultiRequests(requestReferences);
 
@@ -199,7 +196,7 @@ public class BalanaPdpHandler implements PdpHandler {
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
 
         for (Datasource datasource : datasources) {
-            finderModules.add(new SampleAttributeFinderModule(datasource, cache));
+            finderModules.add(new DatasourceAttributeFinderModule(datasource, cache));
         }
         attributeFinder.setModules(finderModules);
 
