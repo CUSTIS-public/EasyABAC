@@ -34,7 +34,19 @@ public class AttributesFactory {
 
     }
 
-    public static Attribute generalAttribute(String id, String type, List<AttributeValue> balanaAttributeValues, boolean includeInResult) {
+
+    private static Attribute integerAttributeWithReturn(custis.easyabac.core.model.abac.attribute.Attribute attribute, List<String> values, boolean includeInResult) {
+        List<org.wso2.balana.attr.AttributeValue> balanaAttributeValues = new ArrayList<>();
+
+        for (String value : values) {
+            balanaAttributeValues.add(stringValue(value));
+        }
+
+        return generalAttribute(attribute.getXacmlName(), StringAttribute.identifier, balanaAttributeValues, includeInResult);
+
+    }
+
+    private static Attribute generalAttribute(String id, String type, List<AttributeValue> balanaAttributeValues, boolean includeInResult) {
         return new org.wso2.balana.ctx.Attribute(
                 URI.create(id),
                 URI.create(type),

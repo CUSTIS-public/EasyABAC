@@ -25,7 +25,7 @@ public class XacmlInitializeTest {
     @Ignore
     public void authTest1() throws Exception {
 
-        InputStream policy = getResourceAsStream("test1_policy.xacml");
+        InputStream policy = getResourceAsStream("test1_policy.xml");
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
 
@@ -53,7 +53,7 @@ public class XacmlInitializeTest {
     @Ignore
     public void authTest2() throws Exception {
 
-        InputStream policy = getResourceAsStream("test2_policy.xacml");
+        InputStream policy = getResourceAsStream("test2_policy.xml");
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
 
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();

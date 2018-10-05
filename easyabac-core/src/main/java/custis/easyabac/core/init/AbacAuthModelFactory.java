@@ -16,7 +16,7 @@ public class AbacAuthModelFactory {
 
             return abacAuthModel;
         } else {
-            throw new IllegalArgumentException(modelType.name() + " not supported");
+            throw new EasyAbacInitException("Model " + modelType.name() + " is not supported");
         }
     }
 
