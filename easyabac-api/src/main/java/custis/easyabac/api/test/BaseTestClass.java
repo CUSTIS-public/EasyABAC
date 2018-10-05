@@ -1,7 +1,6 @@
 package custis.easyabac.api.test;
 
 import custis.easyabac.api.PermitAwarePermissionChecker;
-import custis.easyabac.core.EasyAbac;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import org.junit.BeforeClass;
 
@@ -12,7 +11,7 @@ public class BaseTestClass {
 
     @BeforeClass
     public static void initEasyABAC() {
-        EasyAbac.Builder builder = new EasyAbac.Builder(null, null); // FIXME
+        //EasyAbac.Builder builder = new EasyAbac.Builder((String) null, null); // FIXME
 
         //authService = builder.build();
         //permissionChecker = new EasyABACPermissionChecker<>(authService);

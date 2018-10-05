@@ -78,26 +78,26 @@ public class TestGenerator {
         createPermitTest(type, value, resource);
         for (Policy permission : permissions) {
             if (permission.getTarget().getAccessToActions().contains(value)) {
-                permission.getRules().forEach((s, easyRule) -> createDenyTest(type, value, resource.getId(), s, easyRule));
+                permission.getRules().forEach(rule -> createDenyTest(type, value, resource.getId(), rule));
             }
         }
 
 
     }
 
-    private static void createDenyTest(ClassOrInterfaceDeclaration type, String value, String entityName, String ruleId, Rule rule) {
-        MethodDeclaration method = type.addMethod("test" + value + "_Deny_" + ruleId, Modifier.PUBLIC);
+    private static void createDenyTest(ClassOrInterfaceDeclaration type, String value, String entityName, Rule rule) {
+        MethodDeclaration method = type.addMethod("test" + value + "_Deny_" + rule.getId(), Modifier.PUBLIC);
         method.addMarkerAnnotation(Ignore.class);
         NormalAnnotationExpr annotation = method.addAndGetAnnotation(Test.class);
         annotation.addPair("expected", new ClassExpr(new ClassOrInterfaceType(NotPermittedException.class.getSimpleName())));
 
         BlockStmt body = new BlockStmt();
-        body.addStatement("permissionChecker.ensurePermitted(getDataForTest" + value + "_Deny" + ruleId + "(), " + value + ");");
+        body.addStatement("permissionChecker.ensurePermitted(getDataForTest" + value + "_Deny" + rule.getId() + "(), " + value + ");");
 
         method.setBody(body);
 
 
-        MethodDeclaration dataMethod = type.addMethod("getDataForTest" + value + "_Deny" + ruleId, Modifier.PRIVATE);
+        MethodDeclaration dataMethod = type.addMethod("getDataForTest" + value + "_Deny" + rule.getId(), Modifier.PRIVATE);
         dataMethod.setType(capitalize(entityName));
 
         BlockStmt data = new BlockStmt();
