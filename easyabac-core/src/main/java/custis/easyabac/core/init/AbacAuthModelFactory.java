@@ -1,6 +1,6 @@
 package custis.easyabac.core.init;
 
-import custis.easyabac.ModelType;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.easy.EasyAuthModel;
 import org.yaml.snakeyaml.Yaml;

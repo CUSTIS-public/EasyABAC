@@ -4,6 +4,7 @@ import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.EasyAbacDatasourceException;
 import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.Param;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
@@ -89,13 +90,14 @@ public class PipTest {
 
         Datasource datasourceReportCat = new ReportCategoryDatasource(params, RESOURCE_CATEGORY);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
+                .xacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(REPORT_ID, "1"));
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
 //        authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
-        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "bob"));
+        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "peter"));
         AuthResponse authResponse = authorizationService.authorize(authAttrList);
         Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
 
@@ -176,7 +178,7 @@ public class PipTest {
                 if (reportId != null) {
                     switch (reportId) {
                         case "1":
-                            return Arrays.asList("iod");
+                            return Arrays.asList("dsp");
                         case "2":
                             return Arrays.asList("dsp");
                         case "3":

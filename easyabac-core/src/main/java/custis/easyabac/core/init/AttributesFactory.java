@@ -1,10 +1,12 @@
 package custis.easyabac.core.init;
 
-import org.wso2.balana.attr.AttributeValue;
-import org.wso2.balana.attr.StringAttribute;
+import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
+import org.wso2.balana.ParsingException;
+import org.wso2.balana.attr.*;
 import org.wso2.balana.ctx.Attribute;
 
 import java.net.URI;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,32 +20,63 @@ public class AttributesFactory {
         return new Attribute(ATTRIBUTE_REQUEST_ID, "", null, stringValue(requestId), 3);
     }
 
-    public static Attribute stringAttribute(custis.easyabac.core.model.abac.attribute.Attribute attribute, List<String> values) {
-        return stringAttributeWithReturn(attribute, values, false);
 
-    }
+    public static Attribute balanaAttribute(AttributeWithValue attributeWithValue, boolean includeInResult) throws EasyAbacInitException {
+        List<AttributeValue> balanaAttributeValues = new ArrayList<>();
+        AttributeValue balanaAttributeValue = null;
 
-    public static Attribute stringAttributeWithReturn(custis.easyabac.core.model.abac.attribute.Attribute attribute, List<String> values, boolean includeInResult) {
-        List<org.wso2.balana.attr.AttributeValue> balanaAttributeValues = new ArrayList<>();
 
-        for (String value : values) {
-            balanaAttributeValues.add(stringValue(value));
+        for (String value : attributeWithValue.getValues()) {
+
+            switch (attributeWithValue.getAttribute().getType()) {
+                case STRING:
+                    balanaAttributeValue = StringAttribute.getInstance(value);
+                    break;
+                case INT:
+                    try {
+                        balanaAttributeValue = IntegerAttribute.getInstance(value);
+                    } catch (NumberFormatException e) {
+                        throw new EasyAbacInitException(e.toString(), e);
+                    }
+                    break;
+                case BOOLEAN:
+                    try {
+                        balanaAttributeValue = BooleanAttribute.getInstance(value);
+                    } catch (ParsingException e) {
+                        throw new EasyAbacInitException(e.toString(), e);
+                    }
+                    break;
+                case DATE_TIME:
+                    try {
+                        balanaAttributeValue = DateTimeAttribute.getInstance(value);
+                    } catch (ParsingException | ParseException e) {
+                        throw new EasyAbacInitException(e.toString(), e);
+                    }
+                    break;
+                case TIME:
+                    try {
+                        balanaAttributeValue = TimeAttribute.getInstance(value);
+                    } catch (ParsingException | ParseException e) {
+                        throw new EasyAbacInitException(e.toString(), e);
+                    }
+                    break;
+                case DATE:
+                    try {
+                        balanaAttributeValue = DateAttribute.getInstance(value);
+                    } catch (ParseException e) {
+                        throw new EasyAbacInitException(e.toString(), e);
+                    }
+                    break;
+                default: {
+                    throw new EasyAbacInitException("Type " + attributeWithValue.getAttribute().getType() + " is not supported");
+                }
+
+            }
+            balanaAttributeValues.add(balanaAttributeValue);
         }
 
-        return generalAttribute(attribute.getXacmlName(), StringAttribute.identifier, balanaAttributeValues, includeInResult);
-
-    }
-
-
-    private static Attribute integerAttributeWithReturn(custis.easyabac.core.model.abac.attribute.Attribute attribute, List<String> values, boolean includeInResult) {
-        List<org.wso2.balana.attr.AttributeValue> balanaAttributeValues = new ArrayList<>();
-
-        for (String value : values) {
-            balanaAttributeValues.add(stringValue(value));
-        }
-
-        return generalAttribute(attribute.getXacmlName(), StringAttribute.identifier, balanaAttributeValues, includeInResult);
-
+        return generalAttribute(attributeWithValue.getAttribute().getXacmlName(), attributeWithValue.getAttribute().getType().getXacmlName(),
+                balanaAttributeValues, includeInResult);
     }
 
     private static Attribute generalAttribute(String id, String type, List<AttributeValue> balanaAttributeValues, boolean includeInResult) {

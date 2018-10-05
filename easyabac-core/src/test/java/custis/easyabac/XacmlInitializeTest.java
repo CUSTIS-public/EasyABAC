@@ -1,6 +1,7 @@
 package custis.easyabac;
 
 import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;

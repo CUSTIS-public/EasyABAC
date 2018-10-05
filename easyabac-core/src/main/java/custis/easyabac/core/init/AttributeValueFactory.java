@@ -13,7 +13,7 @@ public class AttributeValueFactory {
         return new StringAttribute(value);
     }
 
-    public static IntegerAttribute stringValue(long value) {
+    public static IntegerAttribute integerValue(long value) {
         return new IntegerAttribute(value);
     }
 

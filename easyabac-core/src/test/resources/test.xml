@@ -1,26 +1,17 @@
-<Response xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17">
-    <Result>
-        <Decision>Permit</Decision>
-        <Status>
-            <StatusCode Value="urn:oasis:names:tc:xacml:1.0:status:ok"/>
-        </Status>
-        <Obligations>
-            <Obligation ObligationId="urn:attr:report.category">
-                <AttributeAssignment AttributeId="urn:attr:report.category"
-                                     DataType="http://www.w3.org/2001/XMLSchema#string"
-                                     Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">iod
-                </AttributeAssignment>
-            </Obligation>
-            <Obligation ObligationId="urn:attr:subject.allowed-categories">
-                <AttributeAssignment AttributeId="urn:attr:report.category"
-                                     DataType="http://www.w3.org/2001/XMLSchema#string"
-                                     Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">iod
-                </AttributeAssignment>
-                <AttributeAssignment AttributeId="urn:attr:report.category"
-                                     DataType="http://www.w3.org/2001/XMLSchema#string"
-                                     Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">dsp
-                </AttributeAssignment>
-            </Obligation>
-        </Obligations>
-    </Result>
-</Response>
+<Request xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" ReturnPolicyIdList="false" CombinedDecision="false">
+    <Attributes Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action">
+        <Attribute AttributeId="urn:attr:report.action" IncludeInResult="false" Issuer="">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">edit</AttributeValue>
+        </Attribute>
+    </Attributes>
+    <Attributes Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+        <Attribute AttributeId="urn:attr:report.id" IncludeInResult="false" Issuer="">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">1</AttributeValue>
+        </Attribute>
+    </Attributes>
+    <Attributes Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
+        <Attribute AttributeId="urn:attr:subject.id" IncludeInResult="false" Issuer="">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">peter</AttributeValue>
+        </Attribute>
+    </Attributes>
+</Request>

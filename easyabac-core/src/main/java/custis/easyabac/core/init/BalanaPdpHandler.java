@@ -4,7 +4,7 @@ import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.AttributeGroup;
-import custis.easyabac.core.model.abac.attribute.AttributeValue;
+import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.MdpAuthRequest;
@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
-import static custis.easyabac.core.init.AttributesFactory.stringAttribute;
+import static custis.easyabac.core.init.AttributesFactory.balanaAttribute;
 import static custis.easyabac.pdp.AuthResponse.Decision.getByIndex;
 import static java.util.stream.Collectors.toSet;
 
@@ -48,20 +48,21 @@ public class BalanaPdpHandler implements PdpHandler {
     }
 
     @Override
-    public AuthResponse evaluate(List<AttributeValue> attributeValues) {
-
-        ResponseCtx responseCtx;
-
+    public AuthResponse evaluate(List<AttributeWithValue> attributeWithValues) {
         Map<Category, Attributes> attributesSet = new HashMap<>();
 
-        for (AttributeValue attributeValue : attributeValues) {
-            Category cat = attributeValue.getAttribute().getCategory();
+        for (AttributeWithValue attributeWithValue : attributeWithValues) {
+            Category cat = attributeWithValue.getAttribute().getCategory();
             Attributes attributes = attributesSet.computeIfAbsent(cat,
                     category -> new Attributes(URI.create(category.getXacmlName()), new HashSet<>())
             );
 
-
-            org.wso2.balana.ctx.Attribute newBalanaAttribute = stringAttribute(attributeValue.getAttribute(), attributeValue.getValues());
+            Attribute newBalanaAttribute = null;
+            try {
+                newBalanaAttribute = balanaAttribute(attributeWithValue, false);
+            } catch (EasyAbacInitException e) {
+                return new AuthResponse(e.getMessage());
+            }
             attributes.getAttributes().add(newBalanaAttribute);
         }
 
@@ -69,7 +70,7 @@ public class BalanaPdpHandler implements PdpHandler {
 
         requestCtx.encode(System.out);
 
-        responseCtx = pdp.evaluate(requestCtx);
+        ResponseCtx responseCtx = pdp.evaluate(requestCtx);
 
         if (log.isDebugEnabled()) {
             log.debug(responseCtx.encode());
@@ -147,8 +148,14 @@ public class BalanaPdpHandler implements PdpHandler {
         return new Attributes(catUri, null, attributeSet, attributeGroup.getId());
     }
 
-    private Attribute transformAttributeValue(AttributeValue attributeValue) {
-        return stringAttribute(attributeValue.getAttribute(), attributeValue.getValues());
+    private Attribute transformAttributeValue(AttributeWithValue attributeWithValue) {
+        try {
+            return balanaAttribute(attributeWithValue, false);
+        } catch (EasyAbacInitException e) {
+            e.printStackTrace();
+        }
+        // TODO: 05.10.2018 чивото сделать
+        return null;
     }
 
     private RequestReference transformReference(MdpAuthRequest.RequestReference requestReference) {

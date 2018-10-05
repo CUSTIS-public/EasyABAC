@@ -2,7 +2,7 @@ package custis.easyabac.core.extend.subject;
 
 import custis.easyabac.core.extend.RequestExtender;
 import custis.easyabac.core.model.abac.attribute.AttributeGroup;
-import custis.easyabac.core.model.abac.attribute.AttributeValue;
+import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.pdp.MdpAuthRequest;
 
@@ -22,8 +22,8 @@ public class SubjectAttributesExtender implements RequestExtender {
     }
 
     @Override
-    public void extend(List<AttributeValue> attributeValues) {
-        attributeValues.addAll(subjectAttributesProvider.provide());
+    public void extend(List<AttributeWithValue> attributeWithValues) {
+        attributeWithValues.addAll(subjectAttributesProvider.provide());
     }
 
     @Override
