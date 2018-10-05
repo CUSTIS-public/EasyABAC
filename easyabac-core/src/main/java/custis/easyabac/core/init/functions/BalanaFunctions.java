@@ -3,6 +3,10 @@ package custis.easyabac.core.init.functions;
 import custis.easyabac.core.init.BalanaPolicyBuildException;
 import org.wso2.balana.cond.Function;
 
+import static custis.easyabac.core.model.abac.Function.IN;
+import static custis.easyabac.core.model.abac.Function.ONE_OF;
+import static custis.easyabac.core.model.abac.Function.SUBSET;
+
 public interface BalanaFunctions {
     Function equal();
     Function greater();
@@ -38,5 +42,9 @@ public interface BalanaFunctions {
             default:
                 throw new BalanaPolicyBuildException("Unsupported function: " + f);
         }
+    }
+
+    default boolean requiresBagAttribute(custis.easyabac.core.model.abac.Function f) {
+        return f == IN | f == ONE_OF | f == SUBSET;
     }
 }
