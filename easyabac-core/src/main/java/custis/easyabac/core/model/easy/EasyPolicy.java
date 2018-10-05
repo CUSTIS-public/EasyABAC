@@ -2,12 +2,11 @@ package custis.easyabac.core.model.easy;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class EasyPolicy {
     private String title;
     private List<String> accessToActions = Collections.emptyList();
-    private Map<String, EasyRule> rules = Collections.emptyMap();
+    private List<EasyRule> rules = Collections.emptyList();
     private List<String> returnAttributes = Collections.emptyList();
 
 
@@ -27,11 +26,11 @@ public class EasyPolicy {
         this.accessToActions = accessToActions;
     }
 
-    public Map<String, EasyRule> getRules() {
+    public List<EasyRule> getRules() {
         return rules;
     }
 
-    public void setRules(Map<String, EasyRule> rules) {
+    public void setRules(List<EasyRule> rules) {
         this.rules = rules;
     }
 

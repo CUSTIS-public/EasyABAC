@@ -3,26 +3,32 @@ package custis.easyabac.core.model.abac;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 
 public class TargetCondition {
-    private String id;
-    private Attribute firstOperand;
-    private String secondOperand;
-    private Function function;
-    private final String expression;
+    private final String id;
+    private final Function function;
+    private final Attribute firstOperand;
+    private final String secondOperand;
+
+
+    public TargetCondition(String id, Function function, Attribute firstOperand, String secondOperand) {
+        this.id = id;
+        this.firstOperand = firstOperand;
+        this.secondOperand = secondOperand;
+        this.function = function;
+    }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public Attribute getFirstOperand() {
+        return firstOperand;
     }
 
-    public TargetCondition(String expression) {
-        this.expression = expression;
+    public String getSecondOperand() {
+        return secondOperand;
     }
 
-    public String getExpression() {
-        return expression;
+    public Function getFunction() {
+        return function;
     }
-
 }
