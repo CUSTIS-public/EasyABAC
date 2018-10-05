@@ -1,7 +1,6 @@
 package custis.easyabac.demo.rest;
 
 import custis.easyabac.api.NotExpectedResultException;
-import custis.easyabac.demo.authz.abac.OrderAction;
 import custis.easyabac.demo.model.Branch;
 import custis.easyabac.demo.model.Customer;
 import custis.easyabac.demo.model.Order;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.HashMap;
 
 @RestController
 public class Resource {
@@ -42,7 +39,7 @@ public class Resource {
                 put(order, OrderAction.CREATE);
             }
         });*/
-       orderPermissionChecker.ensureDeniedAll(order, Arrays.asList(OrderAction.VIEW, OrderAction.APPROVE));
+       //orderPermissionChecker.ensureDeniedAll(order, Arrays.asList(OrderAction.VIEW, OrderAction.APPROVE));
 
 
 

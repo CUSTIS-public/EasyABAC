@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+@Ignore
 public class XacmlInitializeTest {
 
     private InputStream getResourceAsStream(String s) {

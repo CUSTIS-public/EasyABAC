@@ -32,4 +32,5 @@ public class EasyResource {
     public void setAttributes(List<EasyAttribute> attributes) {
         this.attributes = attributes;
     }
+
 }

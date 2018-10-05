@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.InputStream;
 import java.util.*;
 
+@Ignore
 public class PipTest {
 
     private static final String ACTION_OPERATION = "report.action";

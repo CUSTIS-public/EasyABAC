@@ -120,12 +120,11 @@ public class AuthModelTransformer {
     }
 
     private Condition parseCondition(String conditionExpression) throws EasyAbacInitException {
-
-
         boolean negation = false;
-        Attribute firstOperand = findAttributeById("report.category");
-        Attribute secondOperandAttribute = findAttributeById("subject.allowed-categories");
-        Function function = Function.findByEasyName("==");
+        String[] lexems = conditionExpression.split(" "); // FIXME исправить
+        Attribute firstOperand = findAttributeById(lexems[0]);
+        Attribute secondOperandAttribute = findAttributeById(lexems[2]);
+        Function function = Function.findByEasyName(lexems[1]);
 
         return new Condition(IdGenerator.newId(), negation, firstOperand, secondOperandAttribute, function);
     }
