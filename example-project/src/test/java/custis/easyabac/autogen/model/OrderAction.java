@@ -3,7 +3,7 @@ package custis.easyabac.autogen.model;
 import custis.easyabac.api.AuthorizationAction;
 import custis.easyabac.api.AuthorizationActionId;
 
-@AuthorizationAction()
+@AuthorizationAction(entity = "order")
 public enum OrderAction {
 
     VIEW("view"), CREATE("create"), APPROVE("approve"), REJECT("reject");

@@ -1,16 +1,13 @@
 package custis.easyabac.autogen;
 
-import custis.easyabac.api.test.BaseTestClass;
+import custis.easyabac.api.test.EasyAbacBaseTestClass;
 import custis.easyabac.autogen.model.Order;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import static custis.easyabac.autogen.model.OrderAction.*;
 
-@RunWith(JUnit4.class)
-public class EasyABAC_Order_Test extends BaseTestClass {
+public class EasyABAC_Order_Test extends EasyAbacBaseTestClass {
 
     @Ignore
     @Test

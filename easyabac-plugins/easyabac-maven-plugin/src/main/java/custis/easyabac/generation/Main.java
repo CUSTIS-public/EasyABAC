@@ -33,11 +33,14 @@ public class Main {
         Path rootPath = CodeGenerationUtils.mavenModuleRoot(ModelGenerator.class).resolve("src/test/java");
         SourceRoot sourceRoot = new SourceRoot(rootPath);
 
-        String bPackage = "custis.easyabac.generation.test";
+        String bPackage = "generation";
         for (Resource entry : model.getResources().values()) {
+
             EntityGenerator.createEntity(entry, bPackage + ".model", sourceRoot);
             ActionGenerator.createAction(entry, bPackage + ".model", sourceRoot);
             TestGenerator.createTest(entry, bPackage, sourceRoot, model.getPolicies());
+
+
         }
 
 

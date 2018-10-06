@@ -6,6 +6,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SamplePDPHandler {
+
+    private final AuthResponse.Decision decision;
+
+    public SamplePDPHandler(AuthResponse.Decision decision) {
+        this.decision = decision;
+    }
+
     public Map<RequestId, AuthResponse> execute(Map<RequestId, List<AuthAttribute>> attributes) {
         System.out.println("MDP request");
         return attributes.entrySet()
@@ -19,6 +26,6 @@ public class SamplePDPHandler {
             System.out.println(attribute.getId() + " = " + attribute.getValues());
         }
         System.out.println("--------------------------------");
-        return new AuthResponse(AuthResponse.Decision.DENY, Collections.emptyMap());
+        return new AuthResponse(decision.DENY, Collections.emptyMap());
     }
 }

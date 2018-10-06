@@ -30,6 +30,7 @@ resources:
       title: ИД заказа
     - id: amount
       title: Сумма заказа
+      type: int
     - id: branchId
       title: ИД филиала
     - id: customerId
@@ -37,15 +38,6 @@ resources:
 
 
 permissions:
-- title: Ограничение на изменение заказа
-  accessToActions: [order.create, order.approve, order.reject]
-  rules:
-    - title: Только в рабочее время
-      operation: AND
-      conditions:
-      - env.time >= 09:00
-      - env.time <= 17:00
-
 - title: Работа только с заказами своего филиала
   accessToActions: [order.create, order.approve, order.reject, order.view]
   rules:

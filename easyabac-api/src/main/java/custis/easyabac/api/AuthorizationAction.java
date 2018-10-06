@@ -7,4 +7,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuthorizationAction {
 
+    /**
+     * The name of the entity of action
+     * <p/>
+     */
+    String entity();
+
 }

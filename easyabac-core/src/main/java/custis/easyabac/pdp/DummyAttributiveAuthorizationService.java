@@ -6,7 +6,11 @@ import java.util.Map;
 
 public class DummyAttributiveAuthorizationService implements AttributiveAuthorizationService {
 
-    private SamplePDPHandler pdpHandler = new SamplePDPHandler();
+    private SamplePDPHandler pdpHandler;
+
+    public DummyAttributiveAuthorizationService(AuthResponse.Decision decision) {
+        this.pdpHandler = new SamplePDPHandler(decision);
+    }
 
     @Override
     public AuthResponse authorize(List<AuthAttribute> attributes) {

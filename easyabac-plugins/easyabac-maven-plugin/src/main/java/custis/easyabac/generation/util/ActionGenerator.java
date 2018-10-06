@@ -46,7 +46,7 @@ public class ActionGenerator {
         }
 
         FieldDeclaration field = type.addField(getTypeForModelType(DataType.STRING), "id", Modifier.PRIVATE);
-        field.addAndGetAnnotation(AuthorizationActionId.class.getSimpleName());
+        field.addMarkerAnnotation(AuthorizationActionId.class.getSimpleName());
 
         // all arguments constructor
         ConstructorDeclaration constructor = type.addConstructor(Modifier.PRIVATE);
@@ -73,6 +73,7 @@ public class ActionGenerator {
         EnumDeclaration type = actionUnit.addEnum(javaName);
 
         NormalAnnotationExpr annotation = type.addAndGetAnnotation(AuthorizationAction.class.getSimpleName());
+        annotation.addPair("entity", "\"" + resource.getId() + "\"");
         return type;
     }
 
