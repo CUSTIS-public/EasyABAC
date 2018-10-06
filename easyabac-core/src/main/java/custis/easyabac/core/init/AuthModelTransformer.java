@@ -162,7 +162,6 @@ public class AuthModelTransformer {
             if (easyResource.getActions().size() > 0) {
                 Attribute attribute = transformActions(resourceName, easyResource.getActions());
 
-                resourceAttributes.add(attribute);
                 attributes.put(attribute.getId(), attribute);
             }
 
