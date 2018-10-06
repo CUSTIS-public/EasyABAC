@@ -24,6 +24,7 @@ import java.util.Map;
 public class ModelGenerator {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerator.class);
+    public static final String ACTION_SUFFIX = "Action";
 
     public static Path resolvePathForSourceFile(SourceRoot sourceRoot, String packageName, String name) {
         String[] packages = packageName.split("\\.");

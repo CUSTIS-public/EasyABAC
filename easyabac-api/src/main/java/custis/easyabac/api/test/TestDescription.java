@@ -12,6 +12,10 @@ public class TestDescription {
         return action;
     }
 
+    public String getShortAction() {
+        return action.substring(action.lastIndexOf(".") + 1);
+    }
+
     public void setAction(String action) {
         this.action = action;
     }

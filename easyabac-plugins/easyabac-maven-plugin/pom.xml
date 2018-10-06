@@ -78,14 +78,14 @@
                     </configuration>
                     <executions>
                         <execution>
-                            <id>mojo-descriptor</id>
+                            <resourceId>mojo-descriptor</resourceId>
                             <goals>
                                 <goal>descriptor</goal>
                             </goals>
                         </execution>
-                        <!-- if you want to generate help goal -->
+                        <!-- if you want to generatePolicies help goal -->
                         <execution>
-                            <id>help-goal</id>
+                            <resourceId>help-goal</resourceId>
                             <goals>
                                 <goal>helpmojo</goal>
                             </goals>
