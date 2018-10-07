@@ -7,7 +7,7 @@
     <Target>
     </Target>
     <Policy PolicyId="7674f6c0-2432-363e-eb7a-4363ea1a10df" Version="0.1"
-            RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:permit-unless-deny">
+            RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit">
         <Description>p1</Description>
         <Target>
             <AnyOf>
@@ -26,27 +26,25 @@
             <Description>Правило 1</Description>
             <Condition>
                 <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
-                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
                         <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
                             <AttributeDesignator AttributeId="urn:attr:report.category"
                                                  DataType="http://www.w3.org/2001/XMLSchema#string"
                                                  Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
                                                  MustBePresent="false"/>
                         </Apply>
-                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
-                            <AttributeDesignator AttributeId="urn:attr:subject.allowed-categories"
-                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
-                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
-                                                 MustBePresent="false"/>
-                        </Apply>
+                        <AttributeDesignator AttributeId="urn:attr:subject.allowed-categories"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string"
+                                             Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                             MustBePresent="false"/>
                     </Apply>
                 </Apply>
             </Condition>
         </Rule>
         <ObligationExpressions>
             <ObligationExpression ObligationId="urn:attr:subject.allowed-categories" FulfillOn="Permit">
-                <AttributeAssignmentExpression AttributeId="urn:attr:report.category"
-                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                <AttributeAssignmentExpression AttributeId="urn:attr:subject.allowed-categories"
+                                               Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
                     <AttributeDesignator AttributeId="urn:attr:subject.allowed-categories"
                                          DataType="http://www.w3.org/2001/XMLSchema#string"
                                          Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"

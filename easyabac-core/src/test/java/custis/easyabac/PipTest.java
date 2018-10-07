@@ -4,6 +4,7 @@ import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.EasyAbacDatasourceException;
 import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.Param;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
@@ -44,7 +45,6 @@ public class PipTest {
     }
 
     @Test
-    @Ignore
     public void SamplePipTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xml");
         InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
@@ -53,9 +53,10 @@ public class PipTest {
         Param userName = new Param("userName", SUBJECT_SUBJECT_ID);
         params.add(userName);
 
-        Datasource datasource = new ReportCategoryDatasource(params, SUBJECT_ALLOWED_CATEGORIES);
+        Datasource datasource = new UserCategoryDatasource(params, SUBJECT_ALLOWED_CATEGORIES);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy).datasources(Collections.singletonList(datasource)).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy)
+                .datasources(Collections.singletonList(datasource)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
@@ -74,49 +75,72 @@ public class PipTest {
     }
 
     @Test
-    public void SamplePipWithObligationTest() throws Exception {
+    public void SamplePipWithObligationPermitTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_oblig.xml");
         InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
 
-        HashSet<Param> params = new HashSet<>();
+        HashSet<Param> userDsParams = new HashSet<>();
         Param userName = new Param("userName", SUBJECT_SUBJECT_ID);
-        params.add(userName);
+        userDsParams.add(userName);
 
-        Datasource datasource = new SampleDatasource(params, SUBJECT_ALLOWED_CATEGORIES);
+        Datasource datasourceUserCat = new UserCategoryDatasource(userDsParams, SUBJECT_ALLOWED_CATEGORIES);
 
-        params = new HashSet<>();
+        HashSet<Param> reportDsParams = new HashSet<>();
         Param reportId = new Param("reportId", REPORT_ID);
-        params.add(reportId);
+        reportDsParams.add(reportId);
 
-        Datasource datasourceReportCat = new ReportCategoryDatasource(params, RESOURCE_CATEGORY);
+        Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
+                .xacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(REPORT_ID, "1"));
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
-//        authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
-        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "bob"));
+        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "peter"));
         AuthResponse authResponse = authorizationService.authorize(authAttrList);
+        System.out.println(authResponse.getErrorMsg());
         Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+    }
 
-//
-//        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
-//        authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
-//        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "alice"));
-//        authResponse = authorizationService.authorize(authAttrList);
-//        Assert.assertEquals(AuthResponse.Decision.DENY, authResponse.getDecision());
+    @Test
+    public void SamplePipWithObligationDenyTest() throws Exception {
+        InputStream policy = getResourceAsStream("test_pip_oblig.xml");
+        InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
+
+        HashSet<Param> userDsParams = new HashSet<>();
+        Param userName = new Param("userName", SUBJECT_SUBJECT_ID);
+        userDsParams.add(userName);
+
+        Datasource datasource = new UserCategoryDatasource(userDsParams, SUBJECT_ALLOWED_CATEGORIES);
+
+        HashSet<Param> reportDsParams = new HashSet<>();
+        Param reportId = new Param("reportId", REPORT_ID);
+        reportDsParams.add(reportId);
+
+        Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
+
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
+                .xacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
+
+        List<AuthAttribute> authAttrList = new ArrayList<>();
+
+        authAttrList.add(new AuthAttribute(REPORT_ID, "1"));
+        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
+        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "alice"));
+        AuthResponse authResponse = authorizationService.authorize(authAttrList);
+        Assert.assertEquals(AuthResponse.Decision.DENY, authResponse.getDecision());
 
     }
 
 
-    class SampleDatasource extends Datasource {
+    class UserCategoryDatasource extends Datasource {
 
-        public SampleDatasource(Set<Param> params, String requiredAttributeId) {
+        public UserCategoryDatasource(Set<Param> params, String requiredAttributeId) {
             super(params, requiredAttributeId);
         }
 
-        public SampleDatasource(Set<Param> params, String requiredAttributeId, Long expire) {
+        public UserCategoryDatasource(Set<Param> params, String requiredAttributeId, Long expire) {
             super(params, requiredAttributeId, expire);
         }
 

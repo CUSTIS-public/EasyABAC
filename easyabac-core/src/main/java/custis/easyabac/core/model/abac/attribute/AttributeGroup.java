@@ -10,9 +10,9 @@ import java.util.Optional;
 public class AttributeGroup {
     private final String id;
     private final Category category;
-    private final List<AttributeValue> attributes;
+    private final List<AttributeWithValue> attributes;
 
-    public AttributeGroup(String id, Category category, List<AttributeValue> attributes) {
+    public AttributeGroup(String id, Category category, List<AttributeWithValue> attributes) {
         this.id = id;
         this.category = category;
         validateAttributes(attributes);
@@ -23,7 +23,7 @@ public class AttributeGroup {
         return id;
     }
 
-    public List<AttributeValue> getAttributes() {
+    public List<AttributeWithValue> getAttributes() {
         return attributes;
     }
 
@@ -31,13 +31,13 @@ public class AttributeGroup {
         return category;
     }
 
-    public void addAttributes(List<AttributeValue> attributes) {
+    public void addAttributes(List<AttributeWithValue> attributes) {
         validateAttributes(attributes);
         this.attributes.addAll(attributes);
     }
 
-    private void validateAttributes(List<AttributeValue> attributes) {
-        Optional<AttributeValue> incorrectCategory = attributes.stream()
+    private void validateAttributes(List<AttributeWithValue> attributes) {
+        Optional<AttributeWithValue> incorrectCategory = attributes.stream()
                 .filter(attributeValue -> !attributeValue.getAttribute().getCategory().equals(category))
                 .findFirst();
         if (incorrectCategory.isPresent()) {
@@ -45,7 +45,7 @@ public class AttributeGroup {
         }
     }
 
-    public void addAttribute(AttributeValue attributeValue) {
-        this.addAttributes(Arrays.asList(attributeValue));
+    public void addAttribute(AttributeWithValue attributeWithValue) {
+        this.addAttributes(Arrays.asList(attributeWithValue));
     }
 }

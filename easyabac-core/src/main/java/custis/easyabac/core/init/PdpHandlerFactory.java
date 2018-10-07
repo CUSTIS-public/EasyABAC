@@ -1,7 +1,7 @@
 package custis.easyabac.core.init;
 
-import custis.easyabac.ModelType;
 import custis.easyabac.core.cache.Cache;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 
 import java.io.InputStream;

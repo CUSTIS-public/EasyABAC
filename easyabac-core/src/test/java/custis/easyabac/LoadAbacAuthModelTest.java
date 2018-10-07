@@ -1,6 +1,7 @@
 package custis.easyabac;
 
 import custis.easyabac.core.init.AbacAuthModelFactory;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.Operation;
 import org.junit.Assert;
