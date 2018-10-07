@@ -59,7 +59,7 @@ public class BalanaPdpHandler implements PdpHandler {
 
             Attribute newBalanaAttribute = null;
             try {
-                newBalanaAttribute = balanaAttribute(attributeWithValue, false);
+                newBalanaAttribute = transformAttributeValue(attributeWithValue);
             } catch (EasyAbacInitException e) {
                 return new AuthResponse(e.getMessage());
             }
@@ -139,23 +139,21 @@ public class BalanaPdpHandler implements PdpHandler {
     }
 
     private Attributes transformGroup(AttributeGroup attributeGroup) {
-        Set<Attribute> attributeSet = attributeGroup.getAttributes()
-                .stream()
-                .map(this::transformAttributeValue)
-                .collect(toSet());
-
-        URI catUri = URI.create(attributeGroup.getCategory().getXacmlName());
-        return new Attributes(catUri, null, attributeSet, attributeGroup.getId());
+//        Set<Attribute> attributeSet = attributeGroup.getAttributes()
+//                .stream()
+//                .map(this::transformAttributeValue)
+//                .collect(toSet());
+//
+//        URI catUri = URI.create(attributeGroup.getCategory().getXacmlName());
+//        return new Attributes(catUri, null, attributeSet, attributeGroup.getId());
+        return null;
     }
 
-    private Attribute transformAttributeValue(AttributeWithValue attributeWithValue) {
-        try {
-            return balanaAttribute(attributeWithValue, false);
-        } catch (EasyAbacInitException e) {
-            e.printStackTrace();
-        }
-        // TODO: 05.10.2018 чивото сделать
-        return null;
+    private Attribute transformAttributeValue(AttributeWithValue attributeWithValue) throws EasyAbacInitException {
+
+        custis.easyabac.core.model.abac.attribute.Attribute attribute = attributeWithValue.getAttribute();
+        return balanaAttribute(attribute.getXacmlName(), attribute.getType(), attributeWithValue.getValues(), false);
+
     }
 
     private RequestReference transformReference(MdpAuthRequest.RequestReference requestReference) {

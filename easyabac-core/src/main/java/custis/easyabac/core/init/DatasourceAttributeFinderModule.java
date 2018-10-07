@@ -103,6 +103,7 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
         //TODO здесь запаковываем в нужный тип
         if (foundValues != null) {
             for (String foundValue : foundValues) {
+
                 attributeValues.add(new StringAttribute(foundValue));
             }
         }
