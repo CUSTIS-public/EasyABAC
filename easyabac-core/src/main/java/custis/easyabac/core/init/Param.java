@@ -1,25 +1,26 @@
 package custis.easyabac.core.init;
 
-import custis.easyabac.core.model.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.Attribute;
 
 import java.util.Objects;
 
 public class Param {
     private final String name;
-    private final Attribute attributeParam;
+    private final String attributeParamId;
     private String value;
+    private Attribute attributeParam;
 
-    public Param(String name, Attribute attributeParam) {
+    public Param(String name, String attributeParamId) {
         this.name = name;
-        this.attributeParam = attributeParam;
+        this.attributeParamId = attributeParamId;
     }
 
     public String getName() {
         return name;
     }
 
-    public Attribute getAttributeParam() {
-        return attributeParam;
+    public String getAttributeParamId() {
+        return attributeParamId;
     }
 
     public String getValue() {
@@ -28,6 +29,14 @@ public class Param {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public Attribute getAttributeParam() {
+        return attributeParam;
+    }
+
+    public void setAttributeParam(Attribute attributeParam) {
+        this.attributeParam = attributeParam;
     }
 
     @Override

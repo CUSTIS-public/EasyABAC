@@ -4,7 +4,8 @@ import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AttributiveAuthorizationServiceImpl;
+import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.DummyAttributiveAuthorizationService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
 
 public class EnsureMethodsTest {
 
-    private static AttributiveAuthorizationService attributiveAuthorizationService = new AttributiveAuthorizationServiceImpl();
+    private static AttributiveAuthorizationService attributiveAuthorizationService = new DummyAttributiveAuthorizationService(AuthResponse.Decision.DENY);
     private static EasyABACPermissionCheckerFactory factory;
     private static EnsureMethods checker;
 

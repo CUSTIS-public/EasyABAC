@@ -1,8 +1,7 @@
 package custis.easyabac.core.init;
 
 import custis.easyabac.core.cache.Cache;
-import custis.easyabac.core.model.attribute.load.EasyAttributeModel;
-import custis.easyabac.core.model.policy.EasyPolicy;
+import custis.easyabac.core.model.abac.AbacAuthModel;
 import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
 import org.wso2.balana.PDPConfig;
@@ -18,7 +17,7 @@ import java.util.Set;
 
 public class PolicyInitializer {
 
-    public PDP newPDPInstance(InputStream policyXacml, List<SampleDatasource> datasources, Cache cache) {
+    public PDP newPDPInstance(InputStream policyXacml, List<Datasource> datasources, Cache cache) {
 
         PolicyFinder policyFinder = new PolicyFinder();
 
@@ -35,8 +34,8 @@ public class PolicyInitializer {
         AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
 
-        for (SampleDatasource datasource : datasources) {
-            finderModules.add(new SampleAttributeFinderModule(datasource, cache));
+        for (Datasource datasource : datasources) {
+            finderModules.add(new DatasourceAttributeFinderModule(datasource, cache));
         }
         attributeFinder.setModules(finderModules);
 
@@ -44,7 +43,7 @@ public class PolicyInitializer {
     }
 
 
-    public PDP newPDPInstance(EasyPolicy easyPolicy, EasyAttributeModel easyAttributeModel, List<SampleDatasource> datasources) {
+    public PDP newPDPInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache) {
         return null;
     }
 

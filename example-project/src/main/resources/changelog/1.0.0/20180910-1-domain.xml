@@ -2,18 +2,18 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-    <changeSet id="1" author="alapitskiy">
+    <changeSet resourceId="1" author="alapitskiy">
         <createTable tableName="branch">
-            <column name="id" type="VARCHAR(100)">
+            <column name="resourceId" type="VARCHAR(100)">
                 <constraints primaryKey="true" primaryKeyName="pk_branch_id"/>
             </column>
             <column name="name" type="VARCHAR(1000)" />
         </createTable>
     </changeSet>
 
-    <changeSet id="2" author="alapitskiy">
+    <changeSet resourceId="2" author="alapitskiy">
         <createTable tableName="customer">
-            <column name="id" type="VARCHAR(100)">
+            <column name="resourceId" type="VARCHAR(100)">
                 <constraints primaryKey="true" primaryKeyName="pk_customer_id"/>
             </column>
             <column name="first_name" type="VARCHAR(1000)" />
@@ -22,12 +22,12 @@
         </createTable>
 
         <addForeignKeyConstraint baseTableName="customer" baseColumnNames="branch_id" constraintName="fk_customer_branch_id" referencedTableName="branch"
-                                 referencedColumnNames="id" />
+                                 referencedColumnNames="resourceId" />
     </changeSet>
 
-    <changeSet id="3" author="alapitskiy">
+    <changeSet resourceId="3" author="alapitskiy">
         <createTable tableName="order">
-            <column name="id" type="VARCHAR(100)">
+            <column name="resourceId" type="VARCHAR(100)">
                 <constraints primaryKey="true" primaryKeyName="pk_order_id"/>
             </column>
             <column name="branch_id" type="VARCHAR(100)" />
@@ -37,9 +37,9 @@
         </createTable>
 
         <addForeignKeyConstraint baseTableName="order" baseColumnNames="branch_id" constraintName="fk_order_branch_id" referencedTableName="branch"
-                                 referencedColumnNames="id" />
+                                 referencedColumnNames="resourceId" />
         <addForeignKeyConstraint baseTableName="order" baseColumnNames="customer_id" constraintName="fk_order_customer_id" referencedTableName="customer"
-                                 referencedColumnNames="id" />
+                                 referencedColumnNames="resourceId" />
     </changeSet>
 
 
