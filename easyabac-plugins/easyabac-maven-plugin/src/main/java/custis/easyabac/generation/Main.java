@@ -17,10 +17,11 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         InputStream is = getResourceAsStream("test.yaml");
-        Path rootPath = CodeGenerationUtils.mavenModuleRoot(ModelGenerator.class).resolve("src/test/java");
+        Path testSourcePath = CodeGenerationUtils.mavenModuleRoot(ModelGenerator.class).resolve("src/test/java");
+        Path testResourcePath = CodeGenerationUtils.mavenModuleRoot(ModelGenerator.class).resolve("src/test/resources");
         String bPackage = "generation";
 
-        CompleteGenerator.generate(is, rootPath, bPackage);
+        CompleteGenerator.generate(is, testSourcePath, testResourcePath, bPackage);
 
     }
 }

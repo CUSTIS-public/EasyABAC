@@ -29,8 +29,9 @@ public class TestGenerationMojo extends EasyAbacBaseMojo {
 
     private void findAndCreateTests() throws Exception {
         FileInputStream is = new FileInputStream(project.getBasedir() + "/" + policyFile);
-        Path rootPath = project.getBasedir().toPath().resolve(testPath);
+        Path sourcePath = project.getBasedir().toPath().resolve(testPath);
+        Path resourcePath = project.getBasedir().toPath().resolve(testResourcePath);
 
-        CompleteGenerator.generate(is, rootPath, testBasePackage);
+        CompleteGenerator.generate(is, sourcePath, resourcePath, testBasePackage);
     }
 }

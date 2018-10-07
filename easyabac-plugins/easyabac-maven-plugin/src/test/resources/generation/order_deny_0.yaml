@@ -8,5 +8,5 @@ attributes:
   subject:
     id: subject_id_0
     role: MANAGER
-    branchId: branchId
+    branchId: branchId_0
     maxOrderAmount: 600

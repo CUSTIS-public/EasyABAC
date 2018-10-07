@@ -1,0 +1,12 @@
+action: order.approve
+attributes:
+  order:
+    id: order_id_0
+    amount: 500
+    branchId: branchId_0
+    customerId: customerId_0
+  subject:
+    id: subject_id_0
+    role: MANAGER
+    branchId: branchId_0
+    maxOrderAmount: 600

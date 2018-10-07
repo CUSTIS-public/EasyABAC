@@ -14,15 +14,16 @@ import java.nio.file.Path;
 public class CompleteGenerator {
     static final String MODEL_SUFFIX = ".model";
 
-    public static void generate(InputStream is, Path rootPath, String testBasePackage) throws EasyAbacInitException, IOException {
+    public static void generate(InputStream is, Path testSourcePath, Path testResourcePath, String testBasePackage) throws EasyAbacInitException, IOException {
         AbacAuthModel model = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, is);
-        SourceRoot sourceRoot = new SourceRoot(rootPath);
+        SourceRoot sourceRoot = new SourceRoot(testSourcePath);
+        SourceRoot resourceRoot = new SourceRoot(testResourcePath);
 
         for (Resource resource : model.getResources().values()) {
             EntityGenerator.createEntity(resource, testBasePackage + MODEL_SUFFIX, sourceRoot);
             if (!resource.getActions().isEmpty()) {
                 ActionGenerator.createAction(resource, testBasePackage + MODEL_SUFFIX, sourceRoot);
-                TestGenerator.createTests(resource, testBasePackage, sourceRoot, model);
+                TestGenerator.createTests(resource, testBasePackage, sourceRoot, resourceRoot, model);
             }
         }
 
