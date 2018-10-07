@@ -1,4 +1,4 @@
-package custis.easyabac.generation.test;
+package generation;
 
 import custis.easyabac.core.model.abac.Policy;
 

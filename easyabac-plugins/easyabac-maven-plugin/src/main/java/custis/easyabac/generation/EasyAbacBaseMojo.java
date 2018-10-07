@@ -21,6 +21,9 @@ public abstract class EasyAbacBaseMojo extends AbstractMojo {
     @Parameter( property = "testPath", defaultValue = "src/test/java" )
     protected String testPath;
 
+    @Parameter( property = "testResourcePath", defaultValue = "src/test/resources" )
+    protected String testResourcePath;
+
 
 
     // injectable

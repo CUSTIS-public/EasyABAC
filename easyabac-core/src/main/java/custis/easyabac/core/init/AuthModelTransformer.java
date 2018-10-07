@@ -39,13 +39,14 @@ public class AuthModelTransformer {
     }
 
     private void transformPermissions(List<EasyPolicy> permissions) throws EasyAbacInitException {
-        for (EasyPolicy permission : permissions) {
+        for (int i = 0; i < permissions.size(); i++) {
+            EasyPolicy permission = permissions.get(i);
 
             List<TargetCondition> conditions = transformTargetConditions(permission.getAccessToActions());
 
             Target target = new Target(Operation.OR, conditions, permission.getAccessToActions());
 
-            List<Rule> rules = transformRules(permission.getRules());
+            List<Rule> rules = transformRules(i, permission.getRules());
 
             List<Attribute> returnAttributes = transformReturnAttributes(permission.getReturnAttributes());
 
@@ -97,11 +98,13 @@ public class AuthModelTransformer {
         return returnAttributes;
     }
 
-    private List<Rule> transformRules(List<EasyRule> easyRules) throws EasyAbacInitException {
+    private List<Rule> transformRules(int policyId, List<EasyRule> easyRules) throws EasyAbacInitException {
         List<Rule> rules = new ArrayList<>();
-        for (EasyRule easyRule : easyRules) {
+
+        for (int i = 0; i < easyRules.size(); i++) {
+            EasyRule easyRule = easyRules.get(i);
             List<Condition> conditions = transformConditions(easyRule);
-            Rule rule = new Rule(IdGenerator.newId(), easyRule.getTitle(), easyRule.getOperation(), conditions);
+            Rule rule = new Rule("policy_" + policyId + "_rule_" + i, easyRule.getTitle(), easyRule.getOperation(), conditions);
 
             rules.add(rule);
         }
@@ -123,10 +126,13 @@ public class AuthModelTransformer {
         boolean negation = false;
         String[] lexems = conditionExpression.split(" "); // FIXME исправить
         Attribute firstOperand = findAttributeById(lexems[0]);
-        Attribute secondOperandAttribute = findAttributeById(lexems[2]);
         Function function = Function.findByEasyName(lexems[1]);
-
-        return new Condition(IdGenerator.newId(), negation, firstOperand, secondOperandAttribute, function);
+        if (lexems[2].startsWith("'") && lexems[2].endsWith("'")) {
+            return new Condition(IdGenerator.newId(), negation, firstOperand, Arrays.asList(lexems[2].substring(1, lexems[2].length() - 1)), function);
+        } else {
+            Attribute secondOperandAttribute = findAttributeById(lexems[2]);
+            return new Condition(IdGenerator.newId(), negation, firstOperand, secondOperandAttribute, function);
+        }
     }
 
     private Attribute findAttributeById(String id) throws EasyAbacInitException {
