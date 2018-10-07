@@ -202,8 +202,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
                     param.setAttributeParam(attributeParam);
                 }
 
-                Attribute requiredAttribute = findAttribute(abacAuthModel.getAttributes(), datasource.getRequiredAttributeId());
-                datasource.setRequiredAttribute(requiredAttribute);
+                Attribute requiredAttribute = findAttribute(abacAuthModel.getAttributes(), datasource.getReturnAttributeId());
+                datasource.setReturnAttribute(requiredAttribute);
             }
         }
 

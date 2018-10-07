@@ -6,6 +6,7 @@ import org.wso2.balana.attr.*;
 import org.wso2.balana.ctx.Attribute;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,24 @@ public class AttributesFactory {
         return generalAttribute(xacmlId, type.getXacmlName(), balanaAttributeValues, includeInResult);
     }
 
-    private static AttributeValue getAttributeValue(DataType type, String value) throws EasyAbacInitException {
+    public static BagAttribute balanaBagAttributeValues(DataType type, List<String> values) throws EasyAbacInitException {
+        List<AttributeValue> balanaAttributeValues = new ArrayList<>();
+
+        for (String value : values) {
+            AttributeValue balanaAttributeValue = getAttributeValue(type, value);
+            balanaAttributeValues.add(balanaAttributeValue);
+        }
+
+        URI xacmlName = null;
+        try {
+            xacmlName = new URI(type.getXacmlName());
+        } catch (URISyntaxException e) {
+            throw new EasyAbacInitException(e.getMessage());
+        }
+        return new BagAttribute(xacmlName, balanaAttributeValues);
+    }
+
+    public static AttributeValue getAttributeValue(DataType type, String value) throws EasyAbacInitException {
         AttributeValue balanaAttributeValue;
         switch (type) {
             case STRING:

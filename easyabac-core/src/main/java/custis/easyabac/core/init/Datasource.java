@@ -8,19 +8,19 @@ import java.util.Set;
 
 public abstract class Datasource {
     private final Set<Param> params;
-    private final String requiredAttributeId;
+    private final String returnAttributeId;
     private final Long expire;
 
-    private Attribute requiredAttribute;
+    private Attribute returnAttribute;
 
 
-    public Datasource(Set<Param> params, String requiredAttributeId) {
-        this(params, requiredAttributeId, null);
+    public Datasource(Set<Param> params, String returnAttributeId) {
+        this(params, returnAttributeId, null);
     }
 
-    public Datasource(Set<Param> params, String requiredAttributeId, Long expire) {
+    public Datasource(Set<Param> params, String returnAttributeId, Long expire) {
         this.params = params;
-        this.requiredAttributeId = requiredAttributeId;
+        this.returnAttributeId = returnAttributeId;
         this.expire = expire;
     }
 
@@ -29,16 +29,16 @@ public abstract class Datasource {
         return params;
     }
 
-    public String getRequiredAttributeId() {
-        return requiredAttributeId;
+    public String getReturnAttributeId() {
+        return returnAttributeId;
     }
 
-    public Attribute getRequiredAttribute() {
-        return requiredAttribute;
+    public Attribute getReturnAttribute() {
+        return returnAttribute;
     }
 
-    public void setRequiredAttribute(Attribute requiredAttribute) {
-        this.requiredAttribute = requiredAttribute;
+    public void setReturnAttribute(Attribute returnAttribute) {
+        this.returnAttribute = returnAttribute;
     }
 
     public Long getExpire() {
