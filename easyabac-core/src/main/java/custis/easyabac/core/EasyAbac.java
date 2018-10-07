@@ -1,6 +1,7 @@
 package custis.easyabac.core;
 
 import custis.easyabac.core.audit.Audit;
+import custis.easyabac.core.audit.DefaultAudit;
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.extend.RequestExtender;
 import custis.easyabac.core.extend.subject.DummySubjectAttributesProvider;
@@ -13,6 +14,7 @@ import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.AttributeGroup;
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
+import custis.easyabac.core.trace.DefaultTrace;
 import custis.easyabac.core.trace.Trace;
 import custis.easyabac.pdp.*;
 import org.apache.commons.logging.Log;
@@ -42,17 +44,21 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public AuthResponse authorize(List<AuthAttribute> authAttributes) {
-        List<AttributeWithValue> attributeWithValueList = null;
         try {
-            attributeWithValueList = computeAttributeValues(authAttributes);
+            List<AttributeWithValue> attributeWithValueList = computeAttributeValues(authAttributes);
             for (RequestExtender extender : requestExtenders) {
                 extender.extend(attributeWithValueList);
             }
+
+            AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
+
+            audit.onRequest(attributeWithValueList, result);
+
+            return result;
         } catch (Exception e) {
             log.error(e);
             return new AuthResponse(e.getMessage());
         }
-        return pdpHandler.evaluate(attributeWithValueList);
     }
 
     @Override
@@ -64,6 +70,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
 
         MdpAuthResponse result = pdpHandler.evaluate(requestContext);
+
+        audit.onMultipleRequest(requestContext, result);
 
         return result.getResults();
     }
@@ -130,8 +138,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
         private AbacAuthModel abacAuthModel;
         private List<Datasource> datasources = Collections.emptyList();
         private Cache cache;
-        private Trace trace;
-        private Audit audit;
+        private Trace trace = DefaultTrace.INSTANCE;
+        private Audit audit = DefaultAudit.INSTANCE;
         private PdpType pdpType = PdpType.BALANA;
         private SubjectAttributesProvider subjectAttributesProvider = DummySubjectAttributesProvider.INSTANCE;
         private InputStream xacmlPolicy;
