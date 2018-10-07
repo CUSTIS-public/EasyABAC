@@ -1,7 +1,7 @@
 package custis.easyabac.core.extend.env;
 
 import custis.easyabac.core.extend.RequestExtender;
-import custis.easyabac.core.model.abac.attribute.AttributeValue;
+import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.pdp.MdpAuthRequest;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 public class EnvAttributesExtender implements RequestExtender {
 
     @Override
-    public void extend(List<AttributeValue> attributeValues) {
+    public void extend(List<AttributeWithValue> attributeWithValues) {
 
     }
 

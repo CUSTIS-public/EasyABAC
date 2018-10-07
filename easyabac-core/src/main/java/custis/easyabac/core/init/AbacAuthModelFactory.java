@@ -1,6 +1,6 @@
 package custis.easyabac.core.init;
 
-import custis.easyabac.ModelType;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.easy.EasyAuthModel;
 import org.yaml.snakeyaml.Yaml;
@@ -16,7 +16,7 @@ public class AbacAuthModelFactory {
 
             return abacAuthModel;
         } else {
-            throw new IllegalArgumentException(modelType.name() + " not supported");
+            throw new EasyAbacInitException("Model " + modelType.name() + " is not supported");
         }
     }
 

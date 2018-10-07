@@ -35,7 +35,7 @@ public class PolicyInitializer {
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
 
         for (Datasource datasource : datasources) {
-            finderModules.add(new SampleAttributeFinderModule(datasource, cache));
+            finderModules.add(new DatasourceAttributeFinderModule(datasource, cache));
         }
         attributeFinder.setModules(finderModules);
 

@@ -1,17 +1,20 @@
 package custis.easyabac.core;
 
-import custis.easyabac.ModelType;
+import custis.easyabac.core.audit.Audit;
+import custis.easyabac.core.audit.DefaultAudit;
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.extend.RequestExtender;
 import custis.easyabac.core.extend.subject.DummySubjectAttributesProvider;
 import custis.easyabac.core.extend.subject.SubjectAttributesExtender;
 import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
 import custis.easyabac.core.init.*;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.AttributeGroup;
-import custis.easyabac.core.model.abac.attribute.AttributeValue;
+import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
+import custis.easyabac.core.trace.DefaultTrace;
 import custis.easyabac.core.trace.Trace;
 import custis.easyabac.pdp.*;
 import org.apache.commons.logging.Log;
@@ -29,23 +32,33 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private final AbacAuthModel abacAuthModel;
     private final List<Datasource> datasources;
     private final List<RequestExtender> requestExtenders;
+    private final Audit audit;
 
-    private EasyAbac(PdpHandler pdpHandler, AbacAuthModel abacAuthModel, List<Datasource> datasources, List<RequestExtender> requestExtenders) {
+    private EasyAbac(PdpHandler pdpHandler, AbacAuthModel abacAuthModel, List<Datasource> datasources, List<RequestExtender> requestExtenders, Audit audit) {
         this.pdpHandler = pdpHandler;
         this.abacAuthModel = abacAuthModel;
         this.datasources = datasources;
         this.requestExtenders = requestExtenders;
+        this.audit = audit;
     }
 
     @Override
     public AuthResponse authorize(List<AuthAttribute> authAttributes) {
-        List<AttributeValue> attributeValueList = computeAttributeValues(authAttributes);
+        try {
+            List<AttributeWithValue> attributeWithValueList = computeAttributeValues(authAttributes);
+            for (RequestExtender extender : requestExtenders) {
+                extender.extend(attributeWithValueList);
+            }
 
-        for (RequestExtender extender : requestExtenders) {
-            extender.extend(attributeValueList);
+            AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
+
+            audit.onRequest(attributeWithValueList, result);
+
+            return result;
+        } catch (Exception e) {
+            log.error(e);
+            return new AuthResponse(e.getMessage());
         }
-
-        return pdpHandler.evaluate(attributeValueList);
     }
 
     @Override
@@ -57,6 +70,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
 
         MdpAuthResponse result = pdpHandler.evaluate(requestContext);
+
+        audit.onMultipleRequest(requestContext, result);
 
         return result.getResults();
     }
@@ -88,7 +103,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
                 Attribute attribute = abacAuthModel.getAttributes().get(authAttribute.getId());
 
                 AttributeGroup group = groupMap.computeIfAbsent(attribute.getCategory(), category -> new AttributeGroup(requestId + "#" + category, category, new ArrayList<>()));
-                group.addAttribute(new AttributeValue(attribute, authAttribute.getValues()));
+                group.addAttribute(new AttributeWithValue(attribute, authAttribute.getValues()));
             }
 
             request.addRequest(reference);
@@ -97,19 +112,23 @@ public class EasyAbac implements AttributiveAuthorizationService {
         return request;
     }
 
-    private List<AttributeValue> computeAttributeValues(List<AuthAttribute> authAttributes) {
-        List<AttributeValue> attributeValueList = new ArrayList<>();
+    private List<AttributeWithValue> computeAttributeValues(List<AuthAttribute> authAttributes) throws EasyAbacInitException {
+        List<AttributeWithValue> attributeWithValueList = new ArrayList<>();
         for (AuthAttribute authAttribute : authAttributes) {
-            Attribute attribute = abacAuthModel.getAttributes().get(authAttribute.getId());
-            if (attribute == null) {
-                throw new EasyAbacAuthException("Атрибут " + authAttribute.getId() + " не найден в модели");
-            }
-            AttributeValue attributeValue = new AttributeValue(attribute, authAttribute.getValues());
-            attributeValueList.add(attributeValue);
+            Attribute attribute = findAttribute(abacAuthModel.getAttributes(), authAttribute.getId());
+            AttributeWithValue attributeWithValue = new AttributeWithValue(attribute, authAttribute.getValues());
+            attributeWithValueList.add(attributeWithValue);
         }
-        return attributeValueList;
+        return attributeWithValueList;
     }
 
+    public static Attribute findAttribute(Map<String, Attribute> attributeMap, String attributeId) throws EasyAbacInitException {
+        Attribute attributeParam = attributeMap.get(attributeId);
+        if (attributeParam == null) {
+            throw new EasyAbacInitException("Attribute " + attributeId + " is not found in the model");
+        }
+        return attributeParam;
+    }
 
     public static class Builder {
         private final InputStream easyModel;
@@ -119,7 +138,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
         private AbacAuthModel abacAuthModel;
         private List<Datasource> datasources = Collections.emptyList();
         private Cache cache;
-        private Trace trace;
+        private Trace trace = DefaultTrace.INSTANCE;
+        private Audit audit = DefaultAudit.INSTANCE;
         private PdpType pdpType = PdpType.BALANA;
         private SubjectAttributesProvider subjectAttributesProvider = DummySubjectAttributesProvider.INSTANCE;
         private InputStream xacmlPolicy;
@@ -154,6 +174,11 @@ public class EasyAbac implements AttributiveAuthorizationService {
             return this;
         }
 
+        public Builder audit(Audit audit) {
+            this.audit = audit;
+            return this;
+        }
+
         public Builder subjectAttributesProvider(SubjectAttributesProvider subjectAttributesProvider) {
             this.subjectAttributesProvider = subjectAttributesProvider;
             return this;
@@ -184,7 +209,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             }
 
-            return new EasyAbac(pdpHandler, abacAuthModel, datasources, extenders);
+            return new EasyAbac(pdpHandler, abacAuthModel, datasources, extenders, audit);
         }
 
         private void enrichDatasources(List<Datasource> datasources, AbacAuthModel abacAuthModel) throws EasyAbacInitException {
@@ -194,17 +219,9 @@ public class EasyAbac implements AttributiveAuthorizationService {
                     param.setAttributeParam(attributeParam);
                 }
 
-                Attribute requiredAttribute = findAttribute(abacAuthModel.getAttributes(), datasource.getRequiredAttributeId());
-                datasource.setRequiredAttribute(requiredAttribute);
+                Attribute requiredAttribute = findAttribute(abacAuthModel.getAttributes(), datasource.getReturnAttributeId());
+                datasource.setReturnAttribute(requiredAttribute);
             }
-        }
-
-        private Attribute findAttribute(Map<String, Attribute> attributeMap, String attributeParamId) throws EasyAbacInitException {
-            Attribute attributeParam = attributeMap.get(attributeParamId);
-            if (attributeParam == null) {
-                throw new EasyAbacInitException("Attribute " + attributeParamId + " not found in model");
-            }
-            return attributeParam;
         }
 
     }

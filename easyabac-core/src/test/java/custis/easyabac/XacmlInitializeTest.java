@@ -1,6 +1,7 @@
 package custis.easyabac;
 
 import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
@@ -12,6 +13,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+@Ignore
 public class XacmlInitializeTest {
 
     private InputStream getResourceAsStream(String s) {
@@ -25,7 +27,7 @@ public class XacmlInitializeTest {
     @Ignore
     public void authTest1() throws Exception {
 
-        InputStream policy = getResourceAsStream("test1_policy.xacml");
+        InputStream policy = getResourceAsStream("test1_policy.xml");
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
 
@@ -53,7 +55,7 @@ public class XacmlInitializeTest {
     @Ignore
     public void authTest2() throws Exception {
 
-        InputStream policy = getResourceAsStream("test2_policy.xacml");
+        InputStream policy = getResourceAsStream("test2_policy.xml");
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
 
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
