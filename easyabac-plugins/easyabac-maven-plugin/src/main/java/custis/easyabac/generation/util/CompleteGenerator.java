@@ -1,9 +1,9 @@
 package custis.easyabac.generation.util;
 
 import com.github.javaparser.utils.SourceRoot;
-import custis.easyabac.ModelType;
 import custis.easyabac.core.init.AbacAuthModelFactory;
 import custis.easyabac.core.init.EasyAbacInitException;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.Resource;
 

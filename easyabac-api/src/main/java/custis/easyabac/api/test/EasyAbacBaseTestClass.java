@@ -1,6 +1,5 @@
 package custis.easyabac.api.test;
 
-import custis.easyabac.ModelType;
 import custis.easyabac.api.AuthorizationAttribute;
 import custis.easyabac.api.AuthorizationEntity;
 import custis.easyabac.api.PermitAwarePermissionChecker;
@@ -9,9 +8,10 @@ import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.init.AbacAuthModelFactory;
 import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.EasyAbacInitException;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.Attribute;
-import custis.easyabac.core.model.abac.attribute.AttributeValue;
+import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthResponse;
 import org.junit.BeforeClass;
@@ -73,7 +73,7 @@ public abstract class EasyAbacBaseTestClass {
                 .stream()
                 .map(stringObjectEntry -> {
                     Attribute attribute = authModel.getAttributes().get(stringObjectEntry.getKey());
-                    return new AttributeValue(attribute, Collections.singletonList(stringObjectEntry.getValue().toString()));
+                    return new AttributeWithValue(attribute, Collections.singletonList(stringObjectEntry.getValue().toString()));
                 }).collect(Collectors.toList()));
 
         // TODO environment extender
