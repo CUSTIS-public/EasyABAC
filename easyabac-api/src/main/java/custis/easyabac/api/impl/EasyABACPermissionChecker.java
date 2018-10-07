@@ -27,14 +27,9 @@ public class EasyABACPermissionChecker<T, A> implements PermitAwarePermissionChe
     }
 
     @Override
-    public AuthResponse.Decision authorize(T object, A action) {
-        AuthResponse response = attributiveAuthorizationService.authorize(extract(object, action));
-        return response.getDecision();
-    }
-
-    @Override
     public void ensurePermitted(T entity, A operation) throws NotPermittedException {
-        if (authorize(entity, operation) != AuthResponse.Decision.PERMIT) {
+        AuthResponse response = attributiveAuthorizationService.authorize(extract(entity, operation));
+        if (response.getDecision() != AuthResponse.Decision.PERMIT) {
             throw new NotPermittedException("Not permitted " + operation);
         }
     }

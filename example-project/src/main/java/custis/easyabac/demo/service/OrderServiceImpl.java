@@ -1,6 +1,6 @@
 package custis.easyabac.demo.service;
 
-import custis.easyabac.demo.authz.DummyPermissionChecker;
+import custis.easyabac.demo.authz.DemoPermissionChecker;
 import custis.easyabac.demo.model.*;
 import custis.easyabac.demo.repository.BranchRepository;
 import custis.easyabac.demo.repository.CustomerRepository;
@@ -24,7 +24,7 @@ public class OrderServiceImpl implements OrderService {
     private BranchRepository branchRepository;
 
     @Autowired
-    private DummyPermissionChecker dummyPermissionChecker;
+    private DemoPermissionChecker demoPermissionChecker;
 
     @Override
     @Transactional
@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order(customer, branch, amount);
 
         // 3. Проверяем права на создание
-        dummyPermissionChecker.canCreate(order);
+        demoPermissionChecker.canCreate(order);
 
         // 4. Сохраняем заказ
         orderRepository.save(order);
@@ -50,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
 
         // 2. Проверяем, что пользователь может смотреть заказ
-        dummyPermissionChecker.сanView(order);
+        demoPermissionChecker.сanView(order);
 
         // 3. Возвращаем данные заказа
         return order;
@@ -63,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
 
         // 2. Проверяем права на создание
-        dummyPermissionChecker.canApprove(order);
+        demoPermissionChecker.canApprove(order);
 
         // 3. Обновляем статус заказа
         order.approve();
@@ -76,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
 
         // 2. Проверяем права на создание
-        dummyPermissionChecker.checkReject(order);
+        demoPermissionChecker.checkReject(order);
 
         // 3. Обновляем статус заказа
         order.reject();
