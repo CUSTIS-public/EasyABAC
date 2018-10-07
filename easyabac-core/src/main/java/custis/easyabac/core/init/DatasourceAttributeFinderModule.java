@@ -62,7 +62,7 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
         List<String> cachedValue = null;
         if (cache != null) {
             try {
-                cachedValue = cache.get(datasource.getParams(), datasource.getReturnAttribute());
+                cachedValue = cache.get(datasource.getParams(), datasource.getReturnAttributeId());
             } catch (RuntimeException e) {
                 log.error("cache error", e);
             }
@@ -91,7 +91,10 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
         }
 
         if (cache != null && cachedValue == null && returnValue != null) {
-            cache.set(datasource.getParams(), datasource.getReturnAttribute(), datasource.getExpire(), returnValue);
+            Set<Param> params = datasource.getParams();
+            String returnAttributeId = datasource.getReturnAttributeId();
+            Long expire = datasource.getExpire();
+            cache.set(params, returnAttributeId, expire, returnValue);
         }
 
 
