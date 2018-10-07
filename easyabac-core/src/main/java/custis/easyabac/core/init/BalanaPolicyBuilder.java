@@ -20,7 +20,6 @@ import org.wso2.balana.xacml3.AnyOfSelection;
 import org.wso2.balana.xacml3.Target;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -28,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -106,7 +106,7 @@ public class BalanaPolicyBuilder {
 
         Apply expression = new Apply(applyFunction, operands);
         if (negate) {
-            expression = new Apply(new NotFunction(NotFunction.NAME_NOT), Collections.singletonList(expression));
+            expression = new Apply(new NotFunction(NotFunction.NAME_NOT), singletonList(expression));
         }
 
         return new Condition(expression);
@@ -114,49 +114,66 @@ public class BalanaPolicyBuilder {
 
     private Apply buildRuleConditionApply(custis.easyabac.core.model.abac.Condition condition) {
         Attribute firstOperand = condition.getFirstOperand();
-        BalanaFunctions balanaFunctions = BalanaFunctionsFactory.getFunctions(firstOperand.getType());
+        final DataType firstOperandType = firstOperand.getType();
 
-        Expression secondAttr = null;
+        BalanaFunctions balanaFunctions = BalanaFunctionsFactory.getFunctions(firstOperandType);
+        final Function function = balanaFunctions.pick(condition.getFunction());
+
         final Attribute secondOperandAttribute = condition.getSecondOperandAttribute();
+        Expression secondAttr;
 
+        final boolean requiresBagAttribute = balanaFunctions.requiresBagAttribute(condition.getFunction());
         if (secondOperandAttribute != null) {
-            secondAttr = createAttributeDesignator(secondOperandAttribute);
-        } else if (condition.getSecondOperandValue() != null && !condition.getSecondOperandValue().isEmpty()) {
-            if (balanaFunctions.requiresBagAttribute(condition.getFunction())) {
-
-            } else {
-                if (condition.getSecondOperandValue().size() != 1) {
-                    throw new BalanaPolicyBuildException(
-                            format("Rule condition id=%s has more than one value", condition.getId()));
-                }
-
-                final String value = condition.getSecondOperandValue().get(0);
-                try {
-                    secondAttr = StandardAttributeFactory.getFactory().createValue(
-                            URI.create(firstOperand.getType().getXacmlName()),
-                            value);
-                } catch (UnknownIdentifierException | ParsingException e) {
-                    throw new BalanaPolicyBuildException(format(
-                            "Failed to create Balana attribute value from [%s] in rule condition id=%s: %s",
-                            value, condition.getId(), e.getMessage()));
-                }
-            }
+            secondAttr = createAttributeDesignator(secondOperandAttribute, !requiresBagAttribute);
         } else {
-            throw new BalanaPolicyBuildException(
-                    format("Condition %s has neither second operand value nor second operand attribute",
-                            condition.getId()));
+            final String conditionId = condition.getId();
+            if (condition.getSecondOperandValue() != null && !condition.getSecondOperandValue().isEmpty()) {
+                if (requiresBagAttribute) {
+
+                    List<AttributeValue> attrValues = condition.getSecondOperandValue().stream()
+                            .map(s -> createAttributeValue(s, firstOperandType, conditionId))
+                            .collect(toList());
+
+                    secondAttr = new Apply(balanaFunctions.bag(), attrValues);
+                } else {
+                    if (condition.getSecondOperandValue().size() != 1) {
+                        throw new BalanaPolicyBuildException(
+                                format("Rule condition id=%s has more than one value", conditionId));
+                    }
+
+                    secondAttr = createAttributeValue(condition.getSecondOperandValue().get(0), firstOperandType, conditionId);
+                }
+            } else {
+                throw new BalanaPolicyBuildException(
+                        format("Condition %s has neither second operand value nor second operand attribute",
+                                conditionId));
+            }
         }
 
-        return new Apply(balanaFunctions.pick(condition.getFunction()),
-                asList(createAttributeDesignator(firstOperand), secondAttr));
+        //TODO add more sophisticated logic to identify cases when both arguments are bags
+        return new Apply(function,
+                asList(createAttributeDesignator(firstOperand, true), secondAttr));
     }
 
-    private AttributeDesignator createAttributeDesignator(Attribute firstOperand) {
-        return new AttributeDesignator(
-                URI.create(firstOperand.getType().getXacmlName()),
-                URI.create(firstOperand.getId()),
+    private AttributeValue createAttributeValue(String value, DataType dataType, String conditionId) {
+        try {
+            return StandardAttributeFactory.getFactory().createValue(
+                    URI.create(dataType.getXacmlName()),
+                    value);
+        } catch (UnknownIdentifierException | ParsingException e) {
+            throw new BalanaPolicyBuildException(format(
+                    "Failed to create Balana attribute value from [%s] in rule condition id=%s: %s",
+                    value, conditionId, e.getMessage()));
+        }
+    }
+
+    private Evaluatable createAttributeDesignator(Attribute attribute, boolean selectOneValue) {
+        final AttributeDesignator designator = new AttributeDesignator(
+                URI.create(attribute.getType().getXacmlName()),
+                URI.create(attribute.getId()),
                 true,
-                URI.create(firstOperand.getCategory().getXacmlName()));
+                URI.create(attribute.getCategory().getXacmlName()));
+        return selectOneValue ? new Apply(BalanaFunctionsFactory.getFunctions(attribute.getType()).oneAndOnly(), singletonList(designator)) : designator;
     }
 
     private Target buildBalanaTarget(custis.easyabac.core.model.abac.Target target) {
@@ -173,14 +190,14 @@ public class BalanaPolicyBuilder {
             throw new BalanaPolicyBuildException("Unsupported target operation: " + targetOperation);
         }
 
-        return new Target(Collections.singletonList(new AnyOfSelection(allOfSelections)));
+        return new Target(singletonList(new AnyOfSelection(allOfSelections)));
     }
 
     private List<AllOfSelection> buildDisjunction(List<TargetCondition> conditions) {
         return conditions.stream()
                 .map(condition -> {
                     TargetMatch match = buildTargetMatch(condition);
-                    return new AllOfSelection(Collections.singletonList(match));
+                    return new AllOfSelection(singletonList(match));
                 })
                 .collect(toList());
     }
@@ -189,14 +206,14 @@ public class BalanaPolicyBuilder {
         List<TargetMatch> matches = conditions.stream()
                 .map(this::buildTargetMatch)
                 .collect(toList());
-        return Collections.singletonList(new AllOfSelection(matches));
+        return singletonList(new AllOfSelection(matches));
     }
 
     private TargetMatch buildTargetMatch(TargetCondition targetCondition) {
         final Attribute firstOperand = targetCondition.getFirstOperand();
         BalanaFunctions balanaFunctions = BalanaFunctionsFactory.getFunctions(firstOperand.getType());
 
-        //TODO when functions are 'in', 'oneOf', 'subset' -> create complex attribute
+        //TODO when functions are 'in', 'oneOf', 'subset' -> create bag attribute
         final DataType dataType = targetCondition.getFirstOperand().getType();
         AttributeValue attributeValue;
         try {
@@ -210,7 +227,8 @@ public class BalanaPolicyBuilder {
                     targetCondition.getSecondOperand(), targetCondition.getId(), e.getMessage()));
         }
 
-        return new TargetMatch(balanaFunctions.pick(targetCondition.getFunction()),
-                createAttributeDesignator(firstOperand), attributeValue);
+        final custis.easyabac.core.model.abac.Function conditionFunction = targetCondition.getFunction();
+        return new TargetMatch(balanaFunctions.pick(conditionFunction),
+                createAttributeDesignator(firstOperand, !balanaFunctions.requiresBagAttribute(conditionFunction)), attributeValue);
     }
 }

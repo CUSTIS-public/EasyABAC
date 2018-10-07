@@ -8,6 +8,8 @@ public class BalanaFunctionsFactory {
         switch (dataType) {
             case STRING:
                 return new BalanaStringFunctions();
+            case INT:
+                return new BalanaIntegerFunctions();
             default:
                 throw new BalanaPolicyBuildException("Functions for data type " + dataType + " are not supported yet");
         }

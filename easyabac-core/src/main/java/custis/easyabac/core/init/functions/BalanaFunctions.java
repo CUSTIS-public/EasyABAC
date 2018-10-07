@@ -16,6 +16,8 @@ public interface BalanaFunctions {
     Function in();
     Function oneOf();
     Function subset();
+    Function bag();
+    Function oneAndOnly();
 
     default boolean isSupported(custis.easyabac.core.model.abac.Function f) {
         return true;

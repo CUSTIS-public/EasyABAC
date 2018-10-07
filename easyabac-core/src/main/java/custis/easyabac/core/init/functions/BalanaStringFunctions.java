@@ -6,7 +6,7 @@ public class BalanaStringFunctions implements BalanaFunctions {
 
     @Override
     public Function equal() {
-        return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:string-one-and-only");
+        return new EqualFunction(EqualFunction.NAME_STRING_EQUAL);
     }
 
     @Override
@@ -42,5 +42,15 @@ public class BalanaStringFunctions implements BalanaFunctions {
     @Override
     public Function subset() {
         return null;
+    }
+
+    @Override
+    public Function bag() {
+        return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:string-bag");
+    }
+
+    @Override
+    public Function oneAndOnly() {
+        return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:string-one-and-only");
     }
 }

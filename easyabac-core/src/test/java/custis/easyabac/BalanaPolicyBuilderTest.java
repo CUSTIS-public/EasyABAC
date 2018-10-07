@@ -6,7 +6,6 @@ import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.TargetMatch;
@@ -28,9 +27,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test suite for conversion from EasyAbac domain model to Balana domain model
@@ -125,16 +122,24 @@ public class BalanaPolicyBuilderTest {
 
         TargetMatch targetMatch = actionSelection.getMatches().get(0);
         assertEquals("Match function",
-                "urn:oasis:names:tc:xacml:1.0:function:string-one-and-only",
+                "urn:oasis:names:tc:xacml:1.0:function:string-equal",
                 targetMatch.getMatchFunction().getIdentifier().toString());
 
         assertEquals("Match value", "CourseUnit.Edit", targetMatch.getMatchValue().encode());
         Evaluatable matchEvaluatable = targetMatch.getMatchEvaluatable();
-        assertTrue("Match evaluatable is AttributeDesignator", matchEvaluatable instanceof AttributeDesignator);
-        AttributeDesignator attributeDesignator = (AttributeDesignator) matchEvaluatable;
-        assertEquals("Match attribute category",
-                "urn:oasis:names:tc:xacml:3.0:attribute-category:action",
-                attributeDesignator.getCategory().toString());
+        assertTrue("Match evaluatable is Apply", matchEvaluatable instanceof Apply);
+        Apply apply = (Apply) matchEvaluatable;
+        boolean hasAttrDesignator = apply.getChildren().stream()
+                .anyMatch(c -> {
+                     if (!(c instanceof AttributeDesignator)) {
+                         return false;
+                     }
+                     AttributeDesignator ad = (AttributeDesignator) c;
+
+                     return "urn:oasis:names:tc:xacml:3.0:attribute-category:action".equals(ad.getCategory().toString());
+                });
+
+        assertTrue("Match has action attribute designator", hasAttrDesignator);
     }
 
     @Test
@@ -164,15 +169,6 @@ public class BalanaPolicyBuilderTest {
                 andApply.getFunction().getIdentifier());
 
         assertEquals("Apply's children qty", 2, andApply.getChildren().size());
-        boolean hasAuthorIdAttr = andApply.getChildren().stream()
-                .anyMatch(c -> {
-                    if (!(c instanceof AttributeDesignator)) {
-                        return false;
-                    }
-
-                    return ((AttributeDesignator) c).getId().toString().contains("CourseUnit.authorId");
-                });
-        assertTrue("Apply has authorId AttributeDesignator", hasAuthorIdAttr);
     }
 
     private org.wso2.balana.Policy pickSinglePolicy() {
