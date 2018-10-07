@@ -1,6 +1,8 @@
 package custis.easyabac.core.cache;
 
 import custis.easyabac.core.init.Param;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,19 +11,23 @@ import java.util.Set;
 
 public class SampleCache implements Cache {
 
+    private final static Log log = LogFactory.getLog(SampleCache.class);
+
     private final Map<String, List<String>> cachedData = new HashMap<>();
 
     @Override
     public List<String> get(Set<Param> params, String returnAttributeId) {
         String key = makeKey(params, returnAttributeId);
 
-        return cachedData.get(key);
+        List<String> value = cachedData.get(key);
+//        log.debug("get key " + key + " value " + value.toString());
+        return value;
     }
 
     @Override
     public void set(Set<Param> params, String returnAttributeId, List<String> value) {
         String key = makeKey(params, returnAttributeId);
-
+//        log.debug("set key " + key + " value " + value.toString());
         cachedData.put(key, value);
     }
 

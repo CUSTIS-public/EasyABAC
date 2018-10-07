@@ -9,16 +9,16 @@ import java.util.Set;
 public abstract class Datasource {
     private final Set<Param> params;
     private final String returnAttributeId;
-    private final Long expire;
+    private final long expire;
 
     private Attribute returnAttribute;
 
 
     public Datasource(Set<Param> params, String returnAttributeId) {
-        this(params, returnAttributeId, null);
+        this(params, returnAttributeId, 0);
     }
 
-    public Datasource(Set<Param> params, String returnAttributeId, Long expire) {
+    public Datasource(Set<Param> params, String returnAttributeId, long expire) {
         this.params = params;
         this.returnAttributeId = returnAttributeId;
         this.expire = expire;
@@ -41,7 +41,7 @@ public abstract class Datasource {
         this.returnAttribute = returnAttribute;
     }
 
-    public Long getExpire() {
+    public long getExpire() {
         return expire;
     }
 

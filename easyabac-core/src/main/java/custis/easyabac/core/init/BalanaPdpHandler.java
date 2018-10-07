@@ -68,13 +68,13 @@ public class BalanaPdpHandler implements PdpHandler {
 
         RequestCtx requestCtx = new RequestCtx(new HashSet<>(attributesSet.values()), null);
 
-        requestCtx.encode(System.out);
+//        requestCtx.encode(System.out);
 
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
 
-        if (log.isDebugEnabled()) {
-            log.debug(responseCtx.encode());
-        }
+//        if (log.isDebugEnabled()) {
+//            log.debug(responseCtx.encode());
+//        }
 
         return createResponse(responseCtx.getResults().iterator().next());
     }

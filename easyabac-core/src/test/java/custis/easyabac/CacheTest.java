@@ -10,6 +10,7 @@ import custis.easyabac.core.model.ModelType;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -24,6 +25,7 @@ public class CacheTest {
     private static final String SUBJECT_ALLOWED_CATEGORIES = "subject.allowed-categories";
     private static final String REPORT_ID = "report.id";
     public static final String SUBJECTS[] = {"bob", "alice", "peter"};
+    public static final String PERMITS[] = {AuthResponse.Decision.PERMIT.name(), AuthResponse.Decision.DENY.name(), AuthResponse.Decision.PERMIT.name()};
 
 
     @Test
@@ -53,10 +55,11 @@ public class CacheTest {
             List<AuthAttribute> authAttrList = new ArrayList<>();
             authAttrList.add(new AuthAttribute(REPORT_ID, "1"));
             authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
-            authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, SUBJECTS[random.nextInt(2)]));
+            int inx = random.nextInt(3);
+            authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, SUBJECTS[inx]));
             AuthResponse authResponse = authorizationService.authorize(authAttrList);
-//            System.out.println(authResponse.getErrorMsg());
-//            Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+
+            Assert.assertEquals(PERMITS[inx], authResponse.getDecision().name());
         }
 
     }

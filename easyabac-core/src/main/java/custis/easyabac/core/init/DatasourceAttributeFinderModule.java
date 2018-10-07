@@ -71,7 +71,7 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
         if (cachedValue != null) {
             BagAttribute bagAttribute = null;
             try {
-                bagAttribute = AttributesFactory.balanaBagAttributeValues(datasource.getReturnAttribute().getType(), returnValue);
+                bagAttribute = AttributesFactory.balanaBagAttributeValues(datasource.getReturnAttribute().getType(), cachedValue);
             } catch (EasyAbacInitException e) {
                 return getMissingEvaluationResult(e.getMessage());
             }
@@ -91,10 +91,7 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
         }
 
         if (cache != null && cachedValue == null && returnValue != null) {
-            Set<Param> params = datasource.getParams();
-            String returnAttributeId = datasource.getReturnAttributeId();
-            Long expire = datasource.getExpire();
-            cache.set(params, returnAttributeId, expire, returnValue);
+            cache.set(datasource.getParams(), datasource.getReturnAttributeId(), datasource.getExpire(), returnValue);
         }
 
 
