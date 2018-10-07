@@ -25,6 +25,14 @@ public class AuthResponse {
         return decision;
     }
 
+    public Map<String, String> getReturnValues() {
+        return returnValues;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
     public enum Decision {
         PERMIT(0), DENY(1), INDETERMINATE(2), NOT_APPLICABLE(3);
 

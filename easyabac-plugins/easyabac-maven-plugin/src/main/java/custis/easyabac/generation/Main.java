@@ -2,8 +2,8 @@ package custis.easyabac.generation;
 
 import com.github.javaparser.utils.CodeGenerationUtils;
 import com.github.javaparser.utils.SourceRoot;
-import custis.easyabac.ModelType;
 import custis.easyabac.core.init.AbacAuthModelFactory;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.Resource;
 import custis.easyabac.generation.util.ActionGenerator;
@@ -27,7 +27,7 @@ public class Main {
         Yaml yaml = new Yaml();
 
         InputStream is = getResourceAsStream("test.yaml");
-        AbacAuthModel model = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, is);
+        AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML, is);
 
 
         Path rootPath = CodeGenerationUtils.mavenModuleRoot(ModelGenerator.class).resolve("src/test/java");
@@ -39,7 +39,6 @@ public class Main {
             ActionGenerator.createAction(entry, bPackage + ".model", sourceRoot);
             TestGenerator.createTest(entry, bPackage, sourceRoot, model.getPolicies());
         }
-
 
 
         sourceRoot.saveAll();

@@ -1,8 +1,8 @@
 package custis.easyabac.generation;
 
 import com.github.javaparser.utils.SourceRoot;
-import custis.easyabac.ModelType;
 import custis.easyabac.core.init.AbacAuthModelFactory;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.Resource;
 import custis.easyabac.generation.util.ActionGenerator;
@@ -36,7 +36,7 @@ public class TestGenerationMojo extends EasyAbacBaseMojo {
 
     private void findAndCreateTests() throws Exception {
         FileInputStream is = new FileInputStream(project.getBasedir() + "/" + policyFile);
-        AbacAuthModel model = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, is);
+        AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML, is);
 
         Path rootPath = project.getBasedir().toPath().resolve(testPath);
         SourceRoot sourceRoot = new SourceRoot(rootPath);
