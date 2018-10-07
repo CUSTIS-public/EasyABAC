@@ -5,7 +5,7 @@ import custis.easyabac.pdp.AuthResponse;
 import java.util.Map;
 
 public interface Audit {
-    void onRequest(String actor, String action);
+    void onAction(String actor, Map<String, String> resource, String action, AuthResponse.Decision decision);
 
-    void onMultipleRequest(String actor, Map<String, AuthResponse> actionResponse);
+    void onMultipleActions(String actor, Map<String, String> resource, Map<String, AuthResponse.Decision> actionResponse);
 }

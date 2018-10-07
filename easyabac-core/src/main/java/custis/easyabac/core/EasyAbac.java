@@ -53,7 +53,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
 
-            performAudit(attributeWithValueList);
+            performAudit(attributeWithValueList, result);
 
             return result;
         } catch (Exception e) {
@@ -131,7 +131,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
         return attributeParam;
     }
 
-    private void performAudit(List<AttributeWithValue> attributeWithValues) {
+    private void performAudit(List<AttributeWithValue> attributeWithValues, AuthResponse result) {
         List<AttributeWithValue> subject = attributeWithValues.stream()
                 .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.SUBJECT)
                 .collect(Collectors.toList());
@@ -140,7 +140,13 @@ public class EasyAbac implements AttributiveAuthorizationService {
                 .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.ACTION)
                 .findFirst();
 
-        audit.onRequest(serializeSubject(subject), action.get().getValues().get(0));
+        Map<String, String> resourceMap = new HashMap<>();
+        attributeWithValues.stream()
+                .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.RESOURCE)
+                .forEach(attributeWithValue -> resourceMap.put(attributeWithValue.getAttribute().getId(), attributeWithValue.getValues().toString()));
+
+
+        audit.onAction(serializeSubject(subject), resourceMap, action.get().getValues().get(0), result.getDecision());
     }
 
     private void performAudit(MdpAuthRequest request, MdpAuthResponse response) {
@@ -158,7 +164,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
                 .collect(Collectors.toList());
         // FIXME сделать
 
-        audit.onMultipleRequest(serializeSubject(subject), Collections.emptyMap());
+        audit.onMultipleActions(serializeSubject(subject), Collections.emptyMap(), Collections.emptyMap());
     }
 
     private static String serializeSubject(List<AttributeWithValue> subject) {
