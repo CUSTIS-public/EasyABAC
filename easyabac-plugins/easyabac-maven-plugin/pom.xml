@@ -83,7 +83,7 @@
                                 <goal>descriptor</goal>
                             </goals>
                         </execution>
-                        <!-- if you want to generate help goal -->
+                        <!-- if you want to generatePolicies help goal -->
                         <execution>
                             <id>help-goal</id>
                             <goals>

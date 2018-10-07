@@ -24,6 +24,7 @@ import java.util.Map;
 public class ModelGenerator {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerator.class);
+    public static final String ACTION_SUFFIX = "Action";
 
     public static Path resolvePathForSourceFile(SourceRoot sourceRoot, String packageName, String name) {
         String[] packages = packageName.split("\\.");
@@ -81,8 +82,8 @@ public class ModelGenerator {
     private static Map<DataType, Type> TYPE_MAPPING = new HashMap<DataType, Type>() {
         {
             put(DataType.STRING, new ClassOrInterfaceType("String"));
-            put(DataType.INT, new ClassOrInterfaceType("Integer"));
-            put(DataType.BOOLEAN, new ClassOrInterfaceType("Boolean"));
+            put(DataType.INT, new ClassOrInterfaceType("int"));
+            put(DataType.BOOLEAN, new ClassOrInterfaceType("boolean"));
             put(DataType.DATE, new ClassOrInterfaceType("Date"));
         }
     };
