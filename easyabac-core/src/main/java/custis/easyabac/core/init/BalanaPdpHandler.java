@@ -178,7 +178,10 @@ public class BalanaPdpHandler implements PdpHandler {
         PDPConfig pdpConfig = balana.getPdpConfig();
 
         PDP pdp = new PDP(pdpConfig);
+        AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
 
+        List<AttributeFinderModule> finderModules = attributeFinder.getModules();
+        finderModules.clear();
 
         return new BalanaPdpHandler(pdp);
     }
@@ -198,7 +201,9 @@ public class BalanaPdpHandler implements PdpHandler {
 
         // registering new attribute finder. so default PDPConfig is needed to change
         AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
+
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
+        finderModules.clear();
 
         for (Datasource datasource : datasources) {
             finderModules.add(new DatasourceAttributeFinderModule(datasource, cache));
