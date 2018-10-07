@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -132,7 +131,8 @@ public abstract class EasyAbacBaseTestClass {
     }
 
     protected static List<Object[]> generateTestData(Class testClass, Class entityClass, Class actionClass,  AuthResponse.Decision decision) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, FileNotFoundException {
-        String entityCode = getEntityCode(entityClass);
+        return Collections.emptyList();
+        /*String entityCode = getEntityCode(entityClass);
 
         List<Object[]> data = new ArrayList<>();
         // TODO scan tests
@@ -148,7 +148,7 @@ public abstract class EasyAbacBaseTestClass {
             testData[2] = testDescription;
             data.add(testData);
         }
-        return data;
+        return data;*/
     }
 
     private static String getEntityCode(Class entityClass) {
