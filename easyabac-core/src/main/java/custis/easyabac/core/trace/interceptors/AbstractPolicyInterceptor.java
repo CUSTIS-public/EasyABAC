@@ -1,27 +1,37 @@
 package custis.easyabac.core.trace.interceptors;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.MatchResult;
+import org.wso2.balana.ctx.AbstractResult;
 
-public class AbstractPolicyInterceptor implements MethodInterceptor {
+import java.lang.reflect.Method;
 
-    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+public class AbstractPolicyInterceptor extends TraceMethodInterceptor {
+
+    private final AbstractPolicy policy;
+
+    public AbstractPolicyInterceptor(AbstractPolicy policy) {
+        this.policy = policy;
+    }
+
+    @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        Method method = invocation.getMethod();
         String methodName = method.getName();
-        AbstractPolicy abstractPolicy = (AbstractPolicy) obj;
+
         Object realResult = null;
 
-        EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
-
         if (methodName.equals("evaluate")) {
-            handler.onPolicyEvaluateStart(abstractPolicy);
-            realResult = proxy.invokeSuper(obj, args);
+            handler.onPolicyEvaluateStart(policy);
+            realResult = invocation.proceed();
             handler.onPolicyEvaluateEnd((AbstractResult) realResult);
         } else if (methodName.equals("match")) {
-            handler.onPolicyMatchStart(abstractPolicy);
-            realResult = proxy.invokeSuper(obj, args);
+            handler.onPolicyMatchStart(policy);
+            realResult = invocation.proceed();
             handler.onPolicyMatchEnd((MatchResult) realResult);
         } else {
-            realResult = proxy.invokeSuper(obj, args);
+            realResult = invocation.proceed();
         }
 
         return realResult;

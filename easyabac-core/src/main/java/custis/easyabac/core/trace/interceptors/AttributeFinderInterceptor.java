@@ -1,30 +1,24 @@
 package custis.easyabac.core.trace.interceptors;
 
-import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.cglib.proxy.MethodProxy;
 import org.wso2.balana.cond.EvaluationResult;
 
 import java.lang.reflect.Method;
-import java.net.URI;
 
-public class AttributeFinderInterceptor implements MethodInterceptor {
+public class AttributeFinderInterceptor extends TraceMethodInterceptor {
 
-    /*@Override*/
-    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        if (method.getName().equals("findAttribute")) {
-            EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
-            EvaluationResult invokeSuperResult = (EvaluationResult) proxy.invokeSuper(obj, args);
-            handler.onFindAttribute((URI) args[0], (URI) args[1], (URI) args[3], invokeSuperResult);
+    @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        Method method = invocation.getMethod();
+        String methodName = method.getName();
+
+        if (methodName.equals("findAttribute")) {
+            EvaluationResult invokeSuperResult = (EvaluationResult) invocation.proceed();
+            handler.onFindAttribute(invokeSuperResult);
 
             return invokeSuperResult;
         } else {
-            return proxy.invokeSuper(obj, args);
+            return invocation.proceed();
         }
-    }
-
-    @Override
-    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
-        return null;
     }
 }

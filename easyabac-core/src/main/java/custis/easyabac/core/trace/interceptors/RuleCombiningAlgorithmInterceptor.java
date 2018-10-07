@@ -1,23 +1,37 @@
 package custis.easyabac.core.trace.interceptors;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.springframework.cglib.proxy.MethodProxy;
+import org.aopalliance.intercept.MethodInvocation;
+import org.wso2.balana.combine.CombiningAlgorithm;
 import org.wso2.balana.combine.RuleCombiningAlgorithm;
 import org.wso2.balana.ctx.AbstractResult;
 
 import java.lang.reflect.Method;
 
-public class RuleCombiningAlgorithmInterceptor implements MethodInterceptor {
+public class RuleCombiningAlgorithmInterceptor extends TraceMethodInterceptor {
 
-    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        if (method.getName().equals("combine")) {
-            EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
-            handler.onRuleCombineStart((RuleCombiningAlgorithm) obj);
-            Object invokeSuperResult = proxy.invokeSuper(obj, args);
-            handler.onRuleCombineEnd((AbstractResult) invokeSuperResult);
-            return invokeSuperResult;
+    private final CombiningAlgorithm combiningAlg;
+
+    public RuleCombiningAlgorithmInterceptor(CombiningAlgorithm combiningAlg) {
+        this.combiningAlg = combiningAlg;
+    }
+
+    @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        Method method = invocation.getMethod();
+        String methodName = method.getName();
+
+        Object realResult = null;
+
+
+        if (methodName.equals("combine")) {
+            handler.onRuleCombineStart((RuleCombiningAlgorithm) combiningAlg);
+            realResult = invocation.proceed();
+            handler.onRuleCombineEnd((AbstractResult) realResult);
         } else {
-            return proxy.invokeSuper(obj, args);
+            realResult = invocation.proceed();
         }
+
+        return realResult;
+
     }
 }

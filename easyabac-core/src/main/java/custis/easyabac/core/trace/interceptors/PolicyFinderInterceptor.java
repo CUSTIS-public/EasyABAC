@@ -1,27 +1,34 @@
 package custis.easyabac.core.trace.interceptors;
 
-import custis.easyabac.core.trace.ProxyImpl;
+import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.finder.PolicyFinder;
+import org.wso2.balana.finder.PolicyFinderResult;
 
-public class PolicyFinderInterceptor implements MethodInterceptor {
+import java.lang.reflect.Method;
 
-    private ProxyImpl proxy;
+import static custis.easyabac.core.trace.PolicyElementsFactory.createPolicyFinderResult;
 
-    public PolicyFinderInterceptor(ProxyImpl proxy) {
-        this.proxy = proxy;
+public class PolicyFinderInterceptor extends TraceMethodInterceptor {
+
+    private final PolicyFinder policyFinder;
+
+    public PolicyFinderInterceptor() {
+        this.policyFinder = null;
     }
 
-    /*@Override*/
-    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-        if (method.getName().equals("findPolicy")) {
-            EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
+    @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        Method method = invocation.getMethod();
+        String methodName = method.getName();
+
+        if (methodName.equals("findPolicy")) {
             handler.onFindPolicyStart();
-            Object invokeSuperResult = proxy.invokeSuper(obj, args);
+            Object invokeSuperResult = invocation.proceed();
             PolicyFinderResult policyFinderResult = (PolicyFinderResult) invokeSuperResult;
             handler.onFindPolicyEnd(policyFinderResult);
-            return proxy.createPolicyFinderResult(policyFinderResult, (PolicyFinder) obj);
+            return createPolicyFinderResult(policyFinderResult, policyFinder);
         } else {
-            return proxy.invokeSuper(obj, args);
+            return invocation.proceed();
         }
     }
 

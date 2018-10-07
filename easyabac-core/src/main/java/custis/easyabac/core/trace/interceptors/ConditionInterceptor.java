@@ -1,27 +1,36 @@
 package custis.easyabac.core.trace.interceptors;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.cond.Condition;
+import org.wso2.balana.cond.EvaluationResult;
 
-public class ConditionInterceptor implements MethodInterceptor {
+import java.lang.reflect.Method;
 
-    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+public class ConditionInterceptor extends TraceMethodInterceptor {
+
+    private final Condition condition;
+
+    public ConditionInterceptor(Condition condition) {
+        this.condition = condition;
+    }
+
+    @Override
+    public Object invoke(MethodInvocation invocation) throws Throwable {
+        Method method = invocation.getMethod();
         String methodName = method.getName();
-        Condition condition = (Condition) obj;
+
         Object realResult = null;
 
-        EvaluatingProcessHandler handler = EvaluationProcessIdentifier.get();
 
         if (methodName.equals("evaluate")) {
             handler.onConditionEvaluateStart(condition);
-            realResult = proxy.invokeSuper(obj, args);
+            realResult = invocation.proceed();
             handler.onConditionEvaluateEnd((EvaluationResult) realResult);
         } else {
-            realResult = proxy.invokeSuper(obj, args);
+            realResult = invocation.proceed();
         }
 
-
-
         return realResult;
-    }
 
+    }
 }
