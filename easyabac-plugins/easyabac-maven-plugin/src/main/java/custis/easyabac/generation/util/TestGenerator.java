@@ -62,7 +62,7 @@ public class TestGenerator {
         String testName = "EasyABAC_" + resourceName + "_Deny_Test";
         ClassOrInterfaceDeclaration type = createType(testUnit, testName, resource, packageName);
 
-        createDenyTest(type);
+        createTest(type, resourceName, DENY);
         createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, DENY);
 
         testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
@@ -75,7 +75,7 @@ public class TestGenerator {
         String testName = "EasyABAC_" + resourceName + "_Permit_Test";
         ClassOrInterfaceDeclaration type = createType(testUnit, testName, resource, packageName);
 
-        createPermitTest(type);
+        createTest(type, resourceName, PERMIT);
         createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, PERMIT);
 
         testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
@@ -111,27 +111,17 @@ public class TestGenerator {
         method.setBody(body);
     }
 
-    private static void createDenyTest(ClassOrInterfaceDeclaration type) {
-        MethodDeclaration method = type.addMethod("test_Deny", Modifier.PUBLIC);
+    private static void createTest(ClassOrInterfaceDeclaration type, String resourceName, AuthResponse.Decision decision) {
+        MethodDeclaration method = type.addMethod("test_" + decision.name(), Modifier.PUBLIC);
         method.addThrownException(Exception.class);
         method.addMarkerAnnotation(Ignore.class);
         NormalAnnotationExpr annotation = method.addAndGetAnnotation(Test.class);
-        annotation.addPair("expected", new ClassExpr(new ClassOrInterfaceType(NotPermittedException.class.getSimpleName())));
+        if (decision == DENY) {
+            annotation.addPair("expected", new ClassExpr(new ClassOrInterfaceType(NotPermittedException.class.getSimpleName())));
+        }
 
         BlockStmt body = new BlockStmt();
-        body.addStatement("getPermissionChecker().ensurePermitted(resource, action);");
-
-        method.setBody(body);
-    }
-
-    private static void createPermitTest(ClassOrInterfaceDeclaration type) {
-        MethodDeclaration method = type.addMethod("test_Permit", Modifier.PUBLIC);
-        method.addThrownException(Exception.class);
-        method.addMarkerAnnotation(Ignore.class);
-        method.addMarkerAnnotation(Test.class);
-
-        BlockStmt body = new BlockStmt();
-        body.addStatement("getPermissionChecker().ensurePermitted(resource, action);");
+        body.addStatement("getPermissionChecker(" + resourceName + ".class).ensurePermitted(resource, action);");
 
         method.setBody(body);
     }

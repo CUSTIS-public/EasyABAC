@@ -16,8 +16,8 @@ public class EasyABAC_Order_Deny_Test extends EasyAbacBaseTestClass {
 
     @Ignore
     @Test(expected = NotPermittedException.class)
-    public void test_Deny() throws Exception {
-        getPermissionChecker().ensurePermitted(resource, action);
+    public void test_DENY() throws Exception {
+        getPermissionChecker(Order.class).ensurePermitted(resource, action);
     }
 
     @Parameters(name = "{index}: resource({0}) and action({1})")

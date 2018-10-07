@@ -14,9 +14,9 @@ import static custis.easyabac.pdp.AuthResponse.Decision.PERMIT;
 public class EasyABAC_Order_Permit_Test extends EasyAbacBaseTestClass {
 
     @Ignore
-    @Test
-    public void test_Permit() throws Exception {
-        getPermissionChecker().ensurePermitted(resource, action);
+    @Test()
+    public void test_PERMIT() throws Exception {
+        getPermissionChecker(Order.class).ensurePermitted(resource, action);
     }
 
     @Parameters(name = "{index}: resource({0}) and action({1})")

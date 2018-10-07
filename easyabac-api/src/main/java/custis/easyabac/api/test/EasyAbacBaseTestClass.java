@@ -7,6 +7,7 @@ import custis.easyabac.api.PermitAwarePermissionChecker;
 import custis.easyabac.api.impl.EasyABACPermissionChecker;
 import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.init.AbacAuthModelFactory;
+import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.Attribute;
@@ -63,15 +64,31 @@ public abstract class EasyAbacBaseTestClass {
 
     }
 
-    protected PermitAwarePermissionChecker getPermissionChecker() throws FileNotFoundException, EasyAbacInitException {
+    protected PermitAwarePermissionChecker getPermissionChecker(Class entityClass) throws FileNotFoundException, EasyAbacInitException {
         AbacAuthModel authModel = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML, getModelSource());
         EasyAbac.Builder builder = new EasyAbac.Builder(getModelSource(), ModelType.EASY_YAML);
+
+        // subject extender
         builder.subjectAttributesProvider(() -> testDescription.getAttributesByCode("subject").entrySet()
                 .stream()
                 .map(stringObjectEntry -> {
                     Attribute attribute = authModel.getAttributes().get(stringObjectEntry.getKey());
                     return new AttributeValue(attribute, Collections.singletonList(stringObjectEntry.getValue().toString()));
                 }).collect(Collectors.toList()));
+
+        // TODO environment extender
+
+        // other datasources
+        List<Datasource> datasources = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Object>> entry : testDescription.getAttributes().entrySet()) {
+            String entryKey = entry.getKey();
+            if (!entryKey.equals("subject") && !entryKey.equals(getEntityCode(entityClass))) {
+                for (Map.Entry<String, Object> valEntry : entry.getValue().entrySet()) {
+                    datasources.add(new SimpleDatasource(entry.getKey() + "." + valEntry.getKey(), valEntry.getValue().toString()));
+                }
+            }
+        }
+        builder.datasources(datasources);
 
         AttributiveAuthorizationService authService = builder.build();
         EasyABACPermissionChecker<Object, Object> permissionChecker = new EasyABACPermissionChecker<>(authService);
@@ -115,14 +132,7 @@ public abstract class EasyAbacBaseTestClass {
     }
 
     protected static List<Object[]> generateTestData(Class testClass, Class entityClass, Class actionClass,  AuthResponse.Decision decision) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, FileNotFoundException {
-        String entityCode = entityClass.getSimpleName();
-        if (entityClass.isAnnotationPresent(AuthorizationEntity.class)) {
-            Annotation ann = entityClass.getDeclaredAnnotation(AuthorizationEntity.class);
-            AuthorizationEntity authEnt = ((AuthorizationEntity) ann);
-            if (!authEnt.name().isEmpty()) {
-                entityCode = authEnt.name();
-            }
-        }
+        String entityCode = getEntityCode(entityClass);
 
         List<Object[]> data = new ArrayList<>();
         // TODO scan tests
@@ -139,6 +149,18 @@ public abstract class EasyAbacBaseTestClass {
             data.add(testData);
         }
         return data;
+    }
+
+    private static String getEntityCode(Class entityClass) {
+        String entityCode = entityClass.getSimpleName();
+        if (entityClass.isAnnotationPresent(AuthorizationEntity.class)) {
+            Annotation ann = entityClass.getDeclaredAnnotation(AuthorizationEntity.class);
+            AuthorizationEntity authEnt = ((AuthorizationEntity) ann);
+            if (!authEnt.name().isEmpty()) {
+                entityCode = authEnt.name();
+            }
+        }
+        return entityCode;
     }
 
 }
