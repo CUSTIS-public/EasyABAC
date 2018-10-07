@@ -1,14 +1,11 @@
 package custis.easyabac.core.audit;
 
-import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.MdpAuthRequest;
-import custis.easyabac.pdp.MdpAuthResponse;
 
-import java.util.List;
+import java.util.Map;
 
 public interface Audit {
-    void onRequest(List<AttributeWithValue> attributeWithValues, AuthResponse response);
+    void onRequest(String actor, String action);
 
-    void onMultipleRequest(MdpAuthRequest requestContext, MdpAuthResponse response);
+    void onMultipleRequest(String actor, Map<String, AuthResponse> actionResponse);
 }

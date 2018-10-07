@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EasyAbac implements AttributiveAuthorizationService {
 
@@ -52,7 +53,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
 
-            audit.onRequest(attributeWithValueList, result);
+            performAudit(attributeWithValueList);
 
             return result;
         } catch (Exception e) {
@@ -71,7 +72,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
         MdpAuthResponse result = pdpHandler.evaluate(requestContext);
 
-        audit.onMultipleRequest(requestContext, result);
+        performAudit(requestContext, result);
 
         return result.getResults();
     }
@@ -128,6 +129,40 @@ public class EasyAbac implements AttributiveAuthorizationService {
             throw new EasyAbacInitException("Attribute " + attributeId + " is not found in the model");
         }
         return attributeParam;
+    }
+
+    private void performAudit(List<AttributeWithValue> attributeWithValues) {
+        List<AttributeWithValue> subject = attributeWithValues.stream()
+                .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.SUBJECT)
+                .collect(Collectors.toList());
+
+        Optional<AttributeWithValue> action = attributeWithValues.stream()
+                .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.ACTION)
+                .findFirst();
+
+        audit.onRequest(serializeSubject(subject), action.get().getValues().get(0));
+    }
+
+    private void performAudit(MdpAuthRequest request, MdpAuthResponse response) {
+        List<AttributeWithValue> subject = request.getAttributeGroups()
+                .stream()
+                .filter(attributeGroup -> attributeGroup.getCategory() == Category.SUBJECT)
+                .flatMap(attributeGroup -> attributeGroup.getAttributes().stream())
+                .collect(Collectors.toList());
+
+        List<String> actions = request.getAttributeGroups()
+                .stream()
+                .filter(attributeGroup -> attributeGroup.getCategory() == Category.ACTION)
+                .flatMap(attributeGroup -> attributeGroup.getAttributes().stream())
+                .flatMap(attributeWithValue -> attributeWithValue.getValues().stream())
+                .collect(Collectors.toList());
+        // FIXME сделать
+
+        audit.onMultipleRequest(serializeSubject(subject), Collections.emptyMap());
+    }
+
+    private static String serializeSubject(List<AttributeWithValue> subject) {
+        return subject.toString();
     }
 
     public static class Builder {
