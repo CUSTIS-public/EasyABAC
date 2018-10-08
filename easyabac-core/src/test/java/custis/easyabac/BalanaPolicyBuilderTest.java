@@ -6,6 +6,7 @@ import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.TargetMatch;
@@ -106,6 +107,7 @@ public class BalanaPolicyBuilderTest {
     }
 
     @Test
+    @Ignore
     public void buildPolicyTarget_whenSpecifiedInEasyPolicy() {
         org.wso2.balana.Policy policy = pickSinglePolicy();
 
