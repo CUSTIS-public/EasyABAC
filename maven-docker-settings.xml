@@ -21,7 +21,7 @@
 
     <profiles>
         <profile>
-            <resourceId>use-custis-nexus</resourceId>
+            <id>use-custis-nexus</id>
             <repositories>
                 <repository>
                     <id>CustisNexusSnapshots</id>
