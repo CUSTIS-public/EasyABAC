@@ -41,7 +41,7 @@ public class BalanaPolicyBuilder {
     private String policyNamespace;
 
     public BalanaPolicyBuilder(Properties properties) {
-        this.policyNamespace = properties.getProperty(POLICY_NAMESPACE);
+        this.policyNamespace = "urn:oasis:names:tc:xacml:3.0:easy-policy-sample";//properties.getProperty(POLICY_NAMESPACE);
     }
 
     public Map<URI, org.wso2.balana.Policy> buildFrom(AbacAuthModel abacAuthModel) {
@@ -74,7 +74,7 @@ public class BalanaPolicyBuilder {
                 null,
                 null,
                 XACMLConstants.XACML_VERSION_3_0
-                );
+        );
     }
 
     private Condition buildRuleCondition(List<custis.easyabac.core.model.abac.Condition> conditions,
@@ -170,7 +170,7 @@ public class BalanaPolicyBuilder {
     private Evaluatable createAttributeDesignator(Attribute attribute, boolean selectOneValue) {
         final AttributeDesignator designator = new AttributeDesignator(
                 URI.create(attribute.getType().getXacmlName()),
-                URI.create(attribute.getId()),
+                URI.create(attribute.getXacmlName()),
                 true,
                 URI.create(attribute.getCategory().getXacmlName()));
         return selectOneValue ? new Apply(BalanaFunctionsFactory.getFunctions(attribute.getType()).oneAndOnly(), singletonList(designator)) : designator;
@@ -215,11 +215,13 @@ public class BalanaPolicyBuilder {
 
         //TODO when functions are 'in', 'oneOf', 'subset' -> create bag attribute
         final DataType dataType = targetCondition.getFirstOperand().getType();
+
         AttributeValue attributeValue;
         try {
+
             attributeValue = StandardAttributeFactory.getFactory().createValue(
-                     URI.create(dataType.getXacmlName()),
-                     targetCondition.getSecondOperand());
+                    URI.create(dataType.getXacmlName()),
+                    targetCondition.getSecondOperand());
 
         } catch (UnknownIdentifierException | ParsingException e) {
             throw new BalanaPolicyBuildException(format(
@@ -229,6 +231,6 @@ public class BalanaPolicyBuilder {
 
         final custis.easyabac.core.model.abac.Function conditionFunction = targetCondition.getFunction();
         return new TargetMatch(balanaFunctions.pick(conditionFunction),
-                createAttributeDesignator(firstOperand, !balanaFunctions.requiresBagAttribute(conditionFunction)), attributeValue);
+                createAttributeDesignator(firstOperand, false/* !balanaFunctions.requiresBagAttribute(conditionFunction)*/), attributeValue);
     }
 }

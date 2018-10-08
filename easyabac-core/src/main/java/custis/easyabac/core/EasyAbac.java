@@ -56,7 +56,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             return result;
         } catch (Exception e) {
-            log.error(e);
+            log.error("authorize", e);
             return new AuthResponse(e.getMessage());
         }
     }

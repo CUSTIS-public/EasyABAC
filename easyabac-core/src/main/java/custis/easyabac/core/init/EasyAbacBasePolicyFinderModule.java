@@ -3,6 +3,7 @@ package custis.easyabac.core.init;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.MatchResult;
+import org.wso2.balana.Policy;
 import org.wso2.balana.PolicySet;
 import org.wso2.balana.combine.PolicyCombiningAlgorithm;
 import org.wso2.balana.ctx.EvaluationCtx;
@@ -26,6 +27,10 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
     protected Map<URI, org.wso2.balana.Policy> policies;
     protected PolicyCombiningAlgorithm combiningAlg;
 
+    @Override
+    public boolean isRequestSupported() {
+        return true;
+    }
 
     @Override
     public PolicyFinderResult findPolicy(EvaluationCtx context) {
@@ -58,6 +63,9 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
                 // this is the first match we've found, so remember it
                 selectedPolicies.add(policy);
             }
+        }
+        for (Policy selectedPolicy : selectedPolicies) {
+            log.debug(selectedPolicy.encode());
         }
 
         // no errors happened during the search, so now take the right

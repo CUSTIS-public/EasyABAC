@@ -1,8 +1,47 @@
-<Response xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17">
-    <Result>
-        <Decision>Permit</Decision>
-        <Status>
-            <StatusCode Value="urn:oasis:names:tc:xacml:1.0:status:ok"/>
-        </Status>
-    </Result>
-</Response>
+<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+        PolicyId="urn:oasis:names:tc:xacml:3.0:easy-policy-sample:426f104e-7bdc-4b25-8d4b-ed988d0dd7e7" Version="1.0"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit">
+    <Description>политика редактирования отчета в зависимости от категории</Description>
+    <Target>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">report.edit</AttributeValue>
+                    <AttributeDesignator AttributeId="urn:attr:report.action"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"
+                                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                         MustBePresent="true"/>
+                </Match>
+            </AllOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">report.view</AttributeValue>
+                    <AttributeDesignator AttributeId="urn:attr:report.action"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"
+                                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                         MustBePresent="true"/>
+                </Match>
+            </AllOf>
+        </AnyOf>
+    </Target>
+    <Rule RuleId="urn:oasis:names:tc:xacml:3.0:easy-policy-sample:426f104e-7bdc-4b25-8d4b-ed988d0dd7e7:policy_0_rule_0"
+          Effect="Permit">
+        <Description>проверяем возможность доступа к отчету в зависимости от категории</Description>
+        <Condition>
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                        <AttributeDesignator AttributeId="urn:attr:report.category"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                             MustBePresent="true"/>
+                    </Apply>
+                    <AttributeDesignator AttributeId="urn:attr:subject.allowed-categories"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"
+                                         Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                         MustBePresent="true"/>
+                </Apply>
+            </Apply>
+        </Condition>
+    </Rule>
+</Policy>
