@@ -1,13 +1,6 @@
 package custis.easyabac.generation;
 
-import com.github.javaparser.utils.SourceRoot;
-import custis.easyabac.ModelType;
-import custis.easyabac.core.init.AbacAuthModelFactory;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.attribute.Resource;
-import custis.easyabac.generation.util.ActionGenerator;
-import custis.easyabac.generation.util.EntityGenerator;
-import custis.easyabac.generation.util.TestGenerator;
+import custis.easyabac.generation.util.CompleteGenerator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -36,19 +29,9 @@ public class TestGenerationMojo extends EasyAbacBaseMojo {
 
     private void findAndCreateTests() throws Exception {
         FileInputStream is = new FileInputStream(project.getBasedir() + "/" + policyFile);
-        AbacAuthModel model = new AbacAuthModelFactory().getInstance(ModelType.EASY_YAML, is);
+        Path sourcePath = project.getBasedir().toPath().resolve(testPath);
+        Path resourcePath = project.getBasedir().toPath().resolve(testResourcePath);
 
-        Path rootPath = project.getBasedir().toPath().resolve(testPath);
-        SourceRoot sourceRoot = new SourceRoot(rootPath);
-
-        for (Resource resource : model.getResources().values()) {
-            EntityGenerator.createEntity(resource, testBasePackage + ".model", sourceRoot);
-            ActionGenerator.createAction(resource, testBasePackage + ".model", sourceRoot);
-            TestGenerator.createTest(resource, testBasePackage, sourceRoot, model.getPolicies());
-        }
-
-
-
-        sourceRoot.saveAll();
+        CompleteGenerator.generate(is, sourcePath, resourcePath, testBasePackage);
     }
 }

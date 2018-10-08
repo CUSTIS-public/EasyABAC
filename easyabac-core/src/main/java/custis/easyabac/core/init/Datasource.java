@@ -1,5 +1,6 @@
 package custis.easyabac.core.init;
 
+import custis.easyabac.core.EasyAbacDatasourceException;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 
 import java.util.List;
@@ -44,5 +45,5 @@ public abstract class Datasource {
         return expire;
     }
 
-    abstract public List<String> find();
+    abstract public List<String> find() throws EasyAbacDatasourceException;
 }

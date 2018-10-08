@@ -39,13 +39,14 @@ public class AuthModelTransformer {
     }
 
     private void transformPermissions(List<EasyPolicy> permissions) throws EasyAbacInitException {
-        for (EasyPolicy permission : permissions) {
+        for (int i = 0; i < permissions.size(); i++) {
+            EasyPolicy permission = permissions.get(i);
 
             List<TargetCondition> conditions = transformTargetConditions(permission.getAccessToActions());
 
             Target target = new Target(Operation.OR, conditions, permission.getAccessToActions());
 
-            List<Rule> rules = transformRules(permission.getRules());
+            List<Rule> rules = transformRules(i, permission.getRules());
 
             List<Attribute> returnAttributes = transformReturnAttributes(permission.getReturnAttributes());
 
@@ -69,20 +70,20 @@ public class AuthModelTransformer {
     }
 
     private Attribute findAttributeByAction(String action) throws EasyAbacInitException {
-        Resource resource = findResource(action);
+        Resource resource = findResourceByAction(action);
         String actionAttributeName = makeAttributeId(resource.getId(), ACTION);
         return findAttributeById(actionAttributeName);
     }
 
-    private Resource findResource(String action) throws EasyAbacInitException {
+    private Resource findResourceByAction(String action) throws EasyAbacInitException {
         String[] split = action.split("\\.");
         if (split.length == 0) {
-            throw new EasyAbacInitException("Дейстие " + action + " заданно без указания объекта");
+            throw new EasyAbacInitException("Action " + action + " is specified without specifying a resource");
         }
         String resourceId = split[0];
         Resource resource = resources.get(resourceId);
         if (resource == null) {
-            throw new EasyAbacInitException("В моделе не найден ресурс: " + resourceId);
+            throw new EasyAbacInitException("Resource " + resourceId + " is not found in the model");
         }
 
         return resource;
@@ -97,11 +98,13 @@ public class AuthModelTransformer {
         return returnAttributes;
     }
 
-    private List<Rule> transformRules(List<EasyRule> easyRules) throws EasyAbacInitException {
+    private List<Rule> transformRules(int policyId, List<EasyRule> easyRules) throws EasyAbacInitException {
         List<Rule> rules = new ArrayList<>();
-        for (EasyRule easyRule : easyRules) {
+
+        for (int i = 0; i < easyRules.size(); i++) {
+            EasyRule easyRule = easyRules.get(i);
             List<Condition> conditions = transformConditions(easyRule);
-            Rule rule = new Rule(IdGenerator.newId(), easyRule.getTitle(), easyRule.getOperation(), conditions);
+            Rule rule = new Rule("policy_" + policyId + "_rule_" + i, easyRule.getTitle(), easyRule.getOperation(), conditions);
 
             rules.add(rule);
         }
@@ -120,20 +123,22 @@ public class AuthModelTransformer {
     }
 
     private Condition parseCondition(String conditionExpression) throws EasyAbacInitException {
-
-
         boolean negation = false;
-        Attribute firstOperand = findAttributeById("report.category");
-        Attribute secondOperandAttribute = findAttributeById("subject.allowed-categories");
-        Function function = Function.findByEasyName("==");
-
-        return new Condition(IdGenerator.newId(), negation, firstOperand, secondOperandAttribute, function);
+        String[] lexems = conditionExpression.split(" "); // FIXME исправить
+        Attribute firstOperand = findAttributeById(lexems[0]);
+        Function function = Function.findByEasyName(lexems[1]);
+        if (lexems[2].startsWith("'") && lexems[2].endsWith("'")) {
+            return new Condition(IdGenerator.newId(), negation, firstOperand, Arrays.asList(lexems[2].substring(1, lexems[2].length() - 1)), function);
+        } else {
+            Attribute secondOperandAttribute = findAttributeById(lexems[2]);
+            return new Condition(IdGenerator.newId(), negation, firstOperand, secondOperandAttribute, function);
+        }
     }
 
     private Attribute findAttributeById(String id) throws EasyAbacInitException {
         Attribute attribute = attributes.get(id);
         if (attribute == null) {
-            throw new EasyAbacInitException("Attribute " + id + " not found in model");
+            throw new EasyAbacInitException("Attribute " + id + " is not found in the model");
         }
         return attribute;
     }
@@ -157,7 +162,6 @@ public class AuthModelTransformer {
             if (easyResource.getActions().size() > 0) {
                 Attribute attribute = transformActions(resourceName, easyResource.getActions());
 
-                resourceAttributes.add(attribute);
                 attributes.put(attribute.getId(), attribute);
             }
 

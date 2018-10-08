@@ -35,11 +35,13 @@ public class EntityGenerator {
             Comment comment = new JavadocComment("Authorization attribute \"" + attribute.getTitle() + "\"");
             type.addOrphanComment(comment);
 
-            FieldDeclaration field = type.addField(getTypeForModelType(attribute.getType()), ModelGenerator.escape(attribute.getId()), Modifier.PRIVATE);
+            String attributeId = attribute.getId();
+            attributeId = attributeId.substring(attributeId.lastIndexOf(".") + 1);
+            FieldDeclaration field = type.addField(getTypeForModelType(attribute.getType()), ModelGenerator.escape(attributeId), Modifier.PRIVATE);
             fields.add(field);
 
             NormalAnnotationExpr annotation = field.addAndGetAnnotation(AuthorizationAttribute.class.getSimpleName());
-            annotation.addPair("id", "\"" + attribute.getId() + "\"");
+            annotation.addPair("id", "\"" + attributeId + "\"");
         }
 
 

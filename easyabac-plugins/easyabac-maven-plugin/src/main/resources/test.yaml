@@ -2,33 +2,63 @@ resources:
   subject:
     attributes:
     - id: id
-    - id: allowed-categories
-      title: категории доступные субъекту
-      multiple: true
-  report:
-    title: Отчет
-    actions:
-    - edit
-    - view
-    - remove
+    - id: role
+      title: Роль сотрудника "Менеджер" / Операционист
+      allowableValues:  #Разрешенные значения, для валидации политики
+      - OPERATOR
+      - MANAGER
+    - id: branchId
+      title: ИД филиала
+    - id: maxOrderAmount
+      title: Максимальный заказ
+  customer:
+    title: Клиент
     attributes:
     - id: id
+      title: ИД клиента
+    - id: branchId
+      title: ИД филиала
+  order:
+    title: Заказ
+    actions:
+    - view
+    - create
+    - approve
+    - reject
+    attributes:
+    - id: id
+      title: ИД заказа
+    - id: amount
+      title: Сумма заказа
       type: int
-      title: код отчета
-    - id: category
-      title: категория доступа отчета
-      allowableValues:  #Разрешенные значения, для валидации политики
-      - iod
-      - dsp
+    - id: branchId
+      title: ИД филиала
+    - id: customerId
+      title: ИД клиента
+
+
 permissions:
-- title: политика редактирования отчета в зависимости от категории
-  accessToActions:
-    [report.edit]
+- title: Работа только с заказами своего филиала
+  accessToActions: [order.create, order.approve, order.reject, order.view]
   rules:
-    rule1:
-      title: проверяем возможность доступа к отчету в зависимости от категории
-      operation: OR #это здесь просто, что бы проверить загрузку. Возможные операции:  AND, OR, NAND, NOR
+    - title: Только свой филиал
+      operation: AND
       conditions:
-      - report.category == subject.allowed-categories
-  returnAttributes:
-    [subject.allowed-categories]
+      - order.branchId == subject.branchId
+
+- title: Операционист
+  accessToActions: [order.create]
+  rules:
+    - title: Доступ операциониста
+      operation: AND
+      conditions:
+      - subject.role == 'OPERATOR'
+
+- title: Менеджер
+  accessToActions: [order.approve, order.reject]
+  rules:
+    - title: Доступ менеджера
+      operation: AND
+      conditions:
+      - subject.role == 'MANAGER'
+      - subject.maxOrderAmount > order.amount
