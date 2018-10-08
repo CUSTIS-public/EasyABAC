@@ -8,6 +8,7 @@ import custis.easyabac.core.model.abac.attribute.DataType;
 import custis.easyabac.core.model.abac.attribute.Resource;
 import custis.easyabac.core.model.easy.*;
 
+import java.io.StringReader;
 import java.util.*;
 
 public class AuthModelTransformer {
@@ -123,15 +124,12 @@ public class AuthModelTransformer {
     }
 
     private Condition parseCondition(String conditionExpression) throws EasyAbacInitException {
-        boolean negation = false;
-        String[] lexems = conditionExpression.split(" "); // FIXME исправить
-        Attribute firstOperand = findAttributeById(lexems[0]);
-        Function function = Function.findByEasyName(lexems[1]);
-        if (lexems[2].startsWith("'") && lexems[2].endsWith("'")) {
-            return new Condition(IdGenerator.newId(), negation, firstOperand, Arrays.asList(lexems[2].substring(1, lexems[2].length() - 1)), function);
-        } else {
-            Attribute secondOperandAttribute = findAttributeById(lexems[2]);
-            return new Condition(IdGenerator.newId(), negation, firstOperand, secondOperandAttribute, function);
+        PolicyExpressionParser expressionParser = new PolicyExpressionParser(new StringReader(conditionExpression));
+        expressionParser.setAttributes(this.attributes);
+        try {
+            return expressionParser.parseRuleCondition(false);
+        } catch (ParseException e) {
+            throw new EasyAbacInitException("Failed to parse rule condition", e);
         }
     }
 

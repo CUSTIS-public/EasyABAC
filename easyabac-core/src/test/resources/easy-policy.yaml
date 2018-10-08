@@ -1,0 +1,33 @@
+
+policies:
+  #всегда один abac-set. политик одна или несколько
+  #всегда abac-combining-algorithm: deny-unless-permit
+  policy1:
+    target: # target только у политик, у правил нет
+      operation: or #один уоровень объединения or|and
+      conditions: # комбинация из вложенных AnyOf и AllOf
+      - action-id == CourseUnit.Edit #только equal функция зависит от типа аргумента
+      - action-id == CourseUnit.Delete
+    rules:
+      #всегда combining-algorithm: deny-unless-permit
+      rule1:
+        # всегда пермит  effect: permit
+        # по умолчанию не указываем negation: false
+        operation: and # заворачиваем в urn:oasis:names:tc:xacml:1.0:function:or или в and, NOR и NAND
+        conditions:  #- каждая строчка заворачиваем Apply
+        - object.CourseUnit.authorId in user.personId # если атрибут не массив заворачиваем в one-and-only
+        - not object.CourseUnit.status == 'DRAFT' #not заворачивает правило в urn:oasis:names:tc:xacml:1.0:function:not
+      rule2:
+        # всегда пермит  effect: permit
+        negation: true  #not заворачивает все правила в urn:oasis:names:tc:xacml:1.0:function:not
+        operation: and
+        conditions:
+        - object.CourseUnit.curatorId == user.personId
+        - object.CourseUnit.status == ['DRAFT', 'TEST'] #заворачивает в string-bag
+        - object.CourseUnit.count > 15  #тип простого аргумента определяем по типу левого.
+        # левый аргумент всегда атрибут. правый или атрибут или константа или массив констант
+        # типы атрибутов: строка, целое, логический, дата, время, датавремя
+        # функции: строка: equal, contains, regex-match, is-in
+        #          целое, дата, время, датавремя: equal, greater-than,  less-than, greater-than-or-equal, less-than-or-equal, is-in
+        #          логическое:  equal
+        #          массив строка, целое, дата, время, датавремя: set-equal, subset, at-least-one-member-of

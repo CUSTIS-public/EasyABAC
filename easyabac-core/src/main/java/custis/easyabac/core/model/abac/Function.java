@@ -1,13 +1,16 @@
 package custis.easyabac.core.model.abac;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import custis.easyabac.core.init.EasyAbacInitException;
 
 public enum Function {
     EQUAL("=="),
     GREATER(">"),
     LESS("<"),
-    GREATER_OR_EQUEL(">="),
-    LESS_OR_EQUEL("<="),
+    GREATER_OR_EQUAL(">="),
+    LESS_OR_EQUAL("<="),
     IN("in"),
     ONE_OF("one-of"),
     SUBSET("subset");
@@ -29,5 +32,11 @@ public enum Function {
         }
         throw new EasyAbacInitException("Function " + functionName + " is not supported");
 
+}
+
+    public static Optional<Function> of(String name) {
+        return Stream.of(Function.values())
+                .filter(v -> v.easyName.equals(name))
+                .findFirst();
     }
 }
