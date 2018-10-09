@@ -64,10 +64,12 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
                 selectedPolicies.add(policy);
             }
         }
-        for (Policy selectedPolicy : selectedPolicies) {
-            log.debug(selectedPolicy.encode());
-        }
 
+        if (log.isDebugEnabled()) {
+            for (Policy selectedPolicy : selectedPolicies) {
+                log.debug(selectedPolicy.encode());
+            }
+        }
         // no errors happened during the search, so now take the right
         // action based on how many policies we found
         switch (selectedPolicies.size()) {
