@@ -20,7 +20,6 @@ import org.wso2.balana.xacml3.*;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,13 +33,10 @@ import static java.util.stream.Collectors.toList;
  */
 public class BalanaPolicyBuilder {
 
-    private static final String POLICY_NAMESPACE = "policy.namespace";
-
-    //TODO create default app namespace instead of configured one
     private String policyNamespace;
 
-    public BalanaPolicyBuilder(Properties properties) {
-        this.policyNamespace = "urn:oasis:names:tc:xacml:3.0:easy-policy-sample";//properties.getProperty(POLICY_NAMESPACE);
+    public BalanaPolicyBuilder() {
+        this.policyNamespace = "urn:oasis:names:tc:xacml:3.0:easy-policy-sample";
     }
 
     public Map<URI, org.wso2.balana.Policy> buildFrom(AbacAuthModel abacAuthModel) {

@@ -18,10 +18,12 @@ import org.wso2.balana.xacml3.AllOfSelection;
 import org.wso2.balana.xacml3.AnyOfSelection;
 import org.wso2.balana.xacml3.ObligationExpression;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -40,13 +42,7 @@ public class BalanaPolicyBuilderTest {
     @Before
     public void buildPolicy() {
         this.authModel = buildAbacAuthModel();
-        try {
-            Properties builderProperties = new Properties();
-            builderProperties.load(getClass().getResourceAsStream("/easy-policy-builder.properties"));
-            this.balanaPolicyBuilder = new BalanaPolicyBuilder(builderProperties);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.balanaPolicyBuilder = new BalanaPolicyBuilder();
     }
 
     //TODO make builder for policies and diverse test data in particular test methods
