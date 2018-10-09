@@ -6,7 +6,6 @@ import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.TargetMatch;
@@ -105,7 +104,6 @@ public class BalanaPolicyBuilderTest {
     }
 
     @Test
-    @Ignore
     public void buildPolicyTarget_whenSpecifiedInEasyPolicy() {
         org.wso2.balana.Policy policy = pickSinglePolicy();
 
@@ -127,19 +125,11 @@ public class BalanaPolicyBuilderTest {
 
         assertEquals("Match value", "CourseUnit.Edit", targetMatch.getMatchValue().encode());
         Evaluatable matchEvaluatable = targetMatch.getMatchEvaluatable();
-        assertTrue("Match evaluatable is Apply", matchEvaluatable instanceof Apply);
-        Apply apply = (Apply) matchEvaluatable;
-        boolean hasAttrDesignator = apply.getChildren().stream()
-                .anyMatch(c -> {
-                    if (!(c instanceof AttributeDesignator)) {
-                        return false;
-                    }
-                    AttributeDesignator ad = (AttributeDesignator) c;
-
-                    return "urn:oasis:names:tc:xacml:3.0:attribute-category:action".equals(ad.getCategory().toString());
-                });
-
-        assertTrue("Match has action attribute designator", hasAttrDesignator);
+        assertTrue("Match evaluatable is AttributeDesignator", matchEvaluatable instanceof AttributeDesignator);
+        AttributeDesignator ad = (AttributeDesignator) matchEvaluatable;
+        assertEquals("Match attribute category",
+                "urn:oasis:names:tc:xacml:3.0:attribute-category:action",
+                ad.getCategory().toString());
     }
 
     @Test

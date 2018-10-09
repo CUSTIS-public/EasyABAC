@@ -175,13 +175,16 @@ public class BalanaPolicyBuilder {
         }
     }
 
-    private Evaluatable createAttributeDesignator(Attribute attribute, boolean selectOneValue) {
+    private Evaluatable createAttributeDesignator(Attribute attribute, boolean selectAsOneValueFromBag) {
         final AttributeDesignator designator = new AttributeDesignator(
                 URI.create(attribute.getType().getXacmlName()),
                 URI.create(attribute.getXacmlName()),
                 true,
                 URI.create(attribute.getCategory().getXacmlName()));
-        return selectOneValue ? new Apply(BalanaFunctionsFactory.getFunctions(attribute.getType()).oneAndOnly(), singletonList(designator)) : designator;
+        return selectAsOneValueFromBag ?
+                new Apply(BalanaFunctionsFactory.getFunctions(attribute.getType()).oneAndOnly(), singletonList(designator))
+                :
+                designator;
     }
 
     private Target buildBalanaTarget(custis.easyabac.core.model.abac.Target target) {
@@ -239,6 +242,6 @@ public class BalanaPolicyBuilder {
 
         final custis.easyabac.core.model.abac.Function conditionFunction = targetCondition.getFunction();
         return new TargetMatch(balanaFunctions.pick(conditionFunction),
-                createAttributeDesignator(firstOperand, false/* !balanaFunctions.requiresBagAttribute(conditionFunction)*/), attributeValue);
+                createAttributeDesignator(firstOperand, false), attributeValue);
     }
 }
