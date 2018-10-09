@@ -15,14 +15,13 @@ import org.wso2.balana.attr.xacml3.AttributeDesignator;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
 import org.wso2.balana.cond.*;
 import org.wso2.balana.ctx.xacml3.Result;
-import org.wso2.balana.xacml3.AllOfSelection;
-import org.wso2.balana.xacml3.AnyOfSelection;
-import org.wso2.balana.xacml3.Target;
+import org.wso2.balana.xacml3.*;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -56,7 +55,20 @@ public class BalanaPolicyBuilder {
                 new DenyUnlessPermitRuleAlg(),
                 abacPolicy.getTitle(),
                 buildBalanaTarget(abacPolicy.getTarget()),
-                buildBalanaRules(abacPolicy.getRules(), abacPolicy.getId()));
+                null,
+                buildBalanaRules(abacPolicy.getRules(), abacPolicy.getId()),
+                buildBalanaObligations(abacPolicy.getReturnAttributes()));
+    }
+
+    private Set<AbstractObligation> buildBalanaObligations(List<Attribute> returnAttributes) {
+        return returnAttributes.stream()
+                .map(ra -> new ObligationExpression(Result.DECISION_PERMIT,
+                        singletonList(
+                                new AttributeAssignmentExpression(URI.create(ra.getId()),
+                                        URI.create(ra.getCategory().getXacmlName()),
+                                        createAttributeDesignator(ra, false), null)),
+                        URI.create(ra.getId()))
+                ).collect(Collectors.toSet());
     }
 
     private List<Rule> buildBalanaRules(List<custis.easyabac.core.model.abac.Rule> rules, String policyId) {
