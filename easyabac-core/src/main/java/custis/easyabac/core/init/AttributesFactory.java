@@ -1,18 +1,25 @@
 package custis.easyabac.core.init;
 
 import custis.easyabac.core.model.abac.attribute.DataType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.ParsingException;
-import org.wso2.balana.attr.*;
+import org.wso2.balana.UnknownIdentifierException;
+import org.wso2.balana.attr.AttributeValue;
+import org.wso2.balana.attr.BagAttribute;
+import org.wso2.balana.attr.StandardAttributeFactory;
 import org.wso2.balana.ctx.Attribute;
+import org.wso2.balana.finder.impl.FileBasedPolicyFinderModule;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class AttributesFactory {
+
+    private final static Log log = LogFactory.getLog(FileBasedPolicyFinderModule.class);
 
     public static final URI ATTRIBUTE_REQUEST_ID = URI.create("request-id");
 
@@ -51,57 +58,29 @@ public class AttributesFactory {
         try {
             xacmlName = new URI(type.getXacmlName());
         } catch (URISyntaxException e) {
-            throw new EasyAbacInitException(e.getMessage());
+            throw new EasyAbacInitException("balanaBagAttributeValues", e);
         }
         return new BagAttribute(xacmlName, balanaAttributeValues);
     }
 
     public static AttributeValue getAttributeValue(DataType type, String value) throws EasyAbacInitException {
-        AttributeValue balanaAttributeValue;
-        switch (type) {
-            case STRING:
-                balanaAttributeValue = StringAttribute.getInstance(value);
-                break;
-            case INT:
-                try {
-                    balanaAttributeValue = IntegerAttribute.getInstance(value);
-                } catch (NumberFormatException e) {
-                    throw new EasyAbacInitException(e.toString(), e);
-                }
-                break;
-            case BOOLEAN:
-                try {
-                    balanaAttributeValue = BooleanAttribute.getInstance(value);
-                } catch (ParsingException e) {
-                    throw new EasyAbacInitException(e.toString(), e);
-                }
-                break;
-            case DATE_TIME:
-                try {
-                    balanaAttributeValue = DateTimeAttribute.getInstance(value);
-                } catch (ParsingException | ParseException e) {
-                    throw new EasyAbacInitException(e.toString(), e);
-                }
-                break;
-            case TIME:
-                try {
-                    balanaAttributeValue = TimeAttribute.getInstance(value);
-                } catch (ParsingException | ParseException e) {
-                    throw new EasyAbacInitException(e.toString(), e);
-                }
-                break;
-            case DATE:
-                try {
-                    balanaAttributeValue = DateAttribute.getInstance(value);
-                } catch (ParseException e) {
-                    throw new EasyAbacInitException(e.toString(), e);
-                }
-                break;
-            default: {
-                throw new EasyAbacInitException("Type " + type + " is not supported");
-            }
-
+        URI xacmlType;
+        try {
+            xacmlType = new URI(type.getXacmlName());
+        } catch (URISyntaxException e) {
+            log.error("getAttributeValue xacmlType URI", e);
+            throw new EasyAbacInitException(e.toString(), e);
         }
+
+        AttributeValue balanaAttributeValue;
+
+        try {
+            balanaAttributeValue = StandardAttributeFactory.getFactory().createValue(xacmlType, value);
+        } catch (UnknownIdentifierException | ParsingException e) {
+            log.error("getAttributeValue createValue", e);
+            throw new EasyAbacInitException("getAttributeValue createValue", e);
+        }
+
         return balanaAttributeValue;
     }
 
