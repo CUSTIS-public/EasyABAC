@@ -139,7 +139,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
         private Cache cache;
         private Trace trace = DefaultTrace.INSTANCE;
         private Audit audit = DefaultAudit.INSTANCE;
-        private PdpType pdpType = PdpType.BALANA;
         private SubjectAttributesProvider subjectAttributesProvider = DummySubjectAttributesProvider.INSTANCE;
         private InputStream xacmlPolicy;
 
