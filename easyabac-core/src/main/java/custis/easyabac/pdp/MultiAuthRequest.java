@@ -8,9 +8,9 @@ import java.util.Map;
 
 public class MultiAuthRequest {
     private final Map<String, Attribute> attributes;
-    private final Map<String, List<AttributeWithValue>> requests;
+    private final Map<RequestId, List<AttributeWithValue>> requests;
 
-    public MultiAuthRequest(Map<String, Attribute> attributes, Map<String, List<AttributeWithValue>> requests) {
+    public MultiAuthRequest(Map<String, Attribute> attributes, Map<RequestId, List<AttributeWithValue>> requests) {
         this.attributes = attributes;
         this.requests = requests;
     }
@@ -19,7 +19,7 @@ public class MultiAuthRequest {
         return attributes;
     }
 
-    public Map<String, List<AttributeWithValue>> getRequests() {
+    public Map<RequestId, List<AttributeWithValue>> getRequests() {
         return requests;
     }
 }

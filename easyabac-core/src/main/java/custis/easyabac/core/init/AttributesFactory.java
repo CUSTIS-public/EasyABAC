@@ -21,18 +21,7 @@ public class AttributesFactory {
 
     private final static Log log = LogFactory.getLog(FileBasedPolicyFinderModule.class);
 
-    public static final URI ATTRIBUTE_REQUEST_ID = URI.create("request-id");
-
-    public static Attribute requestId(String requestId) {
-        AttributeValue requestIdAttributeValue = null;
-        try {
-            requestIdAttributeValue = getAttributeValue(DataType.STRING, requestId);
-        } catch (EasyAbacInitException e) {
-            e.printStackTrace();
-        }
-        return new Attribute(ATTRIBUTE_REQUEST_ID, "", null, requestIdAttributeValue, 3);
-
-    }
+    public static final String ATTRIBUTE_REQUEST_ID = "request-id";
 
 
     public static Attribute balanaAttribute(String xacmlId, DataType type, List<String> values, boolean includeInResult) throws EasyAbacInitException {

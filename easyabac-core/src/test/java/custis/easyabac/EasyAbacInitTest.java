@@ -79,23 +79,22 @@ public class EasyAbacInitTest {
         authAttrList.add(new AuthAttribute(REPORT_ID, "2"));
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
         authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "bob"));
-        requestMap.put(RequestId.newRandom(), authAttrList);
+        RequestId editBobRequestId = RequestId.newRandom();
+        requestMap.put(editBobRequestId, authAttrList);
 
         authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(REPORT_ID, "2"));
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.view"));
-        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "bob"));
-        requestMap.put(RequestId.newRandom(), authAttrList);
+        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "peter"));
+        RequestId viewPeterRequestId = RequestId.newRandom();
+        requestMap.put(viewPeterRequestId, authAttrList);
 
 
         Map<RequestId, AuthResponse> responseMap = authorizationService.authorizeMultiple(requestMap);
 
-        for (RequestId requestId : requestMap.keySet()) {
-            System.out.println(responseMap.get(requestId).getDecision().name());
-        }
+        Assert.assertEquals(AuthResponse.Decision.PERMIT, responseMap.get(editBobRequestId).getDecision().name());
+        Assert.assertEquals(AuthResponse.Decision.DENY, responseMap.get(viewPeterRequestId).getDecision().name());
 
-
-//        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
     }
 
     class UserCategoryDatasource extends Datasource {
