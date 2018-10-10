@@ -68,8 +68,9 @@ public class BalanaPdpHandler implements PdpHandler {
 
         RequestCtx requestCtx = new RequestCtx(new HashSet<>(attributesSet.values()), null);
 
-        requestCtx.encode(System.out);
-
+        if (log.isDebugEnabled()) {
+            requestCtx.encode(System.out);
+        }
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
 
         if (log.isDebugEnabled()) {
@@ -174,11 +175,29 @@ public class BalanaPdpHandler implements PdpHandler {
     public static PdpHandler getInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache) {
 
 
+        PolicyFinder policyFinder = new PolicyFinder();
+
+        PolicyFinderModule policyFinderModule = new EasyPolicyFinderModule(abacAuthModel);
+        Set<PolicyFinderModule> policyModules = new HashSet<>();
+
+        policyModules.add(policyFinderModule);
+        policyFinder.setModules(policyModules);
+
         Balana balana = Balana.getInstance();
         PDPConfig pdpConfig = balana.getPdpConfig();
 
-        PDP pdp = new PDP(pdpConfig);
 
+        AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
+
+        List<AttributeFinderModule> finderModules = attributeFinder.getModules();
+        finderModules.clear();
+
+        for (Datasource datasource : datasources) {
+            finderModules.add(new DatasourceAttributeFinderModule(datasource, cache));
+        }
+        attributeFinder.setModules(finderModules);
+
+        PDP pdp = new PDP(new PDPConfig(attributeFinder, policyFinder, null, true));
 
         return new BalanaPdpHandler(pdp);
     }
@@ -198,7 +217,9 @@ public class BalanaPdpHandler implements PdpHandler {
 
         // registering new attribute finder. so default PDPConfig is needed to change
         AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
+
         List<AttributeFinderModule> finderModules = attributeFinder.getModules();
+        finderModules.clear();
 
         for (Datasource datasource : datasources) {
             finderModules.add(new DatasourceAttributeFinderModule(datasource, cache));

@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.attr.AttributeValue;
 import org.wso2.balana.attr.BagAttribute;
-import org.wso2.balana.attr.StringAttribute;
 import org.wso2.balana.cond.EvaluationResult;
 import org.wso2.balana.ctx.EvaluationCtx;
 import org.wso2.balana.ctx.Status;
@@ -35,14 +34,14 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
     @Override
     public Set<String> getSupportedCategories() {
         Set<String> categories = new HashSet<>();
-        categories.add(datasource.getRequiredAttribute().getCategory().getXacmlName());
+        categories.add(datasource.getReturnAttribute().getCategory().getXacmlName());
         return categories;
     }
 
     @Override
     public Set getSupportedIds() {
         Set<String> ids = new HashSet<>();
-        ids.add(datasource.getRequiredAttribute().getXacmlName());
+        ids.add(datasource.getReturnAttribute().getXacmlName());
         return ids;
     }
 
@@ -59,24 +58,29 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
             }
         }
 
-        List<String> requiredValue;
+        List<String> returnValue = null;
         List<String> cachedValue = null;
         if (cache != null) {
             try {
-                cachedValue = cache.get(datasource.getParams(), datasource.getRequiredAttribute());
+                cachedValue = cache.get(datasource.getParams(), datasource.getReturnAttributeId());
             } catch (RuntimeException e) {
                 log.error("cache error", e);
             }
 
         }
         if (cachedValue != null) {
-            BagAttribute bagAttribute = packToBag(attributeType, cachedValue);
+            BagAttribute bagAttribute = null;
+            try {
+                bagAttribute = AttributesFactory.balanaBagAttributeValues(datasource.getReturnAttribute().getType(), cachedValue);
+            } catch (EasyAbacInitException e) {
+                return getMissingEvaluationResult(e.getMessage());
+            }
             return new EvaluationResult(bagAttribute);
         }
 
         try {
-            requiredValue = datasource.find();
-            if (requiredValue == null) {
+            returnValue = datasource.find();
+            if (returnValue == null) {
                 throw new EasyAbacDatasourceException("The result cannot be null");
             }
 
@@ -86,30 +90,22 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
             return getMissingEvaluationResult(e.getMessage());
         }
 
-        if (cache != null && cachedValue == null && requiredValue != null) {
-            cache.set(datasource.getParams(), datasource.getRequiredAttribute(), datasource.getExpire(), requiredValue);
+        if (cache != null && cachedValue == null && returnValue != null) {
+            cache.set(datasource.getParams(), datasource.getReturnAttributeId(), datasource.getExpire(), returnValue);
         }
 
 
-        if (requiredValue.isEmpty()) {
+        if (returnValue.isEmpty()) {
             return new EvaluationResult(BagAttribute.createEmptyBag(attributeType));
         }
-        BagAttribute bagAttribute = packToBag(attributeType, requiredValue);
-        return new EvaluationResult(bagAttribute);
-    }
 
-    private BagAttribute packToBag(URI attributeType, List<String> foundValues) {
-        List<AttributeValue> attributeValues = new ArrayList<>();
-        //TODO здесь запаковываем в нужный тип
-        if (foundValues != null) {
-            for (String foundValue : foundValues) {
-
-                attributeValues.add(new StringAttribute(foundValue));
-            }
+        BagAttribute bagAttribute = null;
+        try {
+            bagAttribute = AttributesFactory.balanaBagAttributeValues(datasource.getReturnAttribute().getType(), returnValue);
+        } catch (EasyAbacInitException e) {
+            return getMissingEvaluationResult(e.getMessage());
         }
-
-
-        return new BagAttribute(attributeType, attributeValues);
+        return new EvaluationResult(bagAttribute);
     }
 
     private String extractParamValue(EvaluationCtx context, Param param) throws EasyAbacDatasourceException {

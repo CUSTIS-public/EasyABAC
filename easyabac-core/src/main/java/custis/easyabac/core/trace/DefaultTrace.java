@@ -13,6 +13,9 @@ import org.wso2.balana.ctx.ResponseCtx;
 import org.wso2.balana.finder.PolicyFinderResult;
 
 public class DefaultTrace implements Trace {
+
+    public static DefaultTrace INSTANCE = new DefaultTrace();
+
     @Override
     public void onRuleEvaluateStart(Rule rule) {
 

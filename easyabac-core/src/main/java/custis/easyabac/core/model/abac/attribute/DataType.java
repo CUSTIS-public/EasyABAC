@@ -35,4 +35,14 @@ public enum DataType {
         throw new EasyAbacInitException("Type " + easyName + " is not supported");
 
     }
+
+    public static DataType findByXacmlName(String xacmlName) throws EasyAbacInitException {
+        for (DataType value : DataType.values()) {
+            if (xacmlName.equals(value.getXacmlName())) {
+                return value;
+            }
+        }
+        throw new EasyAbacInitException("Type " + xacmlName + " is not supported");
+
+    }
 }
