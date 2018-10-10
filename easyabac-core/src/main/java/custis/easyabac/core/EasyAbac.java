@@ -134,7 +134,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
         private final AbacAuthModel abacAuthModel;
 
-        private PdpHandlerFactory pdpHandlerFactory = BalanaPdpHandlerFactory.INSTANCE;
+        private PdpHandlerFactory pdpHandlerFactory = BalanaPdpHandlerFactory.PROXY_INSTANCE;
         private List<Datasource> datasources = Collections.emptyList();
         private Cache cache;
         private Trace trace = DefaultTrace.INSTANCE;

@@ -3,7 +3,6 @@ package custis.easyabac.core.trace.interceptors;
 import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.finder.PolicyFinder;
-import org.wso2.balana.finder.PolicyFinderResult;
 
 import java.lang.reflect.Method;
 
@@ -11,11 +10,9 @@ import static custis.easyabac.core.trace.PolicyElementsFactory.createAbstractPol
 
 public class PolicyFinderResultInterceptor extends TraceMethodInterceptor {
 
-    private final PolicyFinderResult policyFinderResult;
     private final PolicyFinder policyFinder;
 
-    public PolicyFinderResultInterceptor(PolicyFinderResult policyFinderResult, PolicyFinder policyFinder) {
-        this.policyFinderResult = policyFinderResult;
+    public PolicyFinderResultInterceptor(PolicyFinder policyFinder) {
         this.policyFinder = policyFinder;
     }
 

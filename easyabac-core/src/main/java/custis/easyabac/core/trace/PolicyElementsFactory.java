@@ -1,22 +1,45 @@
 package custis.easyabac.core.trace;
 
 import custis.easyabac.core.trace.interceptors.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.ProxyFactory;
-import org.wso2.balana.AbstractPolicy;
-import org.wso2.balana.PDP;
-import org.wso2.balana.PDPConfig;
-import org.wso2.balana.Rule;
+import org.wso2.balana.*;
 import org.wso2.balana.combine.CombiningAlgorithm;
+import org.wso2.balana.combine.PolicyCombiningAlgorithm;
 import org.wso2.balana.combine.RuleCombiningAlgorithm;
 import org.wso2.balana.cond.Condition;
 import org.wso2.balana.finder.*;
+import org.wso2.balana.xacml3.AdviceExpression;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class PolicyElementsFactory {
 
-    public static PDPConfig newPDPConfig(Set<PolicyFinderModule> policyFinderModules, List<AttributeFinderModule> attributeFinderModules) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PolicyElementsFactory.class);
+
+    public static PDP newPDP(Set<PolicyFinderModule> policyFinderModules, List<AttributeFinderModule> attributeFinderModules, boolean useProxy) {
+        if (useProxy) {
+            PDPConfig pdpConfig = newPDPConfig(policyFinderModules, attributeFinderModules);
+
+            ProxyFactory result = new ProxyFactory();
+            result.setTarget(new PDP(pdpConfig));
+            result.addAdvice(new PDPInterceptor(pdpConfig));
+
+            return (PDP) result.getProxy();
+        } else {
+            PDPConfig pdpConfig = Balana.getInstance().getPdpConfig();
+            pdpConfig.getAttributeFinder().setModules(attributeFinderModules);
+            pdpConfig.getPolicyFinder().setModules(policyFinderModules);
+            return new PDP(pdpConfig);
+        }
+    }
+
+    /*@Override*/
+    private static PDPConfig newPDPConfig(Set<PolicyFinderModule> policyFinderModules, List<AttributeFinderModule> attributeFinderModules) {
         AttributeFinder attributeFinder = newAttributeFinder();
         attributeFinder.setModules(attributeFinderModules);
 
@@ -25,55 +48,41 @@ public class PolicyElementsFactory {
         return new PDPConfig(attributeFinder, policyFinder, null);
     }
 
-    /*@Override*/
-    public static PDP newPDP(PDPConfig pdpConfig) {
+    private static PolicyFinder newPolicyFinder() {
         ProxyFactory result = new ProxyFactory();
-        result.setTarget(PDP.class);
-        result.addAdvice(new PDPInterceptor(pdpConfig));
-
-        return (PDP) result.getProxy();
-    }
-
-    public static PolicyFinder newPolicyFinder() {
-        ProxyFactory result = new ProxyFactory();
-        result.setTarget(PolicyFinder.class);
+        result.setTarget(new PolicyFinder());
         result.addAdvice(new PolicyFinderInterceptor());
 
         return (PolicyFinder) result.getProxy();
     }
 
-    public static AttributeFinder newAttributeFinder() {
+    private static AttributeFinder newAttributeFinder() {
         ProxyFactory result = new ProxyFactory();
-        result.setTarget(AttributeFinder.class);
+        result.setTarget(new AttributeFinder());
         result.addAdvice(new AttributeFinderInterceptor());
 
         return (AttributeFinder) result.getProxy();
     }
 
-    public static CombiningAlgorithm createPolicyCombiningAlgorithm(CombiningAlgorithm combiningAlg) {
+    private static PolicyCombiningAlgorithm createPolicyCombiningAlgorithm(CombiningAlgorithm combiningAlg) {
         if (combiningAlg == null) {
-            return combiningAlg;
+            return (PolicyCombiningAlgorithm) combiningAlg;
         }
         ProxyFactory result = new ProxyFactory();
-        result.setTarget(RuleCombiningAlgorithm.class);
+        result.setTarget(combiningAlg);
         result.addAdvice(new PolicyCombiningAlgorithmInterceptor(combiningAlg));
 
-        return (CombiningAlgorithm) result.getProxy();
+        return (PolicyCombiningAlgorithm) result.getProxy();
     }
 
 
-    public static Rule createRule(Rule sourceRule) {
+    private static Rule createRule(Rule rule) {
         ProxyFactory result = new ProxyFactory();
-        result.setTarget(Rule.class);
-        result.addAdvice(new RuleInterceptor(sourceRule));
-        /*
-        Enhancer enhancer = new Enhancer();
-        Class[] constructorClasses = new Class[] {
-                URI.class, int.class, String.class, AbstractTarget.class,
-                Condition.class, Set.class, Set.class, int.class
-        };
 
-        Set<AbstractObligation> obligations = null;
+        Set<AbstractObligation> obligations = new HashSet<>();
+        Set<AdviceExpression> advices = new HashSet<>();
+
+/* not needed now
         try {
             Field field = ReflectionUtils.findField(Rule.class, "obligationExpressions");
             field.setAccessible(true);
@@ -81,8 +90,6 @@ public class PolicyElementsFactory {
         } catch (Exception e) {
             LOGGER.error("Ошибка при попытке получить значение поля obligationExpressions");
         }
-
-        Set<AdviceExpression> advices = null;
         try {
             Field field = ReflectionUtils.findField(Rule.class, "adviceExpressions");
             field.setAccessible(true);
@@ -90,154 +97,96 @@ public class PolicyElementsFactory {
         } catch (Exception e) {
             LOGGER.error("Ошибка при попытке получить значение поля adviceExpressions");
         }
+*/
 
-        Integer xacmlVersion = XACMLConstants.XACML_VERSION_3_0;
-        try {
-            Field field = ReflectionUtils.findField(Rule.class, "xacmlVersion");
-            field.setAccessible(true);
-            xacmlVersion = (Integer) field.get(sourceRule);
-        } catch (Exception e) {
-            LOGGER.error("Ошибка при попытке получить значение поля xacmlVersion");
-        }
 
-        Object[] constructorParameters = new Object[] {
-                sourceRule.getId(), sourceRule.getEffect(), sourceRule.getDescription(), sourceRule.getTarget(),
-                createCondition(sourceRule.getCondition()), obligations, advices, xacmlVersion
+        Rule target = new Rule(rule.getId(), rule.getEffect(), rule.getDescription(),
+                rule.getTarget(), createCondition(rule.getCondition()), obligations, advices, XACMLConstants.XACML_VERSION_3_0);
 
-        };*/
+        result.setTarget(target);
+        result.addAdvice(new RuleInterceptor(rule));
 
         return (Rule) result.getProxy();
     }
 
-    public  static CombiningAlgorithm createRuleCombiningAlgorithm(CombiningAlgorithm combiningAlg) {
+    private static RuleCombiningAlgorithm createRuleCombiningAlgorithm(CombiningAlgorithm combiningAlg) {
         if (combiningAlg == null) {
-            return combiningAlg;
+            return (RuleCombiningAlgorithm) combiningAlg;
         }
         ProxyFactory result = new ProxyFactory();
-        result.setTarget(RuleCombiningAlgorithm.class);
+        result.setTarget(combiningAlg);
         result.addAdvice(new RuleCombiningAlgorithmInterceptor(combiningAlg));
 
         return (RuleCombiningAlgorithm) result.getProxy();
     }
 
-    private Condition createCondition(Condition condition) {
+    private static Condition createCondition(Condition condition) {
         if (condition == null) {
             return condition;
         }
         ProxyFactory result = new ProxyFactory();
-        result.setTarget(Condition.class);
+        result.setTarget(condition);
         result.addAdvice(new ConditionInterceptor(condition));
 
-
-       /* boolean isVersionOne = condition.getFunction() != null;
-
-        enhancer.setCallback(new ConditionInterceptor());
-        if (isVersionOne) {
-            return (Condition) enhancer.create(new Class[] {Function.class, List.class}, new Object[] { condition.getFunction(), condition.getChildren()});
-        } else {
-            Expression expression = null;
-            try {
-                Field field = ReflectionUtils.findField(Condition.class, "expression");
-                field.setAccessible(true);
-                expression = (Expression) field.get(condition);
-            } catch (Exception e) {
-                LOGGER.error("Ошибка при попытке получить значение поля expression");
-                return condition;
-            }
-            return (Condition) enhancer.create(new Class[] {Expression.class}, new Object[] { expression});
-        }
-*/
         return (Condition) result.getProxy();
     }
 
     public static PolicyFinderResult createPolicyFinderResult(PolicyFinderResult policyFinderResult, PolicyFinder policyFinder) {
         ProxyFactory result = new ProxyFactory();
-        result.setTarget(Condition.class);
-        result.addAdvice(new PolicyFinderResultInterceptor(policyFinderResult, policyFinder));
 
-        /*Object proxyObject = null;
+        PolicyFinderResult target = null;
+
         if (policyFinderResult.getPolicy() != null) {
-            proxyObject = enhancer.create(new Class[]{AbstractPolicy.class}, new Object[]{policyFinderResult.getPolicy()});
+            target = new PolicyFinderResult(policyFinderResult.getPolicy());
         } else {
-            if (policyFinderResult.getStatus() != null) {
-                proxyObject = enhancer.create(new Class[]{Status.class}, new Object[]{policyFinderResult.getStatus()});
-            } else {
-                proxyObject = enhancer.create();
-            }
+            target = new PolicyFinderResult(policyFinderResult.getStatus());
         }
-        PolicyFinderResult proxiedResult = (PolicyFinderResult) proxyObject;
-        */
 
+        result.setTarget(target);
+        result.addAdvice(new PolicyFinderResultInterceptor(policyFinder));
         return (PolicyFinderResult) result.getProxy();
     }
 
     public static AbstractPolicy createAbstractPolicy(AbstractPolicy policy, final PolicyFinder policyFinder) {
         ProxyFactory result = new ProxyFactory();
-        result.setTarget(AbstractPolicy.class);
-        result.addAdvice(new AbstractPolicyInterceptor(policy));
-
-
-        /*Class[] constructorClasses = null;
-        Object[] constructorParameters = null;
+        AbstractPolicy abstractPolicy = null;
         if (policy instanceof Policy) {
-            enhancer.setSuperclass(Policy.class);
-            constructorClasses = new Class[] {
-                    URI.class, String.class, RuleCombiningAlgorithm.class, String.class,
-                    AbstractTarget.class, String.class, List.class,
-                    Set.class, Set.class
-            };
+            Policy cast = (Policy) policy;
 
             List<PolicyTreeElement> rules = policy.getChildren();
-            List<Rule> proxiedPolicies = new ArrayList<Rule>(rules.size());
+            List<Rule> proxiedRules = new ArrayList<>(rules.size());
             for (PolicyTreeElement policyTreeElement : rules) {
-                proxiedPolicies.add(createRule((Rule) policyTreeElement));
+                proxiedRules.add(createRule((Rule) policyTreeElement));
             }
 
-            constructorParameters = new Object[] {
-                    policy.getId(), policy.getVersion(), createRuleCombiningAlgorithm(policy.getCombiningAlg()), policy.getDescription(),
-                    policy.getTarget(), policy.getDefaultVersion(), proxiedPolicies,
-                    policy.getObligationExpressions(), ((Policy) policy).getVariableDefinitions()
-
-            };
-
-        } else  if (policy instanceof PolicySet) {
-            enhancer.setSuperclass(PolicySet.class);
-            constructorClasses = new Class[] {
-                    URI.class, String.class, PolicyCombiningAlgorithm.class, String.class,
-                    AbstractTarget.class, List.class, String.class,
-                    Set.class
-            };
+            abstractPolicy = new Policy(
+                    cast.getId(), cast.getVersion(), createRuleCombiningAlgorithm(cast.getCombiningAlg()),
+                    cast.getDescription(), cast.getTarget(), cast.getDefaultVersion(), proxiedRules,
+                    cast.getObligationExpressions(), cast.getVariableDefinitions());
+        } else if (policy instanceof PolicySet) {
+            PolicySet cast = (PolicySet) policy;
 
             List<PolicyTreeElement> policies = policy.getChildren();
-            List<AbstractPolicy> proxiedPolicies = new ArrayList<AbstractPolicy>(policies.size());
+            List<AbstractPolicy> proxiedPolicies = new ArrayList<>(policies.size());
             for (PolicyTreeElement policyTreeElement : policies) {
                 proxiedPolicies.add(createAbstractPolicy((AbstractPolicy) policyTreeElement, policyFinder));
             }
 
-            constructorParameters = new Object[] {
-                    policy.getId(), policy.getVersion(), createPolicyCombiningAlgorithm(policy.getCombiningAlg()), policy.getDescription(),
-                    policy.getTarget(), proxiedPolicies, policy.getDefaultVersion(),
-                    policy.getObligationExpressions()
-            };
+            abstractPolicy = new PolicySet(
+                    cast.getId(), cast.getVersion(), createPolicyCombiningAlgorithm(cast.getCombiningAlg()),
+                    cast.getDescription(), cast.getTarget(), proxiedPolicies, cast.getDefaultVersion(),
+                    cast.getObligationExpressions());
         } else if (policy instanceof PolicyReference) {
-            enhancer.setSuperclass(PolicyReference.class);
-
-            constructorClasses = new Class[] {
-                    URI.class, int.class, VersionConstraints.class, PolicyFinder.class, PolicyMetaData.class
-            };
-
-            constructorParameters = new Object[] {
-                    policy.getId(), ((PolicyReference) policy).getReferenceType(), ((PolicyReference) policy).getConstraints(),
-                    policyFinder, policy.getMetaData()
-            };
+            PolicyReference cast = (PolicyReference) policy;
+            abstractPolicy = new PolicyReference(cast.getId(), cast.getReferenceType(), cast.getConstraints(),
+                    policyFinder, cast.getMetaData());
         } else {
-            LOGGER.error("Неизвестная реализация AbstractPolicy");
+            LOGGER.error("Unknown AbstractPolicy implementation");
             return policy;
         }
+        result.setTarget(abstractPolicy);
+        result.addAdvice(new AbstractPolicyInterceptor(policy));
 
-        enhancer.setCallback(new AbstractPolicyInterceptor());
-
-        return (AbstractPolicy) enhancer.create(constructorClasses, constructorParameters);*/
         return (AbstractPolicy) result.getProxy();
     }
 
