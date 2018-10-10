@@ -15,14 +15,12 @@ import org.wso2.balana.attr.xacml3.AttributeDesignator;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
 import org.wso2.balana.cond.*;
 import org.wso2.balana.ctx.xacml3.Result;
-import org.wso2.balana.xacml3.AllOfSelection;
-import org.wso2.balana.xacml3.AnyOfSelection;
-import org.wso2.balana.xacml3.Target;
+import org.wso2.balana.xacml3.*;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -35,13 +33,10 @@ import static java.util.stream.Collectors.toList;
  */
 public class BalanaPolicyBuilder {
 
-    private static final String POLICY_NAMESPACE = "policy.namespace";
-
-    //TODO create default app namespace instead of configured one
     private String policyNamespace;
 
-    public BalanaPolicyBuilder(Properties properties) {
-        this.policyNamespace = "urn:oasis:names:tc:xacml:3.0:easy-policy-sample";//properties.getProperty(POLICY_NAMESPACE);
+    public BalanaPolicyBuilder() {
+        this.policyNamespace = "urn:oasis:names:tc:xacml:3.0:easy-policy-sample";
     }
 
     public Map<URI, org.wso2.balana.Policy> buildFrom(AbacAuthModel abacAuthModel) {
@@ -56,7 +51,20 @@ public class BalanaPolicyBuilder {
                 new DenyUnlessPermitRuleAlg(),
                 abacPolicy.getTitle(),
                 buildBalanaTarget(abacPolicy.getTarget()),
-                buildBalanaRules(abacPolicy.getRules(), abacPolicy.getId()));
+                null,
+                buildBalanaRules(abacPolicy.getRules(), abacPolicy.getId()),
+                buildBalanaObligations(abacPolicy.getReturnAttributes()));
+    }
+
+    private Set<AbstractObligation> buildBalanaObligations(List<Attribute> returnAttributes) {
+        return returnAttributes.stream()
+                .map(ra -> new ObligationExpression(Result.DECISION_PERMIT,
+                        singletonList(
+                                new AttributeAssignmentExpression(URI.create(ra.getId()),
+                                        URI.create(ra.getCategory().getXacmlName()),
+                                        createAttributeDesignator(ra, false), null)),
+                        URI.create(ra.getId()))
+                ).collect(Collectors.toSet());
     }
 
     private List<Rule> buildBalanaRules(List<custis.easyabac.core.model.abac.Rule> rules, String policyId) {
@@ -167,13 +175,16 @@ public class BalanaPolicyBuilder {
         }
     }
 
-    private Evaluatable createAttributeDesignator(Attribute attribute, boolean selectOneValue) {
+    private Evaluatable createAttributeDesignator(Attribute attribute, boolean selectAsOneValueFromBag) {
         final AttributeDesignator designator = new AttributeDesignator(
                 URI.create(attribute.getType().getXacmlName()),
                 URI.create(attribute.getXacmlName()),
                 true,
                 URI.create(attribute.getCategory().getXacmlName()));
-        return selectOneValue ? new Apply(BalanaFunctionsFactory.getFunctions(attribute.getType()).oneAndOnly(), singletonList(designator)) : designator;
+        return selectAsOneValueFromBag ?
+                new Apply(BalanaFunctionsFactory.getFunctions(attribute.getType()).oneAndOnly(), singletonList(designator))
+                :
+                designator;
     }
 
     private Target buildBalanaTarget(custis.easyabac.core.model.abac.Target target) {
@@ -231,6 +242,6 @@ public class BalanaPolicyBuilder {
 
         final custis.easyabac.core.model.abac.Function conditionFunction = targetCondition.getFunction();
         return new TargetMatch(balanaFunctions.pick(conditionFunction),
-                createAttributeDesignator(firstOperand, false/* !balanaFunctions.requiresBagAttribute(conditionFunction)*/), attributeValue);
+                createAttributeDesignator(firstOperand, false), attributeValue);
     }
 }
