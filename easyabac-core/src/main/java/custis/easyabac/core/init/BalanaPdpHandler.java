@@ -1,8 +1,6 @@
 package custis.easyabac.core.init;
 
 import custis.easyabac.core.EasyAbac;
-import custis.easyabac.core.cache.Cache;
-import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.AttributeGroup;
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
@@ -12,22 +10,15 @@ import custis.easyabac.pdp.MdpAuthResponse;
 import custis.easyabac.pdp.RequestId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
-import org.wso2.balana.PDPConfig;
 import org.wso2.balana.ctx.AbstractResult;
 import org.wso2.balana.ctx.Attribute;
 import org.wso2.balana.ctx.AttributeAssignment;
 import org.wso2.balana.ctx.ResponseCtx;
 import org.wso2.balana.ctx.xacml3.RequestCtx;
 import org.wso2.balana.ctx.xacml3.Result;
-import org.wso2.balana.finder.AttributeFinder;
-import org.wso2.balana.finder.AttributeFinderModule;
-import org.wso2.balana.finder.PolicyFinder;
-import org.wso2.balana.finder.PolicyFinderModule;
 import org.wso2.balana.xacml3.*;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Stream;
@@ -43,7 +34,7 @@ public class BalanaPdpHandler implements PdpHandler {
 
     private final PDP pdp;
 
-    private BalanaPdpHandler(PDP pdp) {
+    public BalanaPdpHandler(PDP pdp) {
         this.pdp = pdp;
     }
 
@@ -170,66 +161,6 @@ public class BalanaPdpHandler implements PdpHandler {
         RequestReference ref = new RequestReference();
         ref.setReferences(references);
         return ref;
-    }
-
-    public static PdpHandler getInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache) {
-
-
-        PolicyFinder policyFinder = new PolicyFinder();
-
-        PolicyFinderModule policyFinderModule = new EasyPolicyFinderModule(abacAuthModel);
-        Set<PolicyFinderModule> policyModules = new HashSet<>();
-
-        policyModules.add(policyFinderModule);
-        policyFinder.setModules(policyModules);
-
-        Balana balana = Balana.getInstance();
-        PDPConfig pdpConfig = balana.getPdpConfig();
-
-
-        AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
-
-        List<AttributeFinderModule> finderModules = attributeFinder.getModules();
-        finderModules.clear();
-
-        for (Datasource datasource : datasources) {
-            finderModules.add(new DatasourceAttributeFinderModule(datasource, cache));
-        }
-        attributeFinder.setModules(finderModules);
-
-        PDP pdp = new PDP(new PDPConfig(attributeFinder, policyFinder, null, true));
-
-        return new BalanaPdpHandler(pdp);
-    }
-
-
-    public static PdpHandler getInstance(InputStream policyXacml, List<Datasource> datasources, Cache cache) {
-        PolicyFinder policyFinder = new PolicyFinder();
-
-        PolicyFinderModule stringPolicyFinderModule = new InputStreamPolicyFinderModule(policyXacml);
-        Set<PolicyFinderModule> policyModules = new HashSet<>();
-
-        policyModules.add(stringPolicyFinderModule);
-        policyFinder.setModules(policyModules);
-
-        Balana balana = Balana.getInstance();
-        PDPConfig pdpConfig = balana.getPdpConfig();
-
-        // registering new attribute finder. so default PDPConfig is needed to change
-        AttributeFinder attributeFinder = pdpConfig.getAttributeFinder();
-
-        List<AttributeFinderModule> finderModules = attributeFinder.getModules();
-        finderModules.clear();
-
-        for (Datasource datasource : datasources) {
-            finderModules.add(new DatasourceAttributeFinderModule(datasource, cache));
-        }
-        attributeFinder.setModules(finderModules);
-
-        PDP pdp = new PDP(new PDPConfig(attributeFinder, policyFinder, null, true));
-
-
-        return new BalanaPdpHandler(pdp);
     }
 
 }

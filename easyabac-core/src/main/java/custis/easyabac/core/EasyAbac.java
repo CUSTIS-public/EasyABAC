@@ -131,11 +131,10 @@ public class EasyAbac implements AttributiveAuthorizationService {
     }
 
     public static class Builder {
-        private final InputStream easyModel;
-        private final ModelType modelType;
 
-        private PdpHandler pdpHandler;
-        private AbacAuthModel abacAuthModel;
+        private final AbacAuthModel abacAuthModel;
+
+        private PdpHandlerFactory pdpHandlerFactory = BalanaPdpHandlerFactory.INSTANCE;
         private List<Datasource> datasources = Collections.emptyList();
         private Cache cache;
         private Trace trace = DefaultTrace.INSTANCE;
@@ -144,18 +143,23 @@ public class EasyAbac implements AttributiveAuthorizationService {
         private SubjectAttributesProvider subjectAttributesProvider = DummySubjectAttributesProvider.INSTANCE;
         private InputStream xacmlPolicy;
 
-        public Builder(String easyModel, ModelType modelType) {
-            this.easyModel = new ByteArrayInputStream(easyModel.getBytes());
-            this.modelType = modelType;
+        public Builder(AbacAuthModel abacAuthModel) {
+            this.abacAuthModel = abacAuthModel;
         }
 
-        public Builder(InputStream easyModel, ModelType modelType) {
-            this.easyModel = easyModel;
-            this.modelType = modelType;
+        public Builder(String easyModel, ModelType modelType) throws EasyAbacInitException {
+            this(new ByteArrayInputStream(easyModel.getBytes()), modelType);
         }
 
-        public Builder pdpType(PdpType pdpType) {
-            this.pdpType = pdpType;
+        public Builder(InputStream easyModel, ModelType modelType) throws EasyAbacInitException {
+            this.abacAuthModel = AbacAuthModelFactory.getInstance(modelType, easyModel);
+        }
+
+        public Builder pdpHandlerFactory(PdpHandlerFactory pdpHandlerFactory) {
+            if (xacmlPolicy != null && !pdpHandlerFactory.supportsXacmlPolicies()) {
+                throw new IllegalArgumentException(pdpHandlerFactory.getClass().getName() + " should supports XACML!");
+            }
+            this.pdpHandlerFactory = pdpHandlerFactory;
             return this;
         }
 
@@ -184,19 +188,25 @@ public class EasyAbac implements AttributiveAuthorizationService {
             return this;
         }
 
-        public Builder xacmlPolicy(InputStream xacmlPolicy) {
+        public Builder useXacmlPolicy(InputStream xacmlPolicy) {
+            if (!pdpHandlerFactory.supportsXacmlPolicies()) {
+                throw new IllegalArgumentException(pdpHandlerFactory.getClass().getName() + " doesn't supports XACML!");
+            }
             this.xacmlPolicy = xacmlPolicy;
             return this;
         }
 
 
         public AttributiveAuthorizationService build() throws EasyAbacInitException {
-
-            abacAuthModel = AbacAuthModelFactory.getInstance(modelType, easyModel);
-
             enrichDatasources(datasources, abacAuthModel);
 
-            pdpHandler = PdpHandlerFactory.getPdpHandler(pdpType, modelType, abacAuthModel, xacmlPolicy, datasources, cache);
+            PdpHandler pdpHandler = null;
+            if (xacmlPolicy != null) {
+                // this is xacml source
+                pdpHandler = pdpHandlerFactory.newXacmlInstance(xacmlPolicy, datasources, cache);
+            } else {
+                pdpHandler = pdpHandlerFactory.newInstance(abacAuthModel, datasources, cache);
+            }
 
             List<RequestExtender> extenders = new ArrayList<>();
             extenders.add(new SubjectAttributesExtender(subjectAttributesProvider));

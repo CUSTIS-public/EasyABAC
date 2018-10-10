@@ -1,8 +1,6 @@
 package custis.easyabac;
 
-import custis.easyabac.core.model.abac.Condition;
-import custis.easyabac.core.model.abac.Function;
-import custis.easyabac.core.model.abac.TargetCondition;
+import custis.easyabac.core.model.abac.*;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
