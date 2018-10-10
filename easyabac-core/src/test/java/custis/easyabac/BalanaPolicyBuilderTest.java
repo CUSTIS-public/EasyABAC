@@ -6,23 +6,23 @@ import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.TargetMatch;
 import org.wso2.balana.attr.xacml3.AttributeDesignator;
 import org.wso2.balana.cond.Apply;
 import org.wso2.balana.cond.Evaluatable;
+import org.wso2.balana.ctx.xacml3.Result;
 import org.wso2.balana.xacml3.AllOfSelection;
 import org.wso2.balana.xacml3.AnyOfSelection;
+import org.wso2.balana.xacml3.ObligationExpression;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -41,15 +41,10 @@ public class BalanaPolicyBuilderTest {
     @Before
     public void buildPolicy() {
         this.authModel = buildAbacAuthModel();
-        try {
-            Properties builderProperties = new Properties();
-            builderProperties.load(getClass().getResourceAsStream("/easy-policy-builder.properties"));
-            this.balanaPolicyBuilder = new BalanaPolicyBuilder(builderProperties);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.balanaPolicyBuilder = new BalanaPolicyBuilder();
     }
 
+    //TODO make builder for policies and diverse test data in particular test methods
     private AbacAuthModel buildAbacAuthModel() {
         Target target = new Target(Operation.OR, asList(
                 new TargetCondition(Attribute.ACTION_ID, "CourseUnit.Edit", Function.EQUAL),
@@ -80,7 +75,9 @@ public class BalanaPolicyBuilderTest {
                         asList("DRAFT", "TEST"),
                         Function.IN)));
 
-        Policy abacPolicy = new Policy("policy1", "Sample policy", target, asList(rule1, rule2), emptyList());
+        Attribute attributeToReturn = new Attribute("attrRet1", DataType.STRING, Category.RESOURCE, false);
+
+        Policy abacPolicy = new Policy("policy1", "Sample policy", target, asList(rule1, rule2), singletonList(attributeToReturn));
 
         return new AbacAuthModel(singletonList(abacPolicy), Collections.emptyMap(), Collections.emptyMap());
     }
@@ -107,7 +104,6 @@ public class BalanaPolicyBuilderTest {
     }
 
     @Test
-    @Ignore
     public void buildPolicyTarget_whenSpecifiedInEasyPolicy() {
         org.wso2.balana.Policy policy = pickSinglePolicy();
 
@@ -129,19 +125,11 @@ public class BalanaPolicyBuilderTest {
 
         assertEquals("Match value", "CourseUnit.Edit", targetMatch.getMatchValue().encode());
         Evaluatable matchEvaluatable = targetMatch.getMatchEvaluatable();
-        assertTrue("Match evaluatable is Apply", matchEvaluatable instanceof Apply);
-        Apply apply = (Apply) matchEvaluatable;
-        boolean hasAttrDesignator = apply.getChildren().stream()
-                .anyMatch(c -> {
-                     if (!(c instanceof AttributeDesignator)) {
-                         return false;
-                     }
-                     AttributeDesignator ad = (AttributeDesignator) c;
-
-                     return "urn:oasis:names:tc:xacml:3.0:attribute-category:action".equals(ad.getCategory().toString());
-                });
-
-        assertTrue("Match has action attribute designator", hasAttrDesignator);
+        assertTrue("Match evaluatable is AttributeDesignator", matchEvaluatable instanceof AttributeDesignator);
+        AttributeDesignator ad = (AttributeDesignator) matchEvaluatable;
+        assertEquals("Match attribute category",
+                "urn:oasis:names:tc:xacml:3.0:attribute-category:action",
+                ad.getCategory().toString());
     }
 
     @Test
@@ -171,6 +159,19 @@ public class BalanaPolicyBuilderTest {
                 andApply.getFunction().getIdentifier());
 
         assertEquals("Apply's children qty", 2, andApply.getChildren().size());
+    }
+
+    @Test
+    public void buildObligations_whenGiven() {
+
+        org.wso2.balana.Policy policy = pickSinglePolicy();
+
+        Set obligationExpressions = policy.getObligationExpressions();
+        assertNotNull("Obligations", obligationExpressions);
+        assertFalse("Obligations not found", obligationExpressions.isEmpty());
+
+        ObligationExpression o = (ObligationExpression) obligationExpressions.iterator().next();
+        assertEquals("Fulfill on", Result.DECISION_PERMIT, o.getFulfillOn());
     }
 
     private org.wso2.balana.Policy pickSinglePolicy() {
