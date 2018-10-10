@@ -30,7 +30,7 @@ public class PipTest {
     }
 
     @Test
-    public void TwoAttrEquelsTest() throws Exception {
+    public void TwoAttrEqualsTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xml");
         InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).useXacmlPolicy(policy).build();
@@ -41,6 +41,8 @@ public class PipTest {
         authAttrList.add(new AuthAttribute(SUBJECT_ALLOWED_CATEGORIES, Arrays.asList("iod", "dsp")));
         AuthResponse authResponse = authorizationService.authorize(authAttrList);
         Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+
+        System.out.println(authResponse.getTraceResult());
     }
 
     @Test

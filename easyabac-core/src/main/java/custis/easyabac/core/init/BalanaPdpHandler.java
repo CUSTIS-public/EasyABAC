@@ -4,6 +4,10 @@ import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.model.abac.attribute.AttributeGroup;
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
+import custis.easyabac.core.trace.BalanaTraceHandler;
+import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import custis.easyabac.core.trace.Trace;
+import custis.easyabac.core.trace.result.TraceResult;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.MdpAuthRequest;
 import custis.easyabac.pdp.MdpAuthResponse;
@@ -25,6 +29,7 @@ import java.util.stream.Stream;
 
 import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
 import static custis.easyabac.core.init.AttributesFactory.balanaAttribute;
+import static custis.easyabac.core.trace.BalanaTraceHandlerProvider.instantiate;
 import static custis.easyabac.pdp.AuthResponse.Decision.getByIndex;
 import static java.util.stream.Collectors.toSet;
 
@@ -33,9 +38,11 @@ public class BalanaPdpHandler implements PdpHandler {
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
     private final PDP pdp;
+    private final Trace trace;
 
-    public BalanaPdpHandler(PDP pdp) {
+    public BalanaPdpHandler(PDP pdp, Trace trace) {
         this.pdp = pdp;
+        this.trace = trace;
     }
 
     @Override
@@ -62,13 +69,15 @@ public class BalanaPdpHandler implements PdpHandler {
         if (log.isDebugEnabled()) {
             requestCtx.encode(System.out);
         }
+
+        BalanaTraceHandler balanaTraceHandler = instantiate(trace);
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
 
         if (log.isDebugEnabled()) {
             log.debug(responseCtx.encode());
         }
 
-        return createResponse(responseCtx.getResults().iterator().next());
+        return createResponse(responseCtx.getResults().iterator().next(), BalanaTraceHandlerProvider.get().getResult());
     }
 
     @Override
@@ -88,6 +97,7 @@ public class BalanaPdpHandler implements PdpHandler {
 
         RequestCtx requestCtx = new RequestCtx(null, attributesSet, false, false, multiRequests, null);
 
+        BalanaTraceHandler balanaTraceHandler = instantiate(trace);
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
 
         Map<RequestId, AuthResponse> results = new HashMap<>();
@@ -107,14 +117,14 @@ public class BalanaPdpHandler implements PdpHandler {
                 throw new RuntimeException("Not found requestId in response");
             }
 
-            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult));
+            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult, BalanaTraceHandlerProvider.get().getResult()));
 
         }
 
         return new MdpAuthResponse(results);
     }
 
-    private AuthResponse createResponse(AbstractResult abstractResult) {
+    private AuthResponse createResponse(AbstractResult abstractResult, TraceResult traceResult) {
         AuthResponse.Decision decision = getByIndex(abstractResult.getDecision());
         Set<AttributeAssignment> assignments = abstractResult.getObligations()
                 .stream()
@@ -127,7 +137,7 @@ public class BalanaPdpHandler implements PdpHandler {
         }
 
 
-        return new AuthResponse(decision, obligations);
+        return new AuthResponse(decision, obligations, traceResult);
     }
 
     private Attributes transformGroup(AttributeGroup attributeGroup) {

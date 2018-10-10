@@ -1,5 +1,7 @@
 package custis.easyabac.core.trace.interceptors;
 
+import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.combine.CombiningAlgorithm;
 import org.wso2.balana.combine.RuleCombiningAlgorithm;
@@ -7,7 +9,7 @@ import org.wso2.balana.ctx.AbstractResult;
 
 import java.lang.reflect.Method;
 
-public class RuleCombiningAlgorithmInterceptor extends TraceMethodInterceptor {
+public class RuleCombiningAlgorithmInterceptor implements MethodInterceptor {
 
     private final CombiningAlgorithm combiningAlg;
 
@@ -24,9 +26,9 @@ public class RuleCombiningAlgorithmInterceptor extends TraceMethodInterceptor {
 
 
         if (methodName.equals("combine")) {
-            handler.onRuleCombineStart((RuleCombiningAlgorithm) combiningAlg);
+            BalanaTraceHandlerProvider.get().onRuleCombineStart((RuleCombiningAlgorithm) combiningAlg);
             realResult = invocation.proceed();
-            handler.onRuleCombineEnd((AbstractResult) realResult);
+            BalanaTraceHandlerProvider.get().onRuleCombineEnd((AbstractResult) realResult);
         } else {
             realResult = invocation.proceed();
         }

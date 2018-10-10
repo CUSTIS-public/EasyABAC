@@ -133,16 +133,7 @@ public class PolicyElementsFactory {
 
     public static PolicyFinderResult createPolicyFinderResult(PolicyFinderResult policyFinderResult, PolicyFinder policyFinder) {
         ProxyFactory result = new ProxyFactory();
-
-        PolicyFinderResult target = null;
-
-        if (policyFinderResult.getPolicy() != null) {
-            target = new PolicyFinderResult(policyFinderResult.getPolicy());
-        } else {
-            target = new PolicyFinderResult(policyFinderResult.getStatus());
-        }
-
-        result.setTarget(target);
+        result.setTarget(policyFinderResult);
         result.addAdvice(new PolicyFinderResultInterceptor(policyFinder));
         return (PolicyFinderResult) result.getProxy();
     }

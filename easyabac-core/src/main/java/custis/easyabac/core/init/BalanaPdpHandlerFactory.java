@@ -3,6 +3,7 @@ package custis.easyabac.core.init;
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.trace.PolicyElementsFactory;
+import custis.easyabac.core.trace.Trace;
 import org.wso2.balana.PDP;
 import org.wso2.balana.finder.AttributeFinderModule;
 import org.wso2.balana.finder.PolicyFinderModule;
@@ -30,16 +31,16 @@ public class BalanaPdpHandlerFactory implements PdpHandlerFactory {
     }
 
     @Override
-    public PdpHandler newInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache) {
-        return getInstance(new EasyPolicyFinderModule(abacAuthModel), datasources, cache, useProxy);
+    public PdpHandler newInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache, Trace trace) {
+        return getInstance(new EasyPolicyFinderModule(abacAuthModel), datasources, cache, trace, useProxy);
     }
 
     @Override
-    public PdpHandler newXacmlInstance(InputStream policyXacml, List<Datasource> datasources, Cache cache) {
-        return getInstance(new InputStreamPolicyFinderModule(policyXacml), datasources, cache, useProxy);
+    public PdpHandler newXacmlInstance(InputStream policyXacml, List<Datasource> datasources, Cache cache, Trace trace) {
+        return getInstance(new InputStreamPolicyFinderModule(policyXacml), datasources, cache, trace, useProxy);
     }
 
-    public static PdpHandler getInstance(PolicyFinderModule policyFinderModule, List<Datasource> datasources, Cache cache, boolean useProxy) {
+    public static PdpHandler getInstance(PolicyFinderModule policyFinderModule, List<Datasource> datasources, Cache cache, Trace trace, boolean useProxy) {
         Set<PolicyFinderModule> policyModules = new HashSet<>();
         policyModules.add(policyFinderModule);
 
@@ -50,7 +51,7 @@ public class BalanaPdpHandlerFactory implements PdpHandlerFactory {
 
         PDP pdp = PolicyElementsFactory.newPDP(policyModules, finderModules, useProxy);
 
-        return new BalanaPdpHandler(pdp);
+        return new BalanaPdpHandler(pdp, trace);
     }
 
 }

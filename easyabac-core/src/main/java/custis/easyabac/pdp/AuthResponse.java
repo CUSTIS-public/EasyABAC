@@ -1,5 +1,7 @@
 package custis.easyabac.pdp;
 
+import custis.easyabac.core.trace.result.TraceResult;
+
 import java.util.Collections;
 import java.util.Map;
 
@@ -8,10 +10,16 @@ public class AuthResponse {
     private final Decision decision;
     private final Map<String, String> returnValues;
     private final String errorMsg;
+    private final TraceResult traceResult;
 
     public AuthResponse(Decision decision, Map<String, String> returnValues) {
+        this(decision, returnValues, null);
+    }
+
+    public AuthResponse(Decision decision, Map<String, String> returnValues, TraceResult traceResult) {
         this.decision = decision;
         this.returnValues = returnValues;
+        this.traceResult = traceResult;
         this.errorMsg = null;
     }
 
@@ -19,6 +27,7 @@ public class AuthResponse {
         this.errorMsg = errorMsg;
         decision = Decision.INDETERMINATE;
         returnValues = Collections.emptyMap();
+        traceResult = TraceResult.EMPTY;
     }
 
     public Decision getDecision() {
@@ -31,6 +40,10 @@ public class AuthResponse {
 
     public String getErrorMsg() {
         return errorMsg;
+    }
+
+    public TraceResult getTraceResult() {
+        return traceResult;
     }
 
     public enum Decision {

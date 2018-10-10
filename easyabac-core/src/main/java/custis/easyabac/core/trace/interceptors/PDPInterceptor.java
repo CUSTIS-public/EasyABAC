@@ -1,13 +1,15 @@
 package custis.easyabac.core.trace.interceptors;
 
+import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.PDPConfig;
-import org.wso2.balana.ctx.EvaluationCtx;
 import org.wso2.balana.ctx.ResponseCtx;
+import org.wso2.balana.ctx.xacml3.RequestCtx;
 
 import java.lang.reflect.Method;
 
-public class PDPInterceptor extends TraceMethodInterceptor {
+public class PDPInterceptor implements MethodInterceptor {
 
     private final PDPConfig pdpConfig;
 
@@ -25,11 +27,11 @@ public class PDPInterceptor extends TraceMethodInterceptor {
         Object[] args = invocation.getArguments();
 
 
-        boolean evaluationCall = method.getName().equals("evaluate") && args.length == 1 && args[0] instanceof EvaluationCtx;
+        boolean evaluationCall = method.getName().equals("evaluate") && args.length == 1 && args[0] instanceof RequestCtx;
         if (evaluationCall) {
-            handler.beforeProcess((EvaluationCtx) args[0]);
+            BalanaTraceHandlerProvider.get().beforeProcess((RequestCtx) args[0]);
             realResult = invocation.proceed();
-            handler.postProcess((ResponseCtx) realResult);
+            BalanaTraceHandlerProvider.get().postProcess((ResponseCtx) realResult);
         } else {
             realResult = invocation.proceed();
         }

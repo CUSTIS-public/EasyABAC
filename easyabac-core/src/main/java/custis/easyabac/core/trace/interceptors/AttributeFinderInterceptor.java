@@ -1,11 +1,13 @@
 package custis.easyabac.core.trace.interceptors;
 
+import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.cond.EvaluationResult;
 
 import java.lang.reflect.Method;
 
-public class AttributeFinderInterceptor extends TraceMethodInterceptor {
+public class AttributeFinderInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
@@ -14,7 +16,7 @@ public class AttributeFinderInterceptor extends TraceMethodInterceptor {
 
         if (methodName.equals("findAttribute")) {
             EvaluationResult invokeSuperResult = (EvaluationResult) invocation.proceed();
-            handler.onFindAttribute(invokeSuperResult);
+            BalanaTraceHandlerProvider.get().onFindAttribute(invokeSuperResult);
 
             return invokeSuperResult;
         } else {

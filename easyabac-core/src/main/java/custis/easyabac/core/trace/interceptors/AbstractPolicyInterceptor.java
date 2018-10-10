@@ -1,5 +1,7 @@
 package custis.easyabac.core.trace.interceptors;
 
+import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.MatchResult;
@@ -7,7 +9,7 @@ import org.wso2.balana.ctx.AbstractResult;
 
 import java.lang.reflect.Method;
 
-public class AbstractPolicyInterceptor extends TraceMethodInterceptor {
+public class AbstractPolicyInterceptor implements MethodInterceptor {
 
     private final AbstractPolicy policy;
 
@@ -23,13 +25,13 @@ public class AbstractPolicyInterceptor extends TraceMethodInterceptor {
         Object realResult = null;
 
         if (methodName.equals("evaluate")) {
-            handler.onPolicyEvaluateStart(policy);
+            BalanaTraceHandlerProvider.get().onPolicyEvaluateStart(policy);
             realResult = invocation.proceed();
-            handler.onPolicyEvaluateEnd((AbstractResult) realResult);
+            BalanaTraceHandlerProvider.get().onPolicyEvaluateEnd((AbstractResult) realResult);
         } else if (methodName.equals("match")) {
-            handler.onPolicyMatchStart(policy);
+            BalanaTraceHandlerProvider.get().onPolicyMatchStart(policy);
             realResult = invocation.proceed();
-            handler.onPolicyMatchEnd((MatchResult) realResult);
+            BalanaTraceHandlerProvider.get().onPolicyMatchEnd((MatchResult) realResult);
         } else {
             realResult = invocation.proceed();
         }

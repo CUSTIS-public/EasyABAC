@@ -1,5 +1,7 @@
 package custis.easyabac.core.trace.interceptors;
 
+import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.combine.CombiningAlgorithm;
 import org.wso2.balana.combine.PolicyCombiningAlgorithm;
@@ -7,7 +9,7 @@ import org.wso2.balana.ctx.AbstractResult;
 
 import java.lang.reflect.Method;
 
-public class PolicyCombiningAlgorithmInterceptor extends TraceMethodInterceptor {
+public class PolicyCombiningAlgorithmInterceptor implements MethodInterceptor {
 
     private final CombiningAlgorithm combiningAlg;
 
@@ -24,9 +26,9 @@ public class PolicyCombiningAlgorithmInterceptor extends TraceMethodInterceptor 
 
 
         if (methodName.equals("combine")) {
-            handler.onPolicyCombineStart((PolicyCombiningAlgorithm) combiningAlg);
+            BalanaTraceHandlerProvider.get().onPolicyCombineStart((PolicyCombiningAlgorithm) combiningAlg);
             realResult = invocation.proceed();
-            handler.onPolicyCombineEnd((AbstractResult) realResult);
+            BalanaTraceHandlerProvider.get().onPolicyCombineEnd((AbstractResult) realResult);
         } else {
             realResult = invocation.proceed();
         }

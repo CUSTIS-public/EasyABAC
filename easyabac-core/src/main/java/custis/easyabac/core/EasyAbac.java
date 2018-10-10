@@ -202,9 +202,9 @@ public class EasyAbac implements AttributiveAuthorizationService {
             PdpHandler pdpHandler = null;
             if (xacmlPolicy != null) {
                 // this is xacml source
-                pdpHandler = pdpHandlerFactory.newXacmlInstance(xacmlPolicy, datasources, cache);
+                pdpHandler = pdpHandlerFactory.newXacmlInstance(xacmlPolicy, datasources, cache, trace);
             } else {
-                pdpHandler = pdpHandlerFactory.newInstance(abacAuthModel, datasources, cache);
+                pdpHandler = pdpHandlerFactory.newInstance(abacAuthModel, datasources, cache, trace);
             }
 
             List<RequestExtender> extenders = new ArrayList<>();

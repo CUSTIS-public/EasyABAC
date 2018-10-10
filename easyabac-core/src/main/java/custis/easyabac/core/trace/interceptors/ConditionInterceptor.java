@@ -1,12 +1,14 @@
 package custis.easyabac.core.trace.interceptors;
 
+import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.cond.Condition;
 import org.wso2.balana.cond.EvaluationResult;
 
 import java.lang.reflect.Method;
 
-public class ConditionInterceptor extends TraceMethodInterceptor {
+public class ConditionInterceptor implements MethodInterceptor {
 
     private final Condition condition;
 
@@ -23,9 +25,9 @@ public class ConditionInterceptor extends TraceMethodInterceptor {
 
 
         if (methodName.equals("evaluate")) {
-            handler.onConditionEvaluateStart(condition);
+            BalanaTraceHandlerProvider.get().onConditionEvaluateStart(condition);
             realResult = invocation.proceed();
-            handler.onConditionEvaluateEnd((EvaluationResult) realResult);
+            BalanaTraceHandlerProvider.get().onConditionEvaluateEnd((EvaluationResult) realResult);
         } else {
             realResult = invocation.proceed();
         }
