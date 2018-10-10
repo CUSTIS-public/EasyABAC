@@ -3,10 +3,12 @@ package custis.easyabac.core.init;
 import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.attribute.AttributeGroup;
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
-import custis.easyabac.pdp.*;
+import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.pdp.MdpAuthResponse;
+import custis.easyabac.pdp.MultiAuthRequest;
+import custis.easyabac.pdp.RequestId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.Balana;
@@ -17,7 +19,6 @@ import org.wso2.balana.ctx.Attribute;
 import org.wso2.balana.ctx.AttributeAssignment;
 import org.wso2.balana.ctx.ResponseCtx;
 import org.wso2.balana.ctx.xacml3.RequestCtx;
-import org.wso2.balana.ctx.xacml3.Result;
 import org.wso2.balana.finder.AttributeFinder;
 import org.wso2.balana.finder.AttributeFinderModule;
 import org.wso2.balana.finder.PolicyFinder;
@@ -27,7 +28,6 @@ import org.wso2.balana.xacml3.*;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
 import static custis.easyabac.core.init.AttributesFactory.balanaAttribute;
@@ -67,62 +67,56 @@ public class BalanaPdpHandler implements PdpHandler {
         return createResponse(responseCtx.getResults().iterator().next());
     }
 
-    private Map<Category, Attributes> getBalanaAttributesByCategory(List<AttributeWithValue> attributeWithValues, String requestId) throws EasyAbacInitException {
-        Map<Category, Attributes> attributesMap = new HashMap<>();
-
-        for (AttributeWithValue attributeWithValue : attributeWithValues) {
-            Category cat = attributeWithValue.getAttribute().getCategory();
-            //не соберется
-            Attributes attributes = attributesMap.computeIfAbsent(cat,
-                    category -> new Attributes(URI.create(category.getXacmlName()), null, new HashSet<>(), requestId)
-            );
-            Attribute newBalanaAttribute = transformAttributeValue(attributeWithValue);
-
-            attributes.getAttributes().add(newBalanaAttribute);
-        }
-
-        return attributesMap;
-    }
-
-
     @Override
     public MdpAuthResponse evaluate(MultiAuthRequest multiAuthRequest) throws EasyAbacInitException {
 
         Set<RequestReference> requestReferences = new HashSet<>();
-
+        Set<Attributes> attributesSet = new HashSet<>();
         for (String requestId : multiAuthRequest.getRequests().keySet()) {
             RequestReference requestReference = transformReference(requestId, multiAuthRequest.getRequests().get(requestId));
             requestReferences.add(requestReference);
 
             Map<Category, Attributes> balanaAttributesByCategory = getBalanaAttributesByCategory(multiAuthRequest.getRequests().get(requestId), requestId);
+            attributesSet.addAll(balanaAttributesByCategory.values());
         }
         MultiRequests multiRequests = new MultiRequests(requestReferences);
 
 
+
         RequestCtx requestCtx = new RequestCtx(null, attributesSet, false, false, multiRequests, null);
+
+        if (log.isDebugEnabled()) {
+            requestCtx.encode(System.out);
+        }
 
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
 
-
-        return null;
-    }
-
-    private Attributes transformGroup(AttributeGroup attributeGroup) throws EasyAbacInitException {
-        Set<Attribute> attributeSet = new HashSet<>();
-        for (AttributeWithValue attributeWithValue : attributeGroup.getAttributes()) {
-            Attribute attribute = transformAttributeValue(attributeWithValue);
-            attributeSet.add(attribute);
+        if (log.isDebugEnabled()) {
+            log.debug(responseCtx.encode());
         }
 
-        URI catUri = URI.create(attributeGroup.getCategory().getXacmlName());
-        return new Attributes(catUri, null, attributeSet, attributeGroup.getId());
-    }
+        Map<RequestId, AuthResponse> results = new HashMap<>();
+//
+//        for (AbstractResult abstractResult : responseCtx.getResults()) {
+//            Result result = (Result) abstractResult;
+//
+//            Stream<Attributes> envAttributes = result.getAttributes()
+//                    .stream()
+//                    .filter(attributes -> attributes.getCategory().toString().equals(Category.ENV.getXacmlName()));
+//
+//            Optional<Attribute> requestId = envAttributes.flatMap(attributes -> attributes.getAttributes().stream())
+//                    .filter(attribute -> attribute.getId().equals(ATTRIBUTE_REQUEST_ID))
+//                    .findFirst();
+//
+//            if (!requestId.isPresent()) {
+//                throw new RuntimeException("Not found requestId in response");
+//            }
+//
+//            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult));
+//
+//        }
 
-
-    private Attribute transformAttributeValue(AttributeWithValue attributeWithValue) throws EasyAbacInitException {
-
-        custis.easyabac.core.model.abac.attribute.Attribute attribute = attributeWithValue.getAttribute();
-        return balanaAttribute(attribute.getXacmlName(), attribute.getType(), attributeWithValue.getValues(), false);
+        return new MdpAuthResponse(results);
     }
 
 
@@ -145,55 +139,29 @@ public class BalanaPdpHandler implements PdpHandler {
         return ref;
     }
 
+    private Map<Category, Attributes> getBalanaAttributesByCategory(List<AttributeWithValue> attributeWithValues, String requestId) throws EasyAbacInitException {
+        Map<Category, Attributes> attributesMap = new HashMap<>();
 
-    @Override
-    public MdpAuthResponse evaluate(MdpAuthRequest mdpAuthRequest) {
+        for (AttributeWithValue attributeWithValue : attributeWithValues) {
+            Category cat = attributeWithValue.getAttribute().getCategory();
 
-        Set<RequestReference> requestReferences = mdpAuthRequest.getRequests()
-                .stream()
-                .map(this::transformReference)
-                .collect(toSet());
-        Set<Attributes> attributesSet;
-        try {
+            Attributes attributes = attributesMap.computeIfAbsent(cat,
+                    category -> new Attributes(URI.create(category.getXacmlName()), null, new HashSet<>(), requestId)
+            );
+            Attribute newBalanaAttribute = transformAttributeValue(attributeWithValue);
 
-            attributesSet = new HashSet<>();
-            for (AttributeGroup attributeGroup : mdpAuthRequest.getAttributeGroups()) {
-                Attributes attributes = transformGroup(attributeGroup);
-                attributesSet.add(attributes);
-            }
-        } catch (EasyAbacInitException e) {
-            return null;
+            attributes.getAttributes().add(newBalanaAttribute);
         }
 
-        MultiRequests multiRequests = new MultiRequests(requestReferences);
+        return attributesMap;
+    }
 
 
-        RequestCtx requestCtx = new RequestCtx(null, attributesSet, false, false, multiRequests, null);
 
-        ResponseCtx responseCtx = pdp.evaluate(requestCtx);
+    private Attribute transformAttributeValue(AttributeWithValue attributeWithValue) throws EasyAbacInitException {
 
-        Map<RequestId, AuthResponse> results = new HashMap<>();
-
-        for (AbstractResult abstractResult : responseCtx.getResults()) {
-            Result result = (Result) abstractResult;
-
-            Stream<Attributes> envAttributes = result.getAttributes()
-                    .stream()
-                    .filter(attributes -> attributes.getCategory().toString().equals(Category.ENV.getXacmlName()));
-
-            Optional<Attribute> requestId = envAttributes.flatMap(attributes -> attributes.getAttributes().stream())
-                    .filter(attribute -> attribute.getId().equals(ATTRIBUTE_REQUEST_ID))
-                    .findFirst();
-
-            if (!requestId.isPresent()) {
-                throw new RuntimeException("Not found requestId in response");
-            }
-
-            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult));
-
-        }
-
-        return new MdpAuthResponse(results);
+        custis.easyabac.core.model.abac.attribute.Attribute attribute = attributeWithValue.getAttribute();
+        return balanaAttribute(attribute.getXacmlName(), attribute.getType(), attributeWithValue.getValues(), false);
     }
 
     private AuthResponse createResponse(AbstractResult abstractResult) {
@@ -211,6 +179,58 @@ public class BalanaPdpHandler implements PdpHandler {
 
         return new AuthResponse(decision, obligations);
     }
+//
+//
+//    @Override
+//    public MdpAuthResponse evaluate(MdpAuthRequest mdpAuthRequest) {
+//
+//        Set<RequestReference> requestReferences = mdpAuthRequest.getRequests()
+//                .stream()
+//                .map(this::transformReference)
+//                .collect(toSet());
+//        Set<Attributes> attributesSet;
+//        try {
+//
+//            attributesSet = new HashSet<>();
+//            for (AttributeGroup attributeGroup : mdpAuthRequest.getAttributeGroups()) {
+//                Attributes attributes = transformGroup(attributeGroup);
+//                attributesSet.add(attributes);
+//            }
+//        } catch (EasyAbacInitException e) {
+//            return null;
+//        }
+//
+//        MultiRequests multiRequests = new MultiRequests(requestReferences);
+//
+//
+//        RequestCtx requestCtx = new RequestCtx(null, attributesSet, false, false, multiRequests, null);
+//
+//        ResponseCtx responseCtx = pdp.evaluate(requestCtx);
+//
+//        Map<RequestId, AuthResponse> results = new HashMap<>();
+//
+//        for (AbstractResult abstractResult : responseCtx.getResults()) {
+//            Result result = (Result) abstractResult;
+//
+//            Stream<Attributes> envAttributes = result.getAttributes()
+//                    .stream()
+//                    .filter(attributes -> attributes.getCategory().toString().equals(Category.ENV.getXacmlName()));
+//
+//            Optional<Attribute> requestId = envAttributes.flatMap(attributes -> attributes.getAttributes().stream())
+//                    .filter(attribute -> attribute.getId().equals(ATTRIBUTE_REQUEST_ID))
+//                    .findFirst();
+//
+//            if (!requestId.isPresent()) {
+//                throw new RuntimeException("Not found requestId in response");
+//            }
+//
+//            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult));
+//
+//        }
+//
+//        return new MdpAuthResponse(results);
+//    }
+
 
 //    private Attributes transformGroup(AttributeGroup attributeGroup) throws EasyAbacInitException {
 //        Set<Attribute> attributeSet = new HashSet<>();

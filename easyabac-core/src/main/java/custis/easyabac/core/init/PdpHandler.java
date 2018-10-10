@@ -10,5 +10,5 @@ import java.util.List;
 public interface PdpHandler {
     AuthResponse evaluate(List<AttributeWithValue> attributeWithValues);
 
-    MdpAuthResponse evaluate(MultiAuthRequest mdpAuthRequest) throws EasyAbacInitException;
+    MdpAuthResponse evaluate(MultiAuthRequest multiAuthRequest) throws EasyAbacInitException;
 }

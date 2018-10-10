@@ -10,6 +10,7 @@ resources:
     - id: branchId
       title: ИД филиала
     - id: maxOrderAmount
+      type: int
       title: Максимальный заказ
   customer:
     title: Клиент
@@ -35,8 +36,6 @@ resources:
       title: ИД филиала
     - id: customerId
       title: ИД клиента
-
-
 permissions:
 - title: Работа только с заказами своего филиала
   accessToActions: [order.create, order.approve, order.reject, order.view]

@@ -69,7 +69,12 @@ public class EasyAbac implements AttributiveAuthorizationService {
 //            extender.extend(requestContext);
 //        }
 
-        MdpAuthResponse result = pdpHandler.evaluate(multiAuthRequest);
+        MdpAuthResponse result = null;
+        try {
+            result = pdpHandler.evaluate(multiAuthRequest);
+        } catch (EasyAbacInitException e) {
+            e.printStackTrace();
+        }
 
 //        audit.onMultipleRequest(requestContext, result);
 
@@ -95,12 +100,12 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private MultiAuthRequest prepareMultiRequest(Map<RequestId, List<AuthAttribute>> authAttributes) {
 
         Map<String, Attribute> attributes = new HashMap<>();
-        Map<String, Set<AttributeWithValue>> requests = new HashMap<>();
+        Map<String, List<AttributeWithValue>> requests = new HashMap<>();
 
         for (RequestId requestId : authAttributes.keySet()) {
-            Set<AttributeWithValue> attributeWithValues;
+            List<AttributeWithValue> attributeWithValues;
             try {
-                attributeWithValues = new HashSet<>();
+                attributeWithValues = new ArrayList<>();
                 for (AuthAttribute authAttribute : authAttributes.get(requestId)) {
 
                     Attribute attribute = attributes.get(authAttribute.getId());
