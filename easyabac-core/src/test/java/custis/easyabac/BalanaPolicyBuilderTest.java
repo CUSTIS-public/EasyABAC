@@ -121,6 +121,30 @@ public class BalanaPolicyBuilderTest {
         assertEquals("Fulfill on", Result.DECISION_PERMIT, o.getFulfillOn());
     }
 
+    @Test
+    public void shouldCreateDateTimeAttributes_whenTimeInRuleConditionIsGiven() {
+        Rule timedRule = new Rule("rule_time", "Rule with time", Operation.AND, singletonList(
+                new Condition("rtc1", false,
+                        new Attribute("env.current_time", DataType.TIME, Category.ENV, false),
+                        singletonList("08:30"),
+                        Function.LESS_OR_EQUAL)));
+
+        org.wso2.balana.Policy policy = new SamplePolicyBuilder()
+                .rules(singletonList(timedRule))
+                .build();
+
+        final List<org.wso2.balana.Rule> balanaRules = extractRules(policy);
+        org.wso2.balana.Rule balanaRule = balanaRules.get(0);
+
+        final Object condChild = balanaRule.getCondition().getChildren().iterator().next();
+        assertTrue("Single condition child is Apply", condChild instanceof Apply);
+
+        Apply andApply = (Apply) condChild;
+        assertEquals("Condition apply function",
+                URI.create("urn:oasis:names:tc:xacml:1.0:function:time-greater-than-or-equal"),
+                andApply.getFunction().getIdentifier());
+    }
+
     private List<org.wso2.balana.Rule> extractRules(org.wso2.balana.Policy policy) {
         return policy.getChildren().stream()
                 .filter(e -> e instanceof org.wso2.balana.Rule)
@@ -141,6 +165,11 @@ public class BalanaPolicyBuilderTest {
 
         SamplePolicyBuilder attributeToReturn(Attribute a) {
             this.attributesToReturn = singletonList(a);
+            return this;
+        }
+
+        SamplePolicyBuilder rules(List<Rule> rules) {
+            this.rules = rules;
             return this;
         }
 
