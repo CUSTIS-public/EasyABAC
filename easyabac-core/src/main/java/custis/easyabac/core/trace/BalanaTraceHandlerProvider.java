@@ -7,8 +7,8 @@ public class BalanaTraceHandlerProvider {
 
     private static ThreadLocal<BalanaTraceHandler> THREAD_LOCAL = new ThreadLocal<>();
 
-    public static BalanaTraceHandler instantiate(Trace trace) {
-        BalanaTraceHandler result = new BalanaTraceHandler(trace);
+    public static BalanaTraceHandler instantiate() {
+        BalanaTraceHandler result = new BalanaTraceHandler();
         THREAD_LOCAL.set(result);
         return result;
     }

@@ -6,8 +6,7 @@ import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.trace.BalanaTraceHandler;
 import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
-import custis.easyabac.core.trace.Trace;
-import custis.easyabac.core.trace.result.TraceResult;
+import custis.easyabac.core.trace.model.TraceResult;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.MdpAuthRequest;
 import custis.easyabac.pdp.MdpAuthResponse;
@@ -38,11 +37,9 @@ public class BalanaPdpHandler implements PdpHandler {
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
     private final PDP pdp;
-    private final Trace trace;
 
-    public BalanaPdpHandler(PDP pdp, Trace trace) {
+    public BalanaPdpHandler(PDP pdp) {
         this.pdp = pdp;
-        this.trace = trace;
     }
 
     @Override
@@ -70,7 +67,7 @@ public class BalanaPdpHandler implements PdpHandler {
             requestCtx.encode(System.out);
         }
 
-        BalanaTraceHandler balanaTraceHandler = instantiate(trace);
+        BalanaTraceHandler balanaTraceHandler = instantiate();
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
 
         if (log.isDebugEnabled()) {
@@ -97,7 +94,7 @@ public class BalanaPdpHandler implements PdpHandler {
 
         RequestCtx requestCtx = new RequestCtx(null, attributesSet, false, false, multiRequests, null);
 
-        BalanaTraceHandler balanaTraceHandler = instantiate(trace);
+        BalanaTraceHandler balanaTraceHandler = instantiate();
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
 
         Map<RequestId, AuthResponse> results = new HashMap<>();

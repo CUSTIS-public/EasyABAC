@@ -1,6 +1,7 @@
 package custis.easyabac.core.trace;
 
-import custis.easyabac.core.trace.result.TraceResult;
+import custis.easyabac.core.trace.model.CalculatedRule;
+import custis.easyabac.core.trace.model.TraceResult;
 import org.wso2.balana.*;
 import org.wso2.balana.combine.PolicyCombiningAlgorithm;
 import org.wso2.balana.combine.RuleCombiningAlgorithm;
@@ -18,15 +19,10 @@ import java.util.Stack;
  */
 public class BalanaTraceHandler {
 
-    private final Trace trace;
     private final Stack<Object> callStack = new Stack<Object>();
     //private final Map<AttributeDescriptor, BagAttribute> attributeMap = new HashMap<AttributeDescriptor, BagAttribute>();
     //private final Map<AttributeDescriptor, Status> attributesStatusMap = new HashMap<AttributeDescriptor, Status>();
 
-
-    public BalanaTraceHandler(Trace trace) {
-        this.trace = trace;
-    }
 
     public void onRuleEvaluateStart(Rule rule) {
         callStack.push(rule);
@@ -34,6 +30,8 @@ public class BalanaTraceHandler {
 
     public void onRuleEvaluateEnd(AbstractResult realResult) {
         Rule rule = (Rule) callStack.pop();
+
+        new CalculatedRule(rule, formatAbstractResultId(realResult.getDecision()));
     }
 
     public void onRuleMatchStart(Rule rule) {
@@ -125,6 +123,26 @@ public class BalanaTraceHandler {
 
             }
         }
+    }
+
+    private static String formatAbstractResultId(int id) {
+        switch (id) {
+            case 0:
+                return "DECISION_PERMIT";
+            case 1:
+                return "DECISION_DENY";
+            case 2:
+                return "DECISION_INDETERMINATE";
+            case 3:
+                return "DECISION_NOT_APPLICABLE";
+            case 4:
+                return "DECISION_INDETERMINATE_DENY";
+            case 5:
+                return "DECISION_INDETERMINATE_PERMIT";
+            case 6:
+                return "DECISION_INDETERMINATE_DENY_OR_PERMIT";
+        }
+        return "";
     }
 
     public TraceResult getResult() {

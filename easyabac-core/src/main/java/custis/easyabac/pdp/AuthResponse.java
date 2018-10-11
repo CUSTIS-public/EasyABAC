@@ -1,6 +1,6 @@
 package custis.easyabac.pdp;
 
-import custis.easyabac.core.trace.result.TraceResult;
+import custis.easyabac.core.trace.model.TraceResult;
 
 import java.util.Collections;
 import java.util.Map;
