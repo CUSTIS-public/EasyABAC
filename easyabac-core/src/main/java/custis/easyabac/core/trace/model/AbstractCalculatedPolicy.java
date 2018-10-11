@@ -1,17 +1,18 @@
 package custis.easyabac.core.trace.model;
 
-/**
- * Policy with trace
- */
-public class CalculatedRule {
+public abstract class AbstractCalculatedPolicy {
 
     private final String id;
     private CalculatedResult result;
     private CalculatedMatch match;
+    private CalculatedResult combinationResult;
 
-
-    public CalculatedRule(String id) {
+    public AbstractCalculatedPolicy(String id) {
         this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void setMatch(CalculatedMatch match) {
@@ -20,5 +21,9 @@ public class CalculatedRule {
 
     public void setResult(CalculatedResult result) {
         this.result = result;
+    }
+
+    public void setCombinationResult(CalculatedResult combinationResult) {
+        this.combinationResult = combinationResult;
     }
 }

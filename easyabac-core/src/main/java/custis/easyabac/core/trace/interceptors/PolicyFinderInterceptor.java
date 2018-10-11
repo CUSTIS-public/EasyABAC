@@ -1,8 +1,9 @@
 package custis.easyabac.core.trace.interceptors;
 
-import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.wso2.balana.ctx.EvaluationCtx;
 import org.wso2.balana.finder.PolicyFinder;
 import org.wso2.balana.finder.PolicyFinderResult;
 
@@ -24,7 +25,7 @@ public class PolicyFinderInterceptor implements MethodInterceptor {
         String methodName = method.getName();
 
         if (methodName.equals("findPolicy")) {
-            BalanaTraceHandlerProvider.get().onFindPolicyStart();
+            BalanaTraceHandlerProvider.get().onFindPolicyStart((EvaluationCtx) invocation.getArguments()[0]);
             Object invokeSuperResult = invocation.proceed();
             PolicyFinderResult policyFinderResult = (PolicyFinderResult) invokeSuperResult;
             BalanaTraceHandlerProvider.get().onFindPolicyEnd(policyFinderResult);

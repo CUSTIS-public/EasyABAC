@@ -4,8 +4,8 @@ import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.model.abac.attribute.AttributeGroup;
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
-import custis.easyabac.core.trace.BalanaTraceHandler;
-import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import custis.easyabac.core.trace.balana.BalanaTraceHandler;
+import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
 import custis.easyabac.core.trace.model.TraceResult;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.MdpAuthRequest;
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
 import static custis.easyabac.core.init.AttributesFactory.balanaAttribute;
-import static custis.easyabac.core.trace.BalanaTraceHandlerProvider.instantiate;
+import static custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider.instantiate;
 import static custis.easyabac.pdp.AuthResponse.Decision.getByIndex;
 import static java.util.stream.Collectors.toSet;
 
@@ -74,7 +74,8 @@ public class BalanaPdpHandler implements PdpHandler {
             log.debug(responseCtx.encode());
         }
 
-        return createResponse(responseCtx.getResults().iterator().next(), BalanaTraceHandlerProvider.get().getResult());
+        Map<RequestId, TraceResult> results = BalanaTraceHandlerProvider.get().getResults();
+        return createResponse(responseCtx.getResults().iterator().next(), results.get(null));
     }
 
     @Override
@@ -114,7 +115,8 @@ public class BalanaPdpHandler implements PdpHandler {
                 throw new RuntimeException("Not found requestId in response");
             }
 
-            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult, BalanaTraceHandlerProvider.get().getResult()));
+            Map<RequestId, TraceResult> traceResults = BalanaTraceHandlerProvider.get().getResults();
+            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult, traceResults.get(requestId.get())));
 
         }
 

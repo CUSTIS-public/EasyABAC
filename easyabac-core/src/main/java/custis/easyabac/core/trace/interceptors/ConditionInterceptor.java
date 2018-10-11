@@ -1,6 +1,6 @@
 package custis.easyabac.core.trace.interceptors;
 
-import custis.easyabac.core.trace.BalanaTraceHandlerProvider;
+import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.cond.Condition;

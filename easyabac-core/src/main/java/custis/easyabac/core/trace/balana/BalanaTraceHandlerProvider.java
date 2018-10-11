@@ -1,4 +1,4 @@
-package custis.easyabac.core.trace;
+package custis.easyabac.core.trace.balana;
 
 /**
  * Holder of Trace process

@@ -54,7 +54,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
 
-            trace.handleTrace(result.getTraceResult());
+            trace.handleTrace(abacAuthModel, result.getTraceResult());
             audit.onRequest(attributeWithValueList, result);
 
             return result;
@@ -74,7 +74,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
         MdpAuthResponse result = pdpHandler.evaluate(requestContext);
 
-        result.getResults().forEach((requestId, authResponse) -> trace.handleTrace(authResponse.getTraceResult()));
+        result.getResults().forEach((requestId, authResponse) -> trace.handleTrace(abacAuthModel, authResponse.getTraceResult()));
 
         audit.onMultipleRequest(requestContext, result);
 
