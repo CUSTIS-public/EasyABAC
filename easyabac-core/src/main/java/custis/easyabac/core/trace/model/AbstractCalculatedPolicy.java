@@ -2,7 +2,7 @@ package custis.easyabac.core.trace.model;
 
 import java.net.URI;
 
-public abstract class AbstractCalculatedPolicy implements Populatable {
+public abstract class AbstractCalculatedPolicy {
 
     protected final URI id;
     protected CalculatedResult result;

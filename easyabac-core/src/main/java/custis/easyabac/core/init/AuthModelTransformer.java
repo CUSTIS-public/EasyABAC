@@ -203,8 +203,16 @@ public class AuthModelTransformer {
         }
     }
 
-    private String makeXacmlName(String attributeId) {
+    public static String makeXacmlName(String attributeId) {
         return XACML_ATTR_PREFIX + attributeId;
+    }
+
+    public static String modeModelAttributeIdFromXacml(String xacmlName) {
+        if (xacmlName.startsWith(XACML_ATTR_PREFIX)) {
+            return xacmlName.substring(XACML_ATTR_PREFIX.length());
+        } else {
+            return xacmlName;
+        }
     }
 
     private String makeAttributeId(String resourceName, String id) {

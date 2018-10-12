@@ -46,8 +46,12 @@ public class CalculatedPolicySet extends AbstractCalculatedPolicy {
                 '}';
     }
 
-    @Override
     public void populateByModel(AbacAuthModel abacAuthModel) {
-        getPolicies().forEach(calculatedPolicy -> calculatedPolicy.populateByModel(abacAuthModel));
+        for (int i = 0; i < abacAuthModel.getPolicies().size(); i++) {
+            if (i > policies.size() - 1) {
+                break;
+            }
+            policies.get(i).populate(abacAuthModel.getPolicies().get(i));
+        }
     }
 }

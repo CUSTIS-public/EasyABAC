@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Trace result
  */
-public class TraceResult implements Populatable {
+public class TraceResult {
 
     public static final TraceResult EMPTY = new TraceResult(null);
 
@@ -55,11 +55,14 @@ public class TraceResult implements Populatable {
                 '}';
     }
 
-    @Override
     public void populateByModel(AbacAuthModel abacAuthModel) {
         if (mainPolicy == null) {
             return;
         }
-        mainPolicy.populateByModel(abacAuthModel);
+        if (mainPolicy instanceof CalculatedPolicySet) {
+            ((CalculatedPolicySet) mainPolicy).populateByModel(abacAuthModel);
+        } else if (mainPolicy instanceof CalculatedPolicy) {
+            ((CalculatedPolicy) mainPolicy).populate(abacAuthModel.getPolicies().get(0));
+        }
     }
 }

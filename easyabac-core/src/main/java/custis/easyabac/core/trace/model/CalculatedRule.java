@@ -1,8 +1,5 @@
 package custis.easyabac.core.trace.model;
 
-import custis.easyabac.core.init.BalanaModelTransformer;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.Rule;
 
 import java.net.URI;
@@ -12,7 +9,7 @@ import java.util.List;
 /**
  * Policy with trace
  */
-public class CalculatedRule implements Populatable {
+public class CalculatedRule {
 
     private final URI id;
     private Rule rule;
@@ -63,30 +60,18 @@ public class CalculatedRule implements Populatable {
         return simpleConditions;
     }
 
-    @Override
-    public void populateByModel(AbacAuthModel abacAuthModel) {
-        String policyAndRuleId = BalanaModelTransformer.clearBalanaNamespace(id);
-        for (Policy policy : abacAuthModel.getPolicies()) {
-            for (Rule rule1 : policy.getRules()) {
-                if (policyAndRuleId.equals(BalanaModelTransformer.simpleRuleId(policy.getId(), rule1.getId()))) {
-                    this.rule = rule1;
-
-                    for (int i = 0; i < this.rule.getConditions().size(); i++) {
-                        if (i > simpleConditions.size() - 1) {
-                            break;
-                        }
-                        simpleConditions.get(i).setCondition(this.rule.getConditions().get(i));
-                    }
-
-                    return;
-                }
-            }
-        }
-
-
-    }
-
     public void addSimpleCondition(CalculatedSimpleCondition simpleCondition) {
         simpleConditions.add(simpleCondition);
+    }
+
+    public void populate(Rule rule) {
+        this.rule = rule;
+
+        for (int i = 0; i < this.rule.getConditions().size(); i++) {
+            if (i > simpleConditions.size() - 1) {
+                break;
+            }
+            simpleConditions.get(i).setCondition(this.rule.getConditions().get(i));
+        }
     }
 }

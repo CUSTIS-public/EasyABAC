@@ -8,6 +8,12 @@ import custis.easyabac.core.trace.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.Map;
+
+import static custis.easyabac.core.init.AuthModelTransformer.makeXacmlName;
+import static custis.easyabac.core.init.AuthModelTransformer.modeModelAttributeIdFromXacml;
+
 public class DefaultTrace implements Trace {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(DefaultTrace.class);
@@ -15,78 +21,110 @@ public class DefaultTrace implements Trace {
 
     @Override
     public void handleTrace(AbacAuthModel abacAuthModel, TraceResult traceResult) {
-        printTraceResult(traceResult);
+        StringBuilder modelWithTrace = new StringBuilder();
+        modelWithTrace.append("\n").append("-------TRACE-------").append("\n\n");
+        modelWithTrace.append("--ATTRIBUTES--");
+        traceResult.getAttributes().forEach(
+                (s, calculatedAttribute) -> {
+                    modelWithTrace.append(modeModelAttributeIdFromXacml(calculatedAttribute.getId()))
+                            .append(" = ").append(calculatedAttribute.getValues())
+                            .append("\n");
+
+                }
+        );
+
+        modelWithTrace.append("\n--GENERAL RESULT--\n");
+        printTraceResult(traceResult, modelWithTrace);
+
+        modelWithTrace.append("\n\n--CALC RESULT--\n");
+        AbstractCalculatedPolicy mainPolicy = traceResult.getMainPolicy();
+        if (mainPolicy instanceof CalculatedPolicySet) {
+            List<CalculatedPolicy> calcPolicies = ((CalculatedPolicySet) mainPolicy).getPolicies();
+            for (int i = 0; i < abacAuthModel.getPolicies().size(); i++) {
+                Policy policy = abacAuthModel.getPolicies().get(i);
+                if (i < calcPolicies.size() ) {
+                    printPolicy(calcPolicies.get(i), 1, modelWithTrace, traceResult.getAttributes());
+                } else {
+                    printPolicyWithoutTrace(policy, 1, modelWithTrace);
+                }
+            }
+        } else if (mainPolicy instanceof CalculatedPolicy) {
+            printPolicy((CalculatedPolicy) mainPolicy, 1, modelWithTrace, traceResult.getAttributes());
+        }
+        //printTraceResult(traceResult);
+        LOGGER.info(modelWithTrace.toString());
     }
 
-    private void printTraceResult(TraceResult traceResult) {
-        LOGGER.info("------------");
-        LOGGER.info("TraceResult for request[" + traceResult.getRequestId() + "]");
+    private void printPolicyWithoutTrace(Policy policy, int level, StringBuilder modelWithTrace) {
+        modelWithTrace.append("\n");
+        modelWithTrace.append(makeTabulation(level) + "Policy[" + policy.getId() + "]").append("\n");
+        modelWithTrace.append(makeTabulation(level) + "title: " + policy.getTitle()).append("\n");
+        modelWithTrace.append(makeTabulation(level) + "accessToActions" + policy.getTarget().getAccessToActions()).append("\n");
+    }
+
+    private void printTraceResult(TraceResult traceResult, StringBuilder modelWithTrace) {
+        modelWithTrace.append("TraceResult for request[" + traceResult.getRequestId() + "]\n");
         if (traceResult.getMainPolicy() == null) {
-            LOGGER.info("No policy found");
+            modelWithTrace.append("No policy found\n");
             return;
         }
 
         AbstractCalculatedPolicy mainPolicy = traceResult.getMainPolicy();
         if (mainPolicy instanceof CalculatedPolicy) {
-            LOGGER.info("General result[" + mainPolicy.getId() + "] MATCH=" + mainPolicy.getMatch() + " RESULT=" + mainPolicy.getResult());
-            printInnerPolicy((CalculatedPolicy) mainPolicy, 1);
+            modelWithTrace.append("General result[" + mainPolicy.getId() + "] MATCH=" + mainPolicy.getMatch() + " RESULT=" + mainPolicy.getResult()).append("\n");
         } else if (mainPolicy instanceof CalculatedPolicySet) {
-            LOGGER.info("General result[" + mainPolicy.getId() + "] MATCH=" + mainPolicy.getMatch() + " RESULT=" + mainPolicy.getResult());
-            printInnerPolicySet((CalculatedPolicySet) mainPolicy, 1);
+            modelWithTrace.append("General result[" + mainPolicy.getId() + "] MATCH=" + mainPolicy.getMatch() + " RESULT=" + mainPolicy.getResult()).append("\n");
         }
     }
 
-    private void printPolicySet(CalculatedPolicySet policy, int level) {
-        LOGGER.info(makeTabulation(level) + "PolicySet[" + policy.getId() + "] MATCH=" + policy.getMatch() + " RESULT=" + policy.getResult());
-
-        printInnerPolicySet(policy, level);
-    }
-
-    private void printInnerPolicySet(CalculatedPolicySet policy, int level) {
-        policy.getInnerPolicySets().forEach(calculatedPolicySet -> printPolicySet(calculatedPolicySet, level + 1));
-
-        policy.getPolicies().forEach(calculatedPolicy -> printPolicy(calculatedPolicy, level + 1));
-    }
-
-    private void printInnerPolicy(CalculatedPolicy policy, int level) {
-        policy.getRules().forEach(calculatedRule -> printRule(calculatedRule, level + 1));
-    }
-
-    private void printPolicy(CalculatedPolicy policy, int level) {
+    private void printPolicy(CalculatedPolicy policy, int level, StringBuilder modelWithTrace, Map<String, CalculatedAttribute> attributes) {
         Policy model = policy.getPolicy();
+        modelWithTrace.append("\n");
         if (model != null) {
-            LOGGER.info(makeTabulation(level) + "Policy[" + model.getId() + "]");
-            LOGGER.info(makeTabulation(level) + "accessToActions" + model.getTarget().getAccessToActions() + " MATCH=" + policy.getMatch());
+            modelWithTrace.append(makeTabulation(level) + "Policy[" + model.getId() + "]").append("\n");
+            modelWithTrace.append(makeTabulation(level) + "title: " + model.getTitle()).append("\n");
+            modelWithTrace.append(makeTabulation(level) + "accessToActions" + model.getTarget().getAccessToActions() + " MATCH=" + policy.getMatch()).append("\n");
+
         } else {
-            LOGGER.info(makeTabulation(level) + "Policy[" + policy.getId() + "]");
-            LOGGER.info(makeTabulation(level) + "MATCH=" + policy.getMatch());
+            modelWithTrace.append(makeTabulation(level) + "Policy[" + policy.getId() + "]").append("\n");
+            modelWithTrace.append(makeTabulation(level) + "MATCH=" + policy.getMatch()).append("\n");
         }
 
-        //+ " RESULT=" + policy.getResult())
-
-        printInnerPolicy(policy, level);
+        policy.getRules().forEach(calculatedRule -> printRule(calculatedRule, level + 1, modelWithTrace, attributes));
     }
 
-    private void printRule(CalculatedRule rule, int level) {
+    private void printRule(CalculatedRule rule, int level, StringBuilder modelWithTrace, Map<String, CalculatedAttribute> attributes) {
         Rule model = rule.getRule();
         if (model != null) {
-            LOGGER.info(makeTabulation(level) + "Rule[" + model.getId() + "] MATCH=" + rule.getMatch() + " RESULT=" + rule.getResult());
+            modelWithTrace.append(makeTabulation(level) + "Rule[" + model.getId() + "] MATCH=" + rule.getMatch() + " RESULT=" + rule.getResult()).append("\n");
         } else {
-            LOGGER.info(makeTabulation(level) + "Rule[" + rule.getId() + "] MATCH=" + rule.getMatch() + " RESULT=" + rule.getResult());
+            modelWithTrace.append(makeTabulation(level) + "Rule[" + rule.getId() + "] MATCH=" + rule.getMatch() + " RESULT=" + rule.getResult()).append("\n");
         }
 
         for (CalculatedSimpleCondition calculatedSimpleCondition : rule.getSimpleConditions()) {
-            printSimpleCondition(calculatedSimpleCondition, level + 1);
+            printSimpleCondition(calculatedSimpleCondition, level + 1, modelWithTrace, attributes);
         }
     }
 
-    private void printSimpleCondition(CalculatedSimpleCondition calculatedSimpleCondition, int level) {
+    private void printSimpleCondition(CalculatedSimpleCondition calculatedSimpleCondition, int level, StringBuilder modelWithTrace, Map<String, CalculatedAttribute> attributes) {
         Condition model = calculatedSimpleCondition.getCondition();
         if (model == null) {
-            LOGGER.info(makeTabulation(level) + "Condition[" + calculatedSimpleCondition.getIndex() + "] RESULT=" + calculatedSimpleCondition.getResult());
+            modelWithTrace.append(makeTabulation(level) + "Condition[" + calculatedSimpleCondition.getIndex() + "] RESULT=" + calculatedSimpleCondition.getResult()).append("\n");
         } else {
-            LOGGER.info(makeTabulation(level) + prettyRepresentModelCondition(model) + " RESULT=" + calculatedSimpleCondition.getResult());
+            modelWithTrace.append(makeTabulation(level) + prettyRepresentModelCondition(model) + " RESULT=" + calculatedSimpleCondition.getResult()).append("\n");
+            modelWithTrace.append(makeTabulation(level + 1) + "BY VALUES: ") ;
 
+            CalculatedAttribute calcFirst = attributes.get(makeXacmlName(model.getFirstOperand().getId()));
+            if (calcFirst != null) {
+                modelWithTrace.append(model.getFirstOperand().getId() + " " + calcFirst.getValues()).append(", ");
+            }
+
+            if (model.getSecondOperandAttribute() != null) {
+                CalculatedAttribute calcSecond = attributes.get(makeXacmlName(model.getSecondOperandAttribute().getId()));
+                if (calcSecond != null) {
+                    modelWithTrace.append(model.getSecondOperandAttribute().getId() + " " + calcSecond.getValues()).append("\n");
+                }
+            }
         }
 
     }
