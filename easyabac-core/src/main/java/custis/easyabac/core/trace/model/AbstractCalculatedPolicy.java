@@ -1,17 +1,19 @@
 package custis.easyabac.core.trace.model;
 
-public abstract class AbstractCalculatedPolicy {
+import java.net.URI;
 
-    private final String id;
-    private CalculatedResult result;
-    private CalculatedMatch match;
-    private CalculatedResult combinationResult;
+public abstract class AbstractCalculatedPolicy implements Populatable {
 
-    public AbstractCalculatedPolicy(String id) {
+    protected final URI id;
+    protected CalculatedResult result;
+    protected CalculatedMatch match;
+    protected CalculatedResult combinationResult;
+
+    public AbstractCalculatedPolicy(URI id) {
         this.id = id;
     }
 
-    public String getId() {
+    public URI getId() {
         return id;
     }
 
@@ -25,5 +27,17 @@ public abstract class AbstractCalculatedPolicy {
 
     public void setCombinationResult(CalculatedResult combinationResult) {
         this.combinationResult = combinationResult;
+    }
+
+    public CalculatedResult getResult() {
+        return result;
+    }
+
+    public CalculatedMatch getMatch() {
+        return match;
+    }
+
+    public CalculatedResult getCombinationResult() {
+        return combinationResult;
     }
 }

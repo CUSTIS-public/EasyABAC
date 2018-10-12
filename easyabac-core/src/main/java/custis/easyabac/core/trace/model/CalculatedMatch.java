@@ -27,4 +27,9 @@ public class CalculatedMatch {
         }
         return "N/A";
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

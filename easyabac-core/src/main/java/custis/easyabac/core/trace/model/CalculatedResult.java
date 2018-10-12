@@ -37,4 +37,9 @@ public class CalculatedResult {
         }
         return "";
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

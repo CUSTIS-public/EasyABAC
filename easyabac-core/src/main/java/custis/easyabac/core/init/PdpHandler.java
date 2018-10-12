@@ -11,4 +11,6 @@ public interface PdpHandler {
     AuthResponse evaluate(List<AttributeWithValue> attributeWithValues);
 
     MdpAuthResponse evaluate(MdpAuthRequest mdpAuthRequest);
+
+    boolean xacmlPolicyMode();
 }

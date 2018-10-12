@@ -16,6 +16,7 @@ import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.trace.DefaultTrace;
 import custis.easyabac.core.trace.Trace;
+import custis.easyabac.core.trace.model.TraceResult;
 import custis.easyabac.pdp.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +55,11 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
 
-            trace.handleTrace(abacAuthModel, result.getTraceResult());
+            TraceResult traceResult = result.getTraceResult();
+            if (!pdpHandler.xacmlPolicyMode()) {
+                traceResult.populateByModel(abacAuthModel);
+            }
+            trace.handleTrace(abacAuthModel, traceResult);
             audit.onRequest(attributeWithValueList, result);
 
             return result;
@@ -73,8 +78,13 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
 
         MdpAuthResponse result = pdpHandler.evaluate(requestContext);
-
-        result.getResults().forEach((requestId, authResponse) -> trace.handleTrace(abacAuthModel, authResponse.getTraceResult()));
+        result.getResults().forEach((requestId, authResponse) -> {
+            TraceResult traceResult = authResponse.getTraceResult();
+            if (!pdpHandler.xacmlPolicyMode()) {
+                traceResult.populateByModel(abacAuthModel);
+            }
+            trace.handleTrace(abacAuthModel, traceResult);
+        });
 
         audit.onMultipleRequest(requestContext, result);
 

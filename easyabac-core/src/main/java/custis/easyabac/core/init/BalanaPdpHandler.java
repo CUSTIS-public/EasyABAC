@@ -37,9 +37,11 @@ public class BalanaPdpHandler implements PdpHandler {
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
     private final PDP pdp;
+    private final boolean xacmlPolicyMode;
 
-    public BalanaPdpHandler(PDP pdp) {
+    public BalanaPdpHandler(PDP pdp, boolean xacmlPolicyMode) {
         this.pdp = pdp;
+        this.xacmlPolicyMode = xacmlPolicyMode;
     }
 
     @Override
@@ -121,6 +123,11 @@ public class BalanaPdpHandler implements PdpHandler {
         }
 
         return new MdpAuthResponse(results);
+    }
+
+    @Override
+    public boolean xacmlPolicyMode() {
+        return xacmlPolicyMode;
     }
 
     private AuthResponse createResponse(AbstractResult abstractResult, TraceResult traceResult) {

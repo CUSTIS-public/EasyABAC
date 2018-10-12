@@ -6,6 +6,7 @@ import org.wso2.balana.MatchResult;
 import org.wso2.balana.Policy;
 import org.wso2.balana.PolicySet;
 import org.wso2.balana.combine.PolicyCombiningAlgorithm;
+import org.wso2.balana.combine.xacml3.DenyUnlessPermitPolicyAlg;
 import org.wso2.balana.ctx.EvaluationCtx;
 import org.wso2.balana.ctx.Status;
 import org.wso2.balana.finder.PolicyFinderModule;
@@ -25,7 +26,7 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
     protected final static Log log = LogFactory.getLog(FileBasedPolicyFinderModule.class);
 
     protected Map<URI, org.wso2.balana.Policy> policies;
-    protected PolicyCombiningAlgorithm combiningAlg;
+    protected PolicyCombiningAlgorithm combiningAlg = new DenyUnlessPermitPolicyAlg();
 
     @Override
     public boolean isRequestSupported() {
@@ -78,8 +79,6 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
                     log.debug("No matching XACML policy found");
                 }
                 return new PolicyFinderResult();
-            case 1:
-                return new PolicyFinderResult((selectedPolicies.get(0)));
             default:
                 return new PolicyFinderResult(new PolicySet(null, combiningAlg, null, selectedPolicies));
         }

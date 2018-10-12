@@ -17,10 +17,13 @@ import org.wso2.balana.ctx.EvaluationCtx;
 import org.wso2.balana.ctx.ResponseCtx;
 import org.wso2.balana.ctx.Status;
 import org.wso2.balana.ctx.xacml3.RequestCtx;
+import org.wso2.balana.ctx.xacml3.XACML3EvaluationCtx;
 import org.wso2.balana.finder.PolicyFinderResult;
+import org.wso2.balana.xacml3.Attributes;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
 
@@ -61,7 +64,19 @@ public class BalanaTraceHandler {
     private void finalizeTraceResult() {
         TraceResult traceResult = (TraceResult) callStack.pop();
         EvaluationCtx evalCtx = (EvaluationCtx) callStack.pop();
-        System.out.println(evalCtx);
+
+
+        for (Attributes attributes : ((XACML3EvaluationCtx) evalCtx).getAttributesSet()) {
+            for (org.wso2.balana.ctx.Attribute attribute : attributes.getAttributes()) {
+                List<String> convertedValues = attribute.getValues()
+                                                        .stream()
+                                                        .map(
+                                                                attributeValue -> attributeValue.encode()
+                                                        )
+                                                        .collect(Collectors.toList());
+                traceResult.putAttribute(CalculatedAttribute.of(attribute.getId().toString(), convertedValues));
+            }
+        }
     }
 
     public void onFindPolicyEnd(PolicyFinderResult policyFinderResult) {
@@ -78,19 +93,22 @@ public class BalanaTraceHandler {
 
     public void onPolicyMatchStart(AbstractPolicy policy) {
         Object top = callStack.peek();
+        Object almostTop = callStack.get(callStack.size() - 2);
         if (policy instanceof PolicySet) {
-            CalculatedPolicySet ps = new CalculatedPolicySet(policy.getId().toString());
-            if (top instanceof CalculatedPolicySet) {
-                ((CalculatedPolicySet) top).addInnerResult(ps);
+            CalculatedPolicySet ps = new CalculatedPolicySet(policy.getId());
+            if (almostTop instanceof CalculatedPolicySet) {
+                ((CalculatedPolicySet) almostTop).addInnerPolicySet(ps);
             } else if (top instanceof TraceResult) {
                 ((TraceResult) top).setMainPolicy(ps);
             }
             callStack.push(ps);
         } else if (policy instanceof Policy) {
 
-            CalculatedPolicy newPolicy = new CalculatedPolicy(policy.getId().toString());
-            if (top instanceof CalculatedPolicySet) {
-                ((CalculatedPolicySet) top).addPolicy(newPolicy);
+            CalculatedPolicy newPolicy = new CalculatedPolicy(policy.getId());
+            if (almostTop instanceof CalculatedPolicySet) {
+                ((CalculatedPolicySet) almostTop).addPolicy(newPolicy);
+            } else if (top instanceof TraceResult) {
+                ((TraceResult) top).setMainPolicy(newPolicy);
             }
             callStack.push(newPolicy);
 
@@ -106,20 +124,24 @@ public class BalanaTraceHandler {
     }
 
 
-    public void onPolicyEvaluateStart(AbstractPolicy abstractPolicy) {
-        onPolicyMatchStart(abstractPolicy);
-        onPolicyMatchEnd(new MatchResult(MatchResult.MATCH));
+    public void onPolicyEvaluateStart(AbstractPolicy policy) {
+        boolean isNewPolicy = safePolicyEnd(policy);
+        if (isNewPolicy) {
+            onPolicyMatchStart(policy);
+            onPolicyMatchEnd(new MatchResult(MatchResult.MATCH));
+        }
     }
 
 
     public void onRuleCombineStart(RuleCombiningAlgorithm combiningAlg) {
         // nothing to do
+        callStack.push(combiningAlg);
     }
 
 
     public void onRuleMatchStart(Rule rule) {
-        CalculatedRule calcRule = new CalculatedRule(rule.getId().toString());
-        Object policy = callStack.peek();
+        CalculatedRule calcRule = new CalculatedRule(rule.getId());
+        Object policy = callStack.get(callStack.size() - 2);
         if (policy instanceof CalculatedPolicy) {
             ((CalculatedPolicy) policy).addRule(calcRule);
         } else {
@@ -160,14 +182,13 @@ public class BalanaTraceHandler {
 
 
     public void onRuleCombineEnd(AbstractResult result) {
-        // nothing to do
+        callStack.pop();
         ((CalculatedPolicy) callStack.peek()).setCombinationResult(CalculatedResult.of(result.getDecision()));
     }
 
     public void onPolicyEvaluateEnd(AbstractResult realResult) {
-        AbstractCalculatedPolicy abstractCalculatedPolicy = (AbstractCalculatedPolicy) callStack.peek();
+        AbstractCalculatedPolicy abstractCalculatedPolicy = (AbstractCalculatedPolicy) callStack.pop();
         abstractCalculatedPolicy.setResult(CalculatedResult.of(realResult.getDecision()));
-        safePolicyEnd();
     }
 
 
@@ -186,12 +207,32 @@ public class BalanaTraceHandler {
 
     public void onPolicyCombineStart(PolicyCombiningAlgorithm combiningAlgorithm) {
         // nothing to do
+        callStack.push(combiningAlgorithm);
 
     }
 
     public void onPolicyCombineEnd(AbstractResult result) {
+        // TODO need ??? safePolicyEnd();
+        callStack.pop();
         ((AbstractCalculatedPolicy) callStack.peek()).setCombinationResult(CalculatedResult.of(result.getDecision()));
     }
+
+    private boolean safePolicyEnd(AbstractPolicy newPolicy) {
+        Object stackTop = callStack.peek();
+        if (stackTop instanceof CalculatedPolicy) {
+            if (newPolicy.getId().equals(((CalculatedPolicy) stackTop).getId())) {
+                return false;
+            }
+            callStack.pop();
+        } else if (stackTop instanceof CalculatedPolicySet) {
+            if (newPolicy.getId().equals(((CalculatedPolicySet) stackTop).getId())) {
+                return false;
+            }
+            callStack.pop();
+        }
+        return true;
+    }
+
 
     public void onFindAttribute(EvaluationResult evaluationResult, String type, String attributeId, String category) throws EasyAbacInitException {
         Attribute attr = new Attribute(attributeId, Category.findByXacmlName(category), DataType.findByXacmlName(type));
@@ -210,18 +251,6 @@ public class BalanaTraceHandler {
         // nothing to do
         finalizeTraceResult();
     }
-
-    private void safePolicyEnd() {
-        Object stackTop = callStack.peek();
-        if (stackTop instanceof CalculatedPolicy) {
-            CalculatedPolicy policy = (CalculatedPolicy) callStack.pop();
-        } else if (stackTop instanceof CalculatedPolicySet) {
-            CalculatedPolicySet policySet = (CalculatedPolicySet) callStack.pop();
-        }
-
-    }
-
-
 
     public Map<RequestId, TraceResult> getResults() {
         return traceResults;
