@@ -21,19 +21,19 @@ public class CalculatedResult {
     private static String formatAbstractResultId(int id) {
         switch (id) {
             case 0:
-                return "DECISION_PERMIT";
+                return "PERMIT";
             case 1:
-                return "DECISION_DENY";
+                return "DENY";
             case 2:
-                return "DECISION_INDETERMINATE";
+                return "INDETERMINATE";
             case 3:
-                return "DECISION_NOT_APPLICABLE";
+                return "NOT_APPLICABLE";
             case 4:
-                return "DECISION_INDETERMINATE_DENY";
+                return "INDETERMINATE";
             case 5:
-                return "DECISION_INDETERMINATE_PERMIT";
+                return "INDETERMINATE";
             case 6:
-                return "DECISION_INDETERMINATE_DENY_OR_PERMIT";
+                return "INDETERMINATE";
         }
         return "";
     }

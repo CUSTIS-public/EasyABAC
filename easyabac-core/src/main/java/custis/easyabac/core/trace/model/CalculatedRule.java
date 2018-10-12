@@ -6,6 +6,8 @@ import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.Rule;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Policy with trace
@@ -16,6 +18,8 @@ public class CalculatedRule implements Populatable {
     private Rule rule;
     private CalculatedResult result;
     private CalculatedMatch match;
+
+    private List<CalculatedSimpleCondition> simpleConditions = new ArrayList<>();
 
 
     public CalculatedRule(URI id) {
@@ -55,6 +59,10 @@ public class CalculatedRule implements Populatable {
                 '}';
     }
 
+    public List<CalculatedSimpleCondition> getSimpleConditions() {
+        return simpleConditions;
+    }
+
     @Override
     public void populateByModel(AbacAuthModel abacAuthModel) {
         String policyAndRuleId = BalanaModelTransformer.clearBalanaNamespace(id);
@@ -62,9 +70,23 @@ public class CalculatedRule implements Populatable {
             for (Rule rule1 : policy.getRules()) {
                 if (policyAndRuleId.equals(BalanaModelTransformer.simpleRuleId(policy.getId(), rule1.getId()))) {
                     this.rule = rule1;
+
+                    for (int i = 0; i < this.rule.getConditions().size(); i++) {
+                        if (i > simpleConditions.size() - 1) {
+                            break;
+                        }
+                        simpleConditions.get(i).setCondition(this.rule.getConditions().get(i));
+                    }
+
                     return;
                 }
             }
         }
+
+
+    }
+
+    public void addSimpleCondition(CalculatedSimpleCondition simpleCondition) {
+        simpleConditions.add(simpleCondition);
     }
 }

@@ -1,7 +1,9 @@
 package custis.easyabac.core.trace;
 
 import custis.easyabac.core.model.abac.AbacAuthModel;
+import custis.easyabac.core.model.abac.Condition;
 import custis.easyabac.core.model.abac.Policy;
+import custis.easyabac.core.model.abac.Rule;
 import custis.easyabac.core.trace.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +68,39 @@ public class DefaultTrace implements Trace {
     }
 
     private void printRule(CalculatedRule rule, int level) {
-        LOGGER.info(makeTabulation(level) + "Rule[" + rule.getId() + "] MATCH=" + rule.getMatch() + " RESULT=" + rule.getResult());
+        Rule model = rule.getRule();
+        if (model != null) {
+            LOGGER.info(makeTabulation(level) + "Rule[" + model.getId() + "] MATCH=" + rule.getMatch() + " RESULT=" + rule.getResult());
+        } else {
+            LOGGER.info(makeTabulation(level) + "Rule[" + rule.getId() + "] MATCH=" + rule.getMatch() + " RESULT=" + rule.getResult());
+        }
+
+        for (CalculatedSimpleCondition calculatedSimpleCondition : rule.getSimpleConditions()) {
+            printSimpleCondition(calculatedSimpleCondition, level + 1);
+        }
+    }
+
+    private void printSimpleCondition(CalculatedSimpleCondition calculatedSimpleCondition, int level) {
+        Condition model = calculatedSimpleCondition.getCondition();
+        if (model == null) {
+            LOGGER.info(makeTabulation(level) + "Condition[" + calculatedSimpleCondition.getIndex() + "] RESULT=" + calculatedSimpleCondition.getResult());
+        } else {
+            LOGGER.info(makeTabulation(level) + prettyRepresentModelCondition(model) + " RESULT=" + calculatedSimpleCondition.getResult());
+
+        }
+
+    }
+
+    private String prettyRepresentModelCondition(Condition model) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(model.getFirstOperand().getId()).append(" ").append(model.getFunction().getEasyName()).append(" ");
+        if (model.getSecondOperandAttribute() != null) {
+            stringBuilder.append(model.getSecondOperandAttribute().getId());
+        } else {
+            stringBuilder.append(model.getSecondOperandValue());
+        }
+
+        return stringBuilder.toString();
     }
 
     private String makeTabulation(int level) {

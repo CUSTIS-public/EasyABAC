@@ -8,7 +8,10 @@ import org.wso2.balana.*;
 import org.wso2.balana.combine.CombiningAlgorithm;
 import org.wso2.balana.combine.PolicyCombiningAlgorithm;
 import org.wso2.balana.combine.RuleCombiningAlgorithm;
+import org.wso2.balana.cond.Apply;
 import org.wso2.balana.cond.Condition;
+import org.wso2.balana.cond.Evaluatable;
+import org.wso2.balana.cond.Expression;
 import org.wso2.balana.finder.*;
 import org.wso2.balana.xacml3.AdviceExpression;
 
@@ -125,10 +128,40 @@ public class PolicyElementsFactory {
             return condition;
         }
         ProxyFactory result = new ProxyFactory();
-        result.setTarget(condition);
+        Condition target = new Condition(createRuleApplyCondition((Expression) condition.getChildren().get(0))); // only xacml > 2
+        result.setTarget(target);
         result.addAdvice(new ConditionInterceptor(condition));
 
         return (Condition) result.getProxy();
+    }
+
+    private static Expression createRuleApplyCondition(Expression expression) {
+        if (expression == null || !(expression instanceof Apply)) {
+            return expression;
+        }
+        ProxyFactory result = new ProxyFactory();
+        List<Expression> objects = new ArrayList<>();
+        for (int i = 0; i < ((Apply) expression).getChildren().size(); i++) {
+            Expression exp = (Expression) ((Apply) expression).getChildren().get(i);
+            objects.add(createSimpleRule(exp, i));
+        }
+
+        Apply target = new Apply(((Apply) expression).getFunction(), objects);
+        result.setTarget(target);
+        result.addAdvice(new RuleApplyInterceptor(expression));
+
+        return (Evaluatable) result.getProxy();
+    }
+
+    private static Expression createSimpleRule(Expression expression, int index) {
+        if (expression == null) {
+            return expression;
+        }
+        ProxyFactory result = new ProxyFactory();
+        result.setTarget(expression);
+        result.addAdvice(new SimpleConditionInterceptor(index));
+
+        return (Expression) result.getProxy();
     }
 
     public static PolicyFinderResult createPolicyFinderResult(PolicyFinderResult policyFinderResult, PolicyFinder policyFinder) {

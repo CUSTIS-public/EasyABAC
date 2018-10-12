@@ -12,6 +12,7 @@ import org.wso2.balana.combine.PolicyCombiningAlgorithm;
 import org.wso2.balana.combine.RuleCombiningAlgorithm;
 import org.wso2.balana.cond.Condition;
 import org.wso2.balana.cond.EvaluationResult;
+import org.wso2.balana.cond.Expression;
 import org.wso2.balana.ctx.AbstractResult;
 import org.wso2.balana.ctx.EvaluationCtx;
 import org.wso2.balana.ctx.ResponseCtx;
@@ -92,6 +93,8 @@ public class BalanaTraceHandler {
 
 
     public void onPolicyMatchStart(AbstractPolicy policy) {
+        safePolicyEnd(policy);
+
         Object top = callStack.peek();
         Object almostTop = callStack.get(callStack.size() - 2);
         if (policy instanceof PolicySet) {
@@ -167,12 +170,11 @@ public class BalanaTraceHandler {
     }
 
     public void onConditionEvaluateStart(Condition condition) {
-        callStack.push(condition);
+
     }
 
     public void onConditionEvaluateEnd(EvaluationResult realResult) {
-        Condition condition = (Condition) callStack.pop();
-        // TODO may rule should be populated
+
     }
 
     public void onRuleEvaluateEnd(AbstractResult realResult) {
@@ -212,7 +214,7 @@ public class BalanaTraceHandler {
     }
 
     public void onPolicyCombineEnd(AbstractResult result) {
-        // TODO need ??? safePolicyEnd();
+        safePolicyEnd(null);
         callStack.pop();
         ((AbstractCalculatedPolicy) callStack.peek()).setCombinationResult(CalculatedResult.of(result.getDecision()));
     }
@@ -220,12 +222,12 @@ public class BalanaTraceHandler {
     private boolean safePolicyEnd(AbstractPolicy newPolicy) {
         Object stackTop = callStack.peek();
         if (stackTop instanceof CalculatedPolicy) {
-            if (newPolicy.getId().equals(((CalculatedPolicy) stackTop).getId())) {
+            if (newPolicy != null && newPolicy.getId().equals(((CalculatedPolicy) stackTop).getId())) {
                 return false;
             }
             callStack.pop();
         } else if (stackTop instanceof CalculatedPolicySet) {
-            if (newPolicy.getId().equals(((CalculatedPolicySet) stackTop).getId())) {
+            if (newPolicy != null && newPolicy.getId().equals(((CalculatedPolicySet) stackTop).getId())) {
                 return false;
             }
             callStack.pop();
@@ -254,5 +256,28 @@ public class BalanaTraceHandler {
 
     public Map<RequestId, TraceResult> getResults() {
         return traceResults;
+    }
+
+    public void onRuleExpressionStart(Expression expression) {
+
+    }
+
+    public void onRuleExpressionEnd(EvaluationResult realResult) {
+
+    }
+
+    public void onSimpleConditionStart(int index) {
+        CalculatedSimpleCondition simpleRule = new CalculatedSimpleCondition(index);
+        ((CalculatedRule) callStack.peek()).addSimpleCondition(simpleRule);
+        callStack.push(simpleRule);
+    }
+
+    public void onSimpleCondition(EvaluationResult realResult) {
+        CalculatedSimpleCondition calculatedSimpleCondition = (CalculatedSimpleCondition) callStack.pop();
+        if (realResult.indeterminate()) {
+            calculatedSimpleCondition.setResult(new CalculatedResult("ERROR"));
+        } else {
+            calculatedSimpleCondition.setResult(new CalculatedResult(realResult.getAttributeValue().encode()));
+        }
     }
 }
