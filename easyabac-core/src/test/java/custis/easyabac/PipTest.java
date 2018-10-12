@@ -9,13 +9,12 @@ import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.*;
 
-@Ignore
+
 public class PipTest {
 
     private static final String ACTION_OPERATION = "report.action";
@@ -31,13 +30,39 @@ public class PipTest {
     }
 
     @Test
-    public void TwoAttrEquelsTest() throws Exception {
+    public void TwoAttrEqualsTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xml");
         InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).useXacmlPolicy(policy).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
+        authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
+        authAttrList.add(new AuthAttribute(SUBJECT_ALLOWED_CATEGORIES, Arrays.asList("iod", "dsp")));
+        AuthResponse authResponse = authorizationService.authorize(authAttrList);
+        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+    }
+
+    @Test
+    public void TwoAttrEqualsTestYaml() throws Exception {
+        InputStream easyModel = getResourceAsStream("test_pip_policy.yaml");
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.EASY_YAML).build();
+
+        List<AuthAttribute> authAttrList = new ArrayList<>();
+        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
+        authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
+        authAttrList.add(new AuthAttribute(SUBJECT_ALLOWED_CATEGORIES, Arrays.asList("iod", "dsp")));
+        AuthResponse authResponse = authorizationService.authorize(authAttrList);
+        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+    }
+
+    @Test
+    public void TwoAttrEqualsTestYamlMultiPolicy() throws Exception {
+        InputStream easyModel = getResourceAsStream("test_pip_policy_multipolicy.yaml");
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.EASY_YAML).build();
+
+        List<AuthAttribute> authAttrList = new ArrayList<>();
+        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
         authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
         authAttrList.add(new AuthAttribute(SUBJECT_ALLOWED_CATEGORIES, Arrays.asList("iod", "dsp")));
         AuthResponse authResponse = authorizationService.authorize(authAttrList);
@@ -55,7 +80,7 @@ public class PipTest {
 
         Datasource datasource = new UserCategoryDatasource(params, SUBJECT_ALLOWED_CATEGORIES);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy)
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).useXacmlPolicy(policy)
                 .datasources(Collections.singletonList(datasource)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
@@ -74,34 +99,6 @@ public class PipTest {
 
     }
 
-    @Test
-    public void SamplePipWithObligationPermitTest() throws Exception {
-        InputStream policy = getResourceAsStream("test_pip_oblig.xml");
-        InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
-
-        HashSet<Param> userDsParams = new HashSet<>();
-        Param userName = new Param("userName", SUBJECT_SUBJECT_ID);
-        userDsParams.add(userName);
-
-        Datasource datasourceUserCat = new UserCategoryDatasource(userDsParams, SUBJECT_ALLOWED_CATEGORIES);
-
-        HashSet<Param> reportDsParams = new HashSet<>();
-        Param reportId = new Param("reportId", REPORT_ID);
-        reportDsParams.add(reportId);
-
-        Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
-
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
-                .xacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).build();
-
-        List<AuthAttribute> authAttrList = new ArrayList<>();
-        authAttrList.add(new AuthAttribute(REPORT_ID, "1"));
-        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
-        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "peter"));
-        AuthResponse authResponse = authorizationService.authorize(authAttrList);
-        System.out.println(authResponse.getErrorMsg());
-        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
-    }
 
     @Test
     public void SamplePipWithObligationDenyTest() throws Exception {
@@ -121,7 +118,7 @@ public class PipTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
-                .xacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
+                .useXacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
 
@@ -129,10 +126,40 @@ public class PipTest {
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
         authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "alice"));
         AuthResponse authResponse = authorizationService.authorize(authAttrList);
+        System.out.println(authResponse.getErrorMsg());
         Assert.assertEquals(AuthResponse.Decision.DENY, authResponse.getDecision());
 
     }
 
+
+    @Test
+    public void SamplePipWithObligationPermitTest() throws Exception {
+        InputStream policy = getResourceAsStream("test_pip_oblig.xml");
+        InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
+
+        HashSet<Param> userDsParams = new HashSet<>();
+        Param userName = new Param("userName", SUBJECT_SUBJECT_ID);
+        userDsParams.add(userName);
+
+        Datasource datasourceUserCat = new UserCategoryDatasource(userDsParams, SUBJECT_ALLOWED_CATEGORIES);
+
+        HashSet<Param> reportDsParams = new HashSet<>();
+        Param reportId = new Param("reportId", REPORT_ID);
+        reportDsParams.add(reportId);
+
+        Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
+
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
+                .useXacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).build();
+
+        List<AuthAttribute> authAttrList = new ArrayList<>();
+        authAttrList.add(new AuthAttribute(REPORT_ID, "1"));
+        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
+        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "peter"));
+        AuthResponse authResponse = authorizationService.authorize(authAttrList);
+        System.out.println(authResponse.getErrorMsg());
+        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+    }
 
     class UserCategoryDatasource extends Datasource {
 
