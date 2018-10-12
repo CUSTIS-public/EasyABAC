@@ -30,13 +30,26 @@ public class PipTest {
     }
 
     @Test
-    public void TwoAttrEquelsTest() throws Exception {
+    public void TwoAttrEqualsTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xml");
         InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).useXacmlPolicy(policy).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
+        authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
+        authAttrList.add(new AuthAttribute(SUBJECT_ALLOWED_CATEGORIES, Arrays.asList("iod", "dsp")));
+        AuthResponse authResponse = authorizationService.authorize(authAttrList);
+        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+    }
+
+    @Test
+    public void TwoAttrEqualsTestYaml() throws Exception {
+        InputStream easyModel = getResourceAsStream("test_pip_policy.yaml");
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.EASY_YAML).build();
+
+        List<AuthAttribute> authAttrList = new ArrayList<>();
+        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
         authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
         authAttrList.add(new AuthAttribute(SUBJECT_ALLOWED_CATEGORIES, Arrays.asList("iod", "dsp")));
         AuthResponse authResponse = authorizationService.authorize(authAttrList);
@@ -54,7 +67,7 @@ public class PipTest {
 
         Datasource datasource = new UserCategoryDatasource(params, SUBJECT_ALLOWED_CATEGORIES);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).xacmlPolicy(policy)
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).useXacmlPolicy(policy)
                 .datasources(Collections.singletonList(datasource)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
@@ -92,7 +105,7 @@ public class PipTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
-                .xacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
+                .useXacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
 
@@ -124,7 +137,7 @@ public class PipTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
-                .xacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).build();
+                .useXacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(REPORT_ID, "1"));

@@ -1,9 +1,9 @@
 package custis.easyabac.core.model.abac;
 
+import custis.easyabac.core.init.EasyAbacInitException;
+
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import custis.easyabac.core.init.EasyAbacInitException;
 
 public enum Function {
     EQUAL("=="),

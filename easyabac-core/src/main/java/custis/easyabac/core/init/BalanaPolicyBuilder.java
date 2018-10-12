@@ -33,12 +33,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class BalanaPolicyBuilder {
 
-    private String policyNamespace;
-
-    public BalanaPolicyBuilder() {
-        this.policyNamespace = "urn:oasis:names:tc:xacml:3.0:easy-policy-sample";
-    }
-
     public Map<URI, org.wso2.balana.Policy> buildFrom(AbacAuthModel abacAuthModel) {
         return abacAuthModel.getPolicies().stream()
                 .map(this::buildBalanaPolicy)
@@ -46,7 +40,7 @@ public class BalanaPolicyBuilder {
     }
 
     private org.wso2.balana.Policy buildBalanaPolicy(Policy abacPolicy) {
-        return new org.wso2.balana.Policy(URI.create(policyNamespace + ":" + abacPolicy.getId()),
+        return new org.wso2.balana.Policy(BalanaModelTransformer.balanaPolicyId(abacPolicy.getId()),
                 null,
                 new DenyUnlessPermitRuleAlg(),
                 abacPolicy.getTitle(),
@@ -74,7 +68,7 @@ public class BalanaPolicyBuilder {
     }
 
     private Rule buildBalanaRule(custis.easyabac.core.model.abac.Rule rule, String policyId) {
-        return new Rule(URI.create(policyNamespace + ":" + policyId + ":" + rule.getId()),
+        return new Rule(BalanaModelTransformer.balanaRuleId(policyId, rule.getId()),
                 Result.DECISION_PERMIT,
                 rule.getTitle(),
                 null,

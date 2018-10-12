@@ -46,7 +46,7 @@ public class CacheTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
-                .xacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).cache(new SampleCache()).build();
+                .useXacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).cache(new SampleCache()).build();
 
         Random random = new Random();
         for (int i = 0; i < 1000; i++) {
