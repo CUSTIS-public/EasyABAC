@@ -1,13 +1,10 @@
 package custis.easyabac.core.trace.model;
 
-import custis.easyabac.core.init.BalanaModelTransformer;
-import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.Policy;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Policy with trace
@@ -33,16 +30,14 @@ public class CalculatedPolicy extends AbstractCalculatedPolicy {
         return policy;
     }
 
-    @Override
-    public void populateByModel(AbacAuthModel abacAuthModel) {
-        Optional<Policy> mappedPolicy = abacAuthModel.getPolicies()
-                .stream()
-                .filter(policy1 -> policy1.getId().equals(BalanaModelTransformer.clearBalanaNamespace(id)))
-                .findFirst();
-        if (mappedPolicy.isPresent()) {
-            this.policy = mappedPolicy.get();
-        }
+    public void populate(Policy policy) {
+        this.policy = policy;
 
-        rules.forEach(calculatedRule -> calculatedRule.populateByModel(abacAuthModel));
+        for (int i = 0; i < policy.getRules().size(); i++) {
+            if (i > rules.size() - 1) {
+                break;
+            }
+            rules.get(i).populate(policy.getRules().get(i));
+        }
     }
 }

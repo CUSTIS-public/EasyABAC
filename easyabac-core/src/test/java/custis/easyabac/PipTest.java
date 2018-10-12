@@ -57,6 +57,19 @@ public class PipTest {
     }
 
     @Test
+    public void TwoAttrEqualsTestYamlMultiPolicy() throws Exception {
+        InputStream easyModel = getResourceAsStream("test_pip_policy_multipolicy.yaml");
+        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.EASY_YAML).build();
+
+        List<AuthAttribute> authAttrList = new ArrayList<>();
+        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
+        authAttrList.add(new AuthAttribute(RESOURCE_CATEGORY, "iod"));
+        authAttrList.add(new AuthAttribute(SUBJECT_ALLOWED_CATEGORIES, Arrays.asList("iod", "dsp")));
+        AuthResponse authResponse = authorizationService.authorize(authAttrList);
+        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+    }
+
+    @Test
     public void SamplePipTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xml");
         InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");

@@ -18,6 +18,7 @@ import org.wso2.balana.ctx.xacml3.Result;
 import org.wso2.balana.xacml3.*;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,9 +35,12 @@ import static java.util.stream.Collectors.toList;
 public class BalanaPolicyBuilder {
 
     public Map<URI, org.wso2.balana.Policy> buildFrom(AbacAuthModel abacAuthModel) {
-        return abacAuthModel.getPolicies().stream()
-                .map(this::buildBalanaPolicy)
-                .collect(Collectors.toMap(AbstractPolicy::getId, bp -> bp));
+        Map<URI, org.wso2.balana.Policy> linkedHashMap = new LinkedHashMap<>();
+        abacAuthModel.getPolicies().forEach(policy -> {
+            org.wso2.balana.Policy balanaPolicy = buildBalanaPolicy(policy);
+            linkedHashMap.put(balanaPolicy.getId(), balanaPolicy);
+        });
+        return linkedHashMap;
     }
 
     private org.wso2.balana.Policy buildBalanaPolicy(Policy abacPolicy) {
