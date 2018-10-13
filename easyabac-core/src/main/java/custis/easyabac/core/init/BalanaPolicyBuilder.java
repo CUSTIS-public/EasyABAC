@@ -165,11 +165,20 @@ public class BalanaPolicyBuilder {
         try {
             return StandardAttributeFactory.getFactory().createValue(
                     URI.create(dataType.getXacmlName()),
-                    value);
+                    createXACMLAttributeValue(value, dataType));
         } catch (UnknownIdentifierException | ParsingException e) {
             throw new BalanaPolicyBuildException(format(
                     "Failed to create Balana attribute value from [%s] in rule condition id=%s: %s",
                     value, conditionId, e.getMessage()));
+        }
+    }
+
+    private String createXACMLAttributeValue(String value, DataType dataType) {
+        switch (dataType) {
+            case TIME:
+                return value + ":00"; // XML Schema time format: hh:mm:ss
+            default:
+                return value;
         }
     }
 

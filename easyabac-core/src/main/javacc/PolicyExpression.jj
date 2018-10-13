@@ -86,6 +86,7 @@ TOKEN :
     < IN_OPERATOR: "in" > |
     < SUBSET_OPERATOR: "subset"> |
     < DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* > |
+    < TIME_LITERAL: (("0"["1"-"9"])|("1"["0"-"9"])|("2"["0"-"3"]))":"["0"-"5"]["0"-"9"] > |
     < STRING_LITERAL : "'"(["A"-"Z"]|["a"-"z"]|["0"-"9"])+"'" > |
     < OBJECT_PROPERTY : (["A"-"Z"]|["a"-"z"]|"_"|"-")+"."(["a"-"z"]|["A"-"Z"]|"_"|"-")+ >
 }
@@ -179,6 +180,11 @@ void ConstantValue():
     }
     |
     t = <DECIMAL_LITERAL>
+    {
+      this.attributeValues = Collections.singletonList(t.image);
+    }
+    |
+    t = <TIME_LITERAL>
     {
       this.attributeValues = Collections.singletonList(t.image);
     }

@@ -81,4 +81,18 @@ public class PolicyExpressionParserTest {
         Condition condition = parser.parseRuleCondition(false);
         assertNotNull("Rule condition", condition);
     }
+
+    @Test
+    public void shouldBuildTimeBasedConditions_whenTimeIsUsed() throws ParseException {
+        Map<String, Attribute> attributeMap = new HashMap<>();
+        attributeMap.put("env.current_time", new Attribute("env.current_time", DataType.TIME, Category.ENV, false));
+
+        PolicyExpressionParser parser = new PolicyExpressionParser(new StringReader("env.current_time >= 08:30"));
+        parser.setAttributes(attributeMap);
+
+        Condition condition = parser.parseRuleCondition(false);
+        assertNotNull("Rule condition", condition);
+        assertEquals("Time attribute", "env.current_time", condition.getFirstOperand().getId());
+        assertEquals("Time value", "08:30", condition.getSecondOperandValue().get(0));
+    }
 }
