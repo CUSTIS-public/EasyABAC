@@ -1,6 +1,5 @@
-package custis.easyabac;
+package custis.easyabac.core.init;
 
-import custis.easyabac.core.init.BalanaPolicyBuilder;
 import custis.easyabac.core.model.abac.*;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
@@ -20,7 +19,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -186,9 +184,7 @@ public class BalanaPolicyBuilderTest {
         org.wso2.balana.Policy build() {
             Policy abacPolicy = new Policy("policy1", "Sample policy", this.target, this.rules, this.attributesToReturn);
             AbacAuthModel authModel = new AbacAuthModel(singletonList(abacPolicy), Collections.emptyMap(), Collections.emptyMap());
-            Map<URI, org.wso2.balana.Policy> policies = new BalanaPolicyBuilder().buildFrom(authModel);
-
-            return policies.values().iterator().next();
+            return new BalanaPolicyBuilder().buildPolicies(authModel).get(0);
         }
 
         private Rule rule2() {
