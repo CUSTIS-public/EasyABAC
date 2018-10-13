@@ -4,6 +4,7 @@ import custis.easyabac.core.model.abac.*;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
+import org.junit.Before;
 import org.junit.Test;
 import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.TargetMatch;
@@ -11,27 +12,36 @@ import org.wso2.balana.attr.xacml3.AttributeDesignator;
 import org.wso2.balana.cond.Apply;
 import org.wso2.balana.cond.Evaluatable;
 import org.wso2.balana.ctx.xacml3.Result;
+import org.wso2.balana.finder.impl.CurrentEnvModule;
 import org.wso2.balana.xacml3.AllOfSelection;
 import org.wso2.balana.xacml3.AnyOfSelection;
 import org.wso2.balana.xacml3.ObligationExpression;
 
+import javax.xml.XMLConstants;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
+import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 
 /**
  * Test suite for conversion from EasyAbac domain model to Balana domain model
  */
 public class BalanaPolicyBuilderTest {
-    
+
+    private Map<String, String> POLICY_NAMESPACES;
+
+    @Before
+    public void setUp() {
+        POLICY_NAMESPACES = new HashMap<>();
+        POLICY_NAMESPACES.put(XMLConstants.DEFAULT_NS_PREFIX, "urn:oasis:names:tc:xacml:3.0:core:schema:wd-17");
+    }
+
     @Test
     public void buildPolicyId_fromPolicyKey() throws URISyntaxException {
         AbstractPolicy policy = new SamplePolicyBuilder().build();
@@ -124,7 +134,7 @@ public class BalanaPolicyBuilderTest {
     public void shouldCreateDateTimeAttributes_whenTimeInRuleConditionIsGiven() {
         Rule timedRule = new Rule("rule_time", "Rule with time", Operation.AND, singletonList(
                 new Condition("rtc1", false,
-                        new Attribute("env.current_time", DataType.TIME, Category.ENV, false),
+                        new Attribute("env.time", DataType.TIME, Category.ENV, false),
                         singletonList("08:30"),
                         Function.LESS_OR_EQUAL)));
 
@@ -151,6 +161,30 @@ public class BalanaPolicyBuilderTest {
                     Apply a = (Apply) c;
                     return a.getFunction().getIdentifier().equals(URI.create("urn:oasis:names:tc:xacml:1.0:function:time-less-than-or-equal"));
                 }));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldSelectPredefinedBalanaEnvAttributes_whenRuleConditionUsesCurrentDateAndTime() {
+        Rule timedRule = new Rule("rule_current_time", "Rule with date and time", Operation.AND, asList(
+                new Condition("rtc1", false,
+                        new Attribute("env.time", DataType.TIME, Category.ENV, false),
+                        singletonList("08:30"),
+                        Function.LESS_OR_EQUAL),
+                new Condition("rtc2", false,
+                        new Attribute("env.date", DataType.DATE, Category.ENV, false),
+                        singletonList("2019-09-09"),
+                        Function.LESS_OR_EQUAL)));
+
+        org.wso2.balana.Policy policy = new SamplePolicyBuilder()
+                .rules(singletonList(timedRule))
+                .build();
+
+        String xmlPolicy = policy.encode();
+        assertThat(xmlPolicy, hasXPath("//:AttributeDesignator[@AttributeId=\"" +
+                CurrentEnvModule.ENVIRONMENT_CURRENT_DATE + "\"]").withNamespaceContext(POLICY_NAMESPACES));
+        assertThat(xmlPolicy, hasXPath("//:AttributeDesignator[@AttributeId=\"" +
+                CurrentEnvModule.ENVIRONMENT_CURRENT_TIME + "\"]").withNamespaceContext(POLICY_NAMESPACES));
     }
 
     private List<org.wso2.balana.Rule> extractRules(org.wso2.balana.Policy policy) {

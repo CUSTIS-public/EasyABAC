@@ -7,6 +7,7 @@ import custis.easyabac.core.model.abac.Operation;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.TargetCondition;
 import custis.easyabac.core.model.abac.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
 import org.wso2.balana.*;
 import org.wso2.balana.attr.AttributeValue;
@@ -16,11 +17,11 @@ import org.wso2.balana.combine.xacml3.DenyUnlessPermitPolicyAlg;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
 import org.wso2.balana.cond.*;
 import org.wso2.balana.ctx.xacml3.Result;
+import org.wso2.balana.finder.impl.CurrentEnvModule;
 import org.wso2.balana.xacml3.*;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static custis.easyabac.core.init.BalanaModelTransformer.*;
@@ -37,6 +38,32 @@ class BalanaPolicyBuilder {
     private static final DenyUnlessPermitPolicyAlg DENY_UNLESS_PERMIT_POLICY_ALG = new DenyUnlessPermitPolicyAlg();
     private static final DenyUnlessPermitRuleAlg DENY_UNLESS_PERMIT_RULE_ALG = new DenyUnlessPermitRuleAlg();
 
+    private static final Map<String, AttributeDesignator> predefinedAttributes;
+
+    static {
+        predefinedAttributes = new HashMap<>();
+
+        predefinedAttributes.put(AttributesConstants.ENV_TIME,
+                new AttributeDesignator(URI.create(DataType.TIME.getXacmlName()),
+                        URI.create(CurrentEnvModule.ENVIRONMENT_CURRENT_TIME),
+                        false,
+                        URI.create(Category.ENV.getXacmlName())));
+
+        AttributeDesignator currentDate = new AttributeDesignator(URI.create(DataType.DATE.getXacmlName()),
+                URI.create(CurrentEnvModule.ENVIRONMENT_CURRENT_DATE),
+                false,
+                URI.create(Category.ENV.getXacmlName()));
+        predefinedAttributes.put(AttributesConstants.ENV_DATE, currentDate);
+        predefinedAttributes.put(AttributesConstants.ENV_TODAY, currentDate);
+
+        AttributeDesignator currentDateTime = new AttributeDesignator(URI.create(DataType.DATE_TIME.getXacmlName()),
+                URI.create(CurrentEnvModule.ENVIRONMENT_CURRENT_DATETIME),
+                false,
+                URI.create(Category.ENV.getXacmlName()));
+        predefinedAttributes.put(AttributesConstants.ENV_DATETIME, currentDateTime);
+        predefinedAttributes.put(AttributesConstants.ENV_NOW, currentDateTime);
+    }
+
     PolicySet buildFrom(AbacAuthModel abacAuthModel) {
         return new PolicySet(defaultBalanaPolicySetId(),
                 DENY_UNLESS_PERMIT_POLICY_ALG,
@@ -46,8 +73,8 @@ class BalanaPolicyBuilder {
 
     List<org.wso2.balana.Policy> buildPolicies(AbacAuthModel abacAuthModel) {
         return abacAuthModel.getPolicies().stream()
-                    .map(this::buildBalanaPolicy)
-                    .collect(toList());
+                .map(this::buildBalanaPolicy)
+                .collect(toList());
     }
 
     private org.wso2.balana.Policy buildBalanaPolicy(Policy abacPolicy) {
@@ -168,6 +195,7 @@ class BalanaPolicyBuilder {
                 asList(createAttributeDesignator(firstOperand, true), secondAttr));
     }
 
+    //FIXME Duplicate of AttributesFactory.getAttributeValue
     private AttributeValue createAttributeValue(String value, DataType dataType, String conditionId) {
         try {
             return StandardAttributeFactory.getFactory().createValue(
@@ -190,11 +218,12 @@ class BalanaPolicyBuilder {
     }
 
     private Evaluatable createAttributeDesignator(Attribute attribute, boolean selectAsOneValueFromBag) {
-        final AttributeDesignator designator = new AttributeDesignator(
-                URI.create(attribute.getType().getXacmlName()),
-                URI.create(attribute.getXacmlName()),
-                true,
-                URI.create(attribute.getCategory().getXacmlName()));
+        final AttributeDesignator designator = predefinedAttributes.getOrDefault(attribute.getId(),
+                new AttributeDesignator(
+                        URI.create(attribute.getType().getXacmlName()),
+                        URI.create(attribute.getXacmlName()),
+                        true,
+                        URI.create(attribute.getCategory().getXacmlName())));
         return selectAsOneValueFromBag ?
                 new Apply(BalanaFunctionsFactory.getFunctions(attribute.getType()).oneAndOnly(), singletonList(designator))
                 :
