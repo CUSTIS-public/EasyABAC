@@ -122,6 +122,7 @@ public class BalanaPolicyBuilderTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldCreateDateTimeAttributes_whenTimeInRuleConditionIsGiven() {
         Rule timedRule = new Rule("rule_time", "Rule with time", Operation.AND, singletonList(
                 new Condition("rtc1", false,
@@ -141,8 +142,17 @@ public class BalanaPolicyBuilderTest {
 
         Apply andApply = (Apply) condChild;
         assertEquals("Condition apply function",
-                URI.create("urn:oasis:names:tc:xacml:1.0:function:time-greater-than-or-equal"),
+                URI.create("urn:oasis:names:tc:xacml:1.0:function:and"),
                 andApply.getFunction().getIdentifier());
+        assertTrue("AND Apply has time comparision function", andApply.getChildren().stream()
+                .anyMatch(c -> {
+                    if (!(c instanceof Apply)) {
+                        return false;
+                    }
+
+                    Apply a = (Apply) c;
+                    return a.getFunction().getIdentifier().equals(URI.create("urn:oasis:names:tc:xacml:1.0:function:time-less-than-or-equal"));
+                }));
     }
 
     private List<org.wso2.balana.Rule> extractRules(org.wso2.balana.Policy policy) {

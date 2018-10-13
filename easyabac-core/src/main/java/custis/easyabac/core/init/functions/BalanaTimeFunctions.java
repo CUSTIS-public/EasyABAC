@@ -50,7 +50,7 @@ public class BalanaTimeFunctions implements BalanaFunctions {
 
     @Override
     public Function oneAndOnly() {
-        return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:integer-one-and-only");
+        return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:time-one-and-only");
     }
 
     @Override
