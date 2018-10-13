@@ -7,6 +7,7 @@ import custis.easyabac.core.model.abac.Operation;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.TargetCondition;
 import custis.easyabac.core.model.abac.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
 import org.wso2.balana.*;
 import org.wso2.balana.attr.AttributeValue;
@@ -15,13 +16,11 @@ import org.wso2.balana.attr.xacml3.AttributeDesignator;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
 import org.wso2.balana.cond.*;
 import org.wso2.balana.ctx.xacml3.Result;
+import org.wso2.balana.finder.impl.CurrentEnvModule;
 import org.wso2.balana.xacml3.*;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -33,6 +32,32 @@ import static java.util.stream.Collectors.toList;
  * Converts domain model Policy to Balana policies
  */
 public class BalanaPolicyBuilder {
+
+    private static final Map<String, AttributeDesignator> predefinedAttributes;
+
+    static {
+        predefinedAttributes = new HashMap<>();
+
+        predefinedAttributes.put("env.time",
+                new AttributeDesignator(URI.create(DataType.TIME.getXacmlName()),
+                        URI.create(CurrentEnvModule.ENVIRONMENT_CURRENT_TIME),
+                        false,
+                        URI.create(Category.ENV.getXacmlName())));
+
+        AttributeDesignator currentDate = new AttributeDesignator(URI.create(DataType.DATE.getXacmlName()),
+                URI.create(CurrentEnvModule.ENVIRONMENT_CURRENT_DATE),
+                false,
+                URI.create(Category.ENV.getXacmlName()));
+        predefinedAttributes.put("env.date", currentDate);
+        predefinedAttributes.put("env.today", currentDate);
+
+        AttributeDesignator currentDateTime = new AttributeDesignator(URI.create(DataType.DATE_TIME.getXacmlName()),
+                URI.create(CurrentEnvModule.ENVIRONMENT_CURRENT_DATETIME),
+                false,
+                URI.create(Category.ENV.getXacmlName()));
+        predefinedAttributes.put("env.datetime", currentDateTime);
+        predefinedAttributes.put("env.now", currentDateTime);
+    }
 
     public Map<URI, org.wso2.balana.Policy> buildFrom(AbacAuthModel abacAuthModel) {
         Map<URI, org.wso2.balana.Policy> linkedHashMap = new LinkedHashMap<>();
@@ -183,11 +208,12 @@ public class BalanaPolicyBuilder {
     }
 
     private Evaluatable createAttributeDesignator(Attribute attribute, boolean selectAsOneValueFromBag) {
-        final AttributeDesignator designator = new AttributeDesignator(
-                URI.create(attribute.getType().getXacmlName()),
-                URI.create(attribute.getXacmlName()),
-                true,
-                URI.create(attribute.getCategory().getXacmlName()));
+        final AttributeDesignator designator = predefinedAttributes.getOrDefault(attribute.getId(),
+                new AttributeDesignator(
+                        URI.create(attribute.getType().getXacmlName()),
+                        URI.create(attribute.getXacmlName()),
+                        true,
+                        URI.create(attribute.getCategory().getXacmlName())));
         return selectAsOneValueFromBag ?
                 new Apply(BalanaFunctionsFactory.getFunctions(attribute.getType()).oneAndOnly(), singletonList(designator))
                 :

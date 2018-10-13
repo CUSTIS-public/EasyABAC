@@ -14,6 +14,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <properties>
         <argLine>-Dfile.encoding=UTF-8 -Duser.timezone=UTC</argLine>
+        <xmlunit.version>2.6.2</xmlunit.version>
     </properties>
 
     <dependencies>
@@ -59,6 +60,17 @@
             <groupId>org.audit4j</groupId>
             <artifactId>audit4j-core</artifactId>
             <version>2.5.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-core</artifactId>
+            <version>${xmlunit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-matchers</artifactId>
+            <version>${xmlunit.version}</version>
         </dependency>
 
     </dependencies>
