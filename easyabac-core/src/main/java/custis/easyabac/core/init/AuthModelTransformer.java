@@ -51,7 +51,7 @@ public class AuthModelTransformer {
 
             List<Attribute> returnAttributes = transformReturnAttributes(permission.getReturnAttributes());
 
-            policyList.add(new Policy(IdGenerator.newId(), permission.getTitle(), target, rules, returnAttributes));
+            policyList.add(new Policy("policy" + i, permission.getTitle(), target, rules, returnAttributes));
         }
     }
 
@@ -105,7 +105,7 @@ public class AuthModelTransformer {
         for (int i = 0; i < easyRules.size(); i++) {
             EasyRule easyRule = easyRules.get(i);
             List<Condition> conditions = transformConditions(easyRule);
-            Rule rule = new Rule("policy_" + policyId + "_rule_" + i, easyRule.getTitle(), easyRule.getOperation(), conditions);
+            Rule rule = new Rule("rule" + i, easyRule.getTitle(), easyRule.getOperation(), conditions);
 
             rules.add(rule);
         }
@@ -203,8 +203,16 @@ public class AuthModelTransformer {
         }
     }
 
-    private String makeXacmlName(String attributeId) {
+    public static String makeXacmlName(String attributeId) {
         return XACML_ATTR_PREFIX + attributeId;
+    }
+
+    public static String modeModelAttributeIdFromXacml(String xacmlName) {
+        if (xacmlName.startsWith(XACML_ATTR_PREFIX)) {
+            return xacmlName.substring(XACML_ATTR_PREFIX.length());
+        } else {
+            return xacmlName;
+        }
     }
 
     private String makeAttributeId(String resourceName, String id) {

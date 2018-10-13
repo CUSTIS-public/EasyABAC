@@ -38,7 +38,7 @@ public class BalanaPolicyBuilderTest {
     public void buildPolicyId_fromPolicyKey() throws URISyntaxException {
         AbstractPolicy policy = new SamplePolicyBuilder().build();
         assertEquals("Policy ID",
-                new URI("urn:oasis:names:tc:xacml:3.0:easy-policy-sample:policy1"),
+                new URI("urn:oasis:names:tc:xacml:3.0:easy-policy:policy1"),
                 policy.getId());
     }
 

@@ -2,12 +2,11 @@ package custis.easyabac.core.init;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.balana.MatchResult;
 import org.wso2.balana.Policy;
 import org.wso2.balana.PolicySet;
 import org.wso2.balana.combine.PolicyCombiningAlgorithm;
+import org.wso2.balana.combine.xacml3.DenyUnlessPermitPolicyAlg;
 import org.wso2.balana.ctx.EvaluationCtx;
-import org.wso2.balana.ctx.Status;
 import org.wso2.balana.finder.PolicyFinderModule;
 import org.wso2.balana.finder.PolicyFinderResult;
 import org.wso2.balana.finder.impl.FileBasedPolicyFinderModule;
@@ -25,7 +24,7 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
     protected final static Log log = LogFactory.getLog(FileBasedPolicyFinderModule.class);
 
     protected Map<URI, org.wso2.balana.Policy> policies;
-    protected PolicyCombiningAlgorithm combiningAlg;
+    protected PolicyCombiningAlgorithm combiningAlg = new DenyUnlessPermitPolicyAlg();
 
     @Override
     public boolean isRequestSupported() {
@@ -41,7 +40,8 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
         for (Map.Entry<URI, org.wso2.balana.Policy> entry : entrySet) {
 
             org.wso2.balana.Policy policy = entry.getValue();
-            MatchResult match = policy.match(context);
+           /* TODO match policies with trace
+           MatchResult match = policy.match(context);
             int result = match.getResult();
 
             // if target matching was indeterminate, then return the error
@@ -62,7 +62,9 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
 
                 // this is the first match we've found, so remember it
                 selectedPolicies.add(policy);
-            }
+            }*/
+
+            selectedPolicies.add(policy);
         }
 
         if (log.isDebugEnabled()) {
@@ -78,8 +80,6 @@ public abstract class EasyAbacBasePolicyFinderModule extends PolicyFinderModule 
                     log.debug("No matching XACML policy found");
                 }
                 return new PolicyFinderResult();
-            case 1:
-                return new PolicyFinderResult((selectedPolicies.get(0)));
             default:
                 return new PolicyFinderResult(new PolicySet(null, combiningAlg, null, selectedPolicies));
         }
