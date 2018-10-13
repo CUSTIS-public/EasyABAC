@@ -39,10 +39,11 @@ class BalanaPolicyBuilder {
     private static final DenyUnlessPermitRuleAlg DENY_UNLESS_PERMIT_RULE_ALG = new DenyUnlessPermitRuleAlg();
 
     private static final Map<String, AttributeDesignator> predefinedAttributes;
+
     static {
         predefinedAttributes = new HashMap<>();
 
-        predefinedAttributes.put("env.time",
+        predefinedAttributes.put(AttributesConstants.ENV_TIME,
                 new AttributeDesignator(URI.create(DataType.TIME.getXacmlName()),
                         URI.create(CurrentEnvModule.ENVIRONMENT_CURRENT_TIME),
                         false,
@@ -52,15 +53,15 @@ class BalanaPolicyBuilder {
                 URI.create(CurrentEnvModule.ENVIRONMENT_CURRENT_DATE),
                 false,
                 URI.create(Category.ENV.getXacmlName()));
-        predefinedAttributes.put("env.date", currentDate);
-        predefinedAttributes.put("env.today", currentDate);
+        predefinedAttributes.put(AttributesConstants.ENV_DATE, currentDate);
+        predefinedAttributes.put(AttributesConstants.ENV_TODAY, currentDate);
 
         AttributeDesignator currentDateTime = new AttributeDesignator(URI.create(DataType.DATE_TIME.getXacmlName()),
                 URI.create(CurrentEnvModule.ENVIRONMENT_CURRENT_DATETIME),
                 false,
                 URI.create(Category.ENV.getXacmlName()));
-        predefinedAttributes.put("env.datetime", currentDateTime);
-        predefinedAttributes.put("env.now", currentDateTime);
+        predefinedAttributes.put(AttributesConstants.ENV_DATETIME, currentDateTime);
+        predefinedAttributes.put(AttributesConstants.ENV_NOW, currentDateTime);
     }
 
     PolicySet buildFrom(AbacAuthModel abacAuthModel) {
@@ -194,6 +195,7 @@ class BalanaPolicyBuilder {
                 asList(createAttributeDesignator(firstOperand, true), secondAttr));
     }
 
+    //FIXME Duplicate of AttributesFactory.getAttributeValue
     private AttributeValue createAttributeValue(String value, DataType dataType, String conditionId) {
         try {
             return StandardAttributeFactory.getFactory().createValue(
