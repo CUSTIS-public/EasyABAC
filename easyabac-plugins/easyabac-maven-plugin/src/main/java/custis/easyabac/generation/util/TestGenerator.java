@@ -4,6 +4,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.comments.JavadocComment;
@@ -44,24 +45,25 @@ public class TestGenerator {
 
     public static final String DATA_FILE_SUFFIX = ".yaml";
 
-    public static void createTests(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel) throws IOException {
+    public static void createTests(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException {
         if (resource.getActions() == null || resource.getActions().isEmpty()) {
             return;
         }
 
         // generating Deny tests
-        createDenyTestClass(resource, packageName, sourceRoot, resourceRoot, abacAuthModel);
+        createDenyTestClass(resource, packageName, sourceRoot, resourceRoot, abacAuthModel, modelFileName);
 
         // generating Permit tests
-        createPermitTestClass(resource, packageName, sourceRoot, resourceRoot, abacAuthModel);
+        createPermitTestClass(resource, packageName, sourceRoot, resourceRoot, abacAuthModel, modelFileName);
     }
 
-    private static void createDenyTestClass(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel) throws IOException {
+    private static void createDenyTestClass(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException {
         CompilationUnit testUnit = new CompilationUnit(packageName);
         String resourceName = capitalize(resource.getId());
         String testName = "EasyABAC_" + resourceName + "_Deny_Test";
         ClassOrInterfaceDeclaration type = createType(testUnit, testName, resource, packageName);
 
+        createConstructor(type, testName, modelFileName);
         createTest(type, resourceName, DENY);
         createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, DENY);
 
@@ -69,17 +71,25 @@ public class TestGenerator {
         sourceRoot.add(testUnit);
     }
 
-    private static void createPermitTestClass(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel) throws IOException {
+    private static void createPermitTestClass(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException {
         CompilationUnit testUnit = new CompilationUnit(packageName);
         String resourceName = capitalize(resource.getId());
         String testName = "EasyABAC_" + resourceName + "_Permit_Test";
         ClassOrInterfaceDeclaration type = createType(testUnit, testName, resource, packageName);
 
+        createConstructor(type, testName, modelFileName);
         createTest(type, resourceName, PERMIT);
         createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, PERMIT);
 
         testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
         sourceRoot.add(testUnit);
+    }
+
+    private static void createConstructor(ClassOrInterfaceDeclaration type, String testName, String modelFileName) {
+        ConstructorDeclaration constructor = type.addConstructor(Modifier.PUBLIC);
+        constructor.addThrownException(Exception.class);
+        BlockStmt body = constructor.getBody();
+        body.addStatement("super(loadModel(" + testName + ".class, \"" + modelFileName + "\"));");
     }
 
     private static void createData(ClassOrInterfaceDeclaration type, AbacAuthModel abacAuthModel, String testName, Resource resource, SourceRoot resourceRoot, String resourceName, AuthResponse.Decision decision) throws IOException {
@@ -90,7 +100,6 @@ public class TestGenerator {
         algorithm.generatePolicies(abacAuthModel.getPolicies(), testDataHolder);
 
         Yaml yaml = new Yaml();
-        // TODO tests by decision
         for (int i = 0; i < testDataHolder.getPermitTests().size(); i++) {
             TestDescription permitTest = testDataHolder.getPermitTests().get(i);
             FileWriter writer = new FileWriter(resourceRoot + "/" + resource.getId().toLowerCase() + "_" + decision.name().toLowerCase() + "_" + i + DATA_FILE_SUFFIX);
@@ -115,9 +124,11 @@ public class TestGenerator {
         MethodDeclaration method = type.addMethod("test_" + decision.name(), Modifier.PUBLIC);
         method.addThrownException(Exception.class);
         method.addMarkerAnnotation(Ignore.class);
-        NormalAnnotationExpr annotation = method.addAndGetAnnotation(Test.class);
         if (decision == DENY) {
+            NormalAnnotationExpr annotation = method.addAndGetAnnotation(Test.class);
             annotation.addPair("expected", new ClassExpr(new ClassOrInterfaceType(NotPermittedException.class.getSimpleName())));
+        } else {
+            method.addMarkerAnnotation(Test.class);
         }
 
         BlockStmt body = new BlockStmt();

@@ -134,7 +134,7 @@
                 <configuration>
                     <sourcePath>src/main/java</sourcePath>
                     <testPath>src/test/java</testPath>
-                    <policyFile>src/main/resources/policy.yaml</policyFile>
+                    <modelFile>policy.yaml</modelFile>
                     <testBasePackage>custis.easyabac.autogen</testBasePackage>
                     <modelPackage>custis.easyabac.demo.model</modelPackage>
                     <permissioncheckerPackage>custis.easyabac.demo.permissionchecker</permissioncheckerPackage>

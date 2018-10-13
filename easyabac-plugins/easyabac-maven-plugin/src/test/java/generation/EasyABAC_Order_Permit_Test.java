@@ -13,8 +13,12 @@ import static custis.easyabac.pdp.AuthResponse.Decision.PERMIT;
 
 public class EasyABAC_Order_Permit_Test extends EasyAbacBaseTestClass {
 
+    public EasyABAC_Order_Permit_Test() throws Exception {
+        super(loadModel(EasyABAC_Order_Permit_Test.class, "test.yaml"));
+    }
+
     @Ignore
-    @Test()
+    @Test
     public void test_PERMIT() throws Exception {
         getPermissionChecker(Order.class).ensurePermitted(resource, action);
     }

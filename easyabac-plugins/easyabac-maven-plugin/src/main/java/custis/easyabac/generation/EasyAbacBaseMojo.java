@@ -12,11 +12,14 @@ import java.util.List;
 
 public abstract class EasyAbacBaseMojo extends AbstractMojo {
 
-    @Parameter( property = "policyFile", defaultValue = "src/main/resources/policy.yaml" )
-    protected String policyFile;
+    @Parameter( property = "modelFile", defaultValue = "src/main/resources/model.yaml" )
+    protected String modelFile;
 
     @Parameter( property = "sourcePath", defaultValue = "src/main/java" )
     protected String sourcePath;
+
+    @Parameter( property = "resourcePath", defaultValue = "src/main/resources" )
+    protected String resourcePath;
 
     @Parameter( property = "testPath", defaultValue = "src/test/java" )
     protected String testPath;
