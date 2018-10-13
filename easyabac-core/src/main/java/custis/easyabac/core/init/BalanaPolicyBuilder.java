@@ -13,6 +13,7 @@ import org.wso2.balana.*;
 import org.wso2.balana.attr.AttributeValue;
 import org.wso2.balana.attr.StandardAttributeFactory;
 import org.wso2.balana.attr.xacml3.AttributeDesignator;
+import org.wso2.balana.combine.xacml3.DenyUnlessPermitPolicyAlg;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
 import org.wso2.balana.cond.*;
 import org.wso2.balana.ctx.xacml3.Result;
@@ -23,18 +24,21 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static custis.easyabac.core.init.BalanaModelTransformer.*;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Converts domain model Policy to Balana policies
+ * Converts domain model Policy to Balana PolicySet
  */
-public class BalanaPolicyBuilder {
+class BalanaPolicyBuilder {
+
+    private static final DenyUnlessPermitPolicyAlg DENY_UNLESS_PERMIT_POLICY_ALG = new DenyUnlessPermitPolicyAlg();
+    private static final DenyUnlessPermitRuleAlg DENY_UNLESS_PERMIT_RULE_ALG = new DenyUnlessPermitRuleAlg();
 
     private static final Map<String, AttributeDesignator> predefinedAttributes;
-
     static {
         predefinedAttributes = new HashMap<>();
 
@@ -59,19 +63,23 @@ public class BalanaPolicyBuilder {
         predefinedAttributes.put("env.now", currentDateTime);
     }
 
-    public Map<URI, org.wso2.balana.Policy> buildFrom(AbacAuthModel abacAuthModel) {
-        Map<URI, org.wso2.balana.Policy> linkedHashMap = new LinkedHashMap<>();
-        abacAuthModel.getPolicies().forEach(policy -> {
-            org.wso2.balana.Policy balanaPolicy = buildBalanaPolicy(policy);
-            linkedHashMap.put(balanaPolicy.getId(), balanaPolicy);
-        });
-        return linkedHashMap;
+    PolicySet buildFrom(AbacAuthModel abacAuthModel) {
+        return new PolicySet(defaultBalanaPolicySetId(),
+                DENY_UNLESS_PERMIT_POLICY_ALG,
+                null,
+                buildPolicies(abacAuthModel));
+    }
+
+    List<org.wso2.balana.Policy> buildPolicies(AbacAuthModel abacAuthModel) {
+        return abacAuthModel.getPolicies().stream()
+                .map(this::buildBalanaPolicy)
+                .collect(toList());
     }
 
     private org.wso2.balana.Policy buildBalanaPolicy(Policy abacPolicy) {
-        return new org.wso2.balana.Policy(BalanaModelTransformer.balanaPolicyId(abacPolicy.getId()),
+        return new org.wso2.balana.Policy(balanaPolicyId(abacPolicy.getId()),
                 null,
-                new DenyUnlessPermitRuleAlg(),
+                DENY_UNLESS_PERMIT_RULE_ALG,
                 abacPolicy.getTitle(),
                 buildBalanaTarget(abacPolicy.getTarget()),
                 null,
@@ -97,7 +105,7 @@ public class BalanaPolicyBuilder {
     }
 
     private Rule buildBalanaRule(custis.easyabac.core.model.abac.Rule rule, String policyId) {
-        return new Rule(BalanaModelTransformer.balanaRuleId(policyId, rule.getId()),
+        return new Rule(balanaRuleId(policyId, rule.getId()),
                 Result.DECISION_PERMIT,
                 rule.getTitle(),
                 null,
