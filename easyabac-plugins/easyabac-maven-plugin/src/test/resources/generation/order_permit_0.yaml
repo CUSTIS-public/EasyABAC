@@ -1,5 +1,5 @@
 !!custis.easyabac.api.test.TestDescription
 action: order.view
 attributes:
-  subject: {branchId: '!UNKNOWN!-aRdQR', role: MANAGER}
-  customer: {branchId: '!UNKNOWN!-aRdQR'}
+  subject: {branchId: '!N/A!-wVNbv', role: MANAGER}
+  customer: {branchId: '!N/A!-wVNbv'}

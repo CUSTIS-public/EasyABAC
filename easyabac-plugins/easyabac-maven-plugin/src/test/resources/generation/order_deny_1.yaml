@@ -1,6 +1,6 @@
 !!custis.easyabac.api.test.TestDescription
 action: order.view
 attributes:
-  subject: {branchId: '!NEGATE!-!UNKNOWN!-kdKV0', role: '!NEGATE!-MANAGER'}
-  customer: {branchId: '!UNKNOWN!-kdKV0'}
-  order: {branchId: '!NEGATE!-!UNKNOWN!-kdKV0'}
+  subject: {branchId: '!N/A!-lVeCE', role: '!N/A!-Z8KkH'}
+  customer: {branchId: '!N/A!-6r4n5'}
+  order: {branchId: '!N/A!-lVeCE'}

@@ -8,8 +8,8 @@ import java.util.List;
 
 public class FunctionUtils {
 
-    public static final String UNKNOWN_PREFIX = "!UNKNOWN!-";
-    public static final String NEGATE_PREFIX = "!NEGATE!-";
+    public static final String UNKNOWN_PREFIX = "!N/A!-";
+    public static final String NEGATE_PREFIX = "!NOT!-";
     public static final String ACTION = "!ACTION!";
 
     public static String newUnknownResult() {
@@ -32,7 +32,7 @@ public class FunctionUtils {
         if (expectedResult) {
             return value;
         } else {
-            return NEGATE_PREFIX + value;
+            return newUnknownResult();
         }
     }
 }

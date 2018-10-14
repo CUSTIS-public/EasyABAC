@@ -5,6 +5,8 @@ import custis.easyabac.core.model.abac.Condition;
 import custis.easyabac.core.model.abac.Function;
 import custis.easyabac.core.model.abac.Rule;
 import custis.easyabac.core.model.abac.attribute.Attribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,6 +14,8 @@ import java.util.stream.Collectors;
 import static custis.easyabac.generation.util.algorithm.FunctionUtils.UNKNOWN_PREFIX;
 
 public class RuleGenerationUtils {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(RuleGenerationUtils.class);
 
     public static List<Map<String, String>> generateRule(Rule rule, boolean expectedResult,
                                                                       Map<String, String> attributes) throws EasyAbacInitException {
@@ -39,15 +43,29 @@ public class RuleGenerationUtils {
             for (int i = 0; i < conditions.size(); i++) {
                 Condition condition = conditions.get(i);
                 generateForCondition(condition, expectedResult, copied);
+                if (copied.isEmpty()) {
+                    break;
+                }
             }
-            out.add(copied);
+            if (!copied.isEmpty()) {
+                out.add(copied);
+            }
         } else {
             for (int i = 0; i < conditions.size(); i++) {
                 Map<String, String> copied = deepCopy(attributes);
                 Condition condition = conditions.get(i);
                 generateForCondition(condition, expectedResult, copied);
+                if (copied.isEmpty()) {
+                    continue;
+                }
                 for (int j = 0; j < i; j++) {
                     generateForCondition(conditions.get(j), !expectedResult, copied);
+                    if (copied.isEmpty()) {
+                        break;
+                    }
+                }
+                if (copied.isEmpty()) {
+                    continue;
                 }
 
                 out.add(copied);
@@ -66,8 +84,17 @@ public class RuleGenerationUtils {
                 Map<String, String> copied = deepCopy(attributes);
                 Condition condition = conditions.get(i);
                 generateForCondition(condition, expectedResult, copied);
+                if (copied.isEmpty()) {
+                    continue;
+                }
                 for (int j = 0; j < i; j++) {
                     generateForCondition(conditions.get(j), !expectedResult, copied);
+                    if (copied.isEmpty()) {
+                        break;
+                    }
+                }
+                if (copied.isEmpty()) {
+                    continue;
                 }
 
                 out.add(copied);
@@ -77,8 +104,13 @@ public class RuleGenerationUtils {
             for (int i = 0; i < conditions.size(); i++) {
                 Condition condition = conditions.get(i);
                 generateForCondition(condition, expectedResult, copied);
+                if (copied.isEmpty()) {
+                    break;
+                }
             }
-            out.add(copied);
+            if (!copied.isEmpty()) {
+                out.add(copied);
+            }
         }
 
 
@@ -96,6 +128,9 @@ public class RuleGenerationUtils {
             String firstValue = attributes.get(firstAttribute.getId());
             String value = FunctionUtils.generateValue(function, values, expectedResult);
             resolveAttributes(attributes, firstAttribute.getId(), value);
+            if (attributes.isEmpty()) {
+                return;
+            }
 
         } else {
             // we've got placeholder
@@ -108,18 +143,30 @@ public class RuleGenerationUtils {
 
                 secondValue = FunctionUtils.generateValue(function, Collections.singletonList(firstValue), expectedResult);
                 resolveAttributes(attributes, secondAttribute.getId(), secondValue);
+                if (attributes.isEmpty()) {
+                    return;
+                }
 
             } else {
                 if (secondValue != null) {
                     // value for second one
                     firstValue = FunctionUtils.generateValue(function, Collections.singletonList(secondValue), expectedResult);
                     resolveAttributes(attributes, firstAttribute.getId(), firstValue);
+                    if (attributes.isEmpty()) {
+                        return;
+                    }
                 } else {
                     firstValue = FunctionUtils.newUnknownResult();
                     resolveAttributes(attributes, firstAttribute.getId(), firstValue);
+                    if (attributes.isEmpty()) {
+                        return;
+                    }
 
                     secondValue = FunctionUtils.generateValue(function, Collections.singletonList(firstValue), expectedResult);
                     resolveAttributes(attributes, secondAttribute.getId(), secondValue);
+                    if (attributes.isEmpty()) {
+                        return;
+                    }
                 }
             }
 
@@ -153,10 +200,11 @@ public class RuleGenerationUtils {
                             .map(stringStringEntry -> stringStringEntry.getKey())
                             .collect(Collectors.toList());
                     keysToReplace.forEach(s -> attributes.put(id, existingValue));
-                    attributes.put(id, value);
+                    //attributes.put(id, value);
                 } else {
                     if (!existingValue.equals(value)) {
-                     // FIXME   throw new EasyAbacInitException("Test generation error, cannot calculate not conflicting attribute " + id);
+                        LOGGER.warn("Test generation error, cannot calculate not conflicting attribute " + id);
+                        attributes.clear();
                     }
                 }
             }
