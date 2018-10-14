@@ -58,7 +58,7 @@ public abstract class EasyAbacBaseTestClass {
         builder.subjectAttributesProvider(() -> testDescription.getAttributesByCode("subject").entrySet()
                 .stream()
                 .map(stringObjectEntry -> {
-                    Attribute attribute = model.getAttributes().get(stringObjectEntry.getKey());
+                    Attribute attribute = model.getAttributes().get("subject." + stringObjectEntry.getKey());
                     return new AttributeWithValue(attribute, Collections.singletonList(stringObjectEntry.getValue().toString()));
                 }).collect(Collectors.toList()));
 

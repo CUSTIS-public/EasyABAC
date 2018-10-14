@@ -22,8 +22,8 @@ public class DefaultTrace implements Trace {
     @Override
     public void handleTrace(AbacAuthModel abacAuthModel, TraceResult traceResult) {
         StringBuilder modelWithTrace = new StringBuilder();
-        modelWithTrace.append("\n").append("-------TRACE-------").append("\n\n");
-        modelWithTrace.append("--ATTRIBUTES--");
+        modelWithTrace.append("\n").append("-------TRACE-------");
+        modelWithTrace.append("\n--ATTRIBUTES--\n");
         traceResult.getAttributes().forEach(
                 (s, calculatedAttribute) -> {
                     modelWithTrace.append(modeModelAttributeIdFromXacml(calculatedAttribute.getId()))
@@ -36,7 +36,7 @@ public class DefaultTrace implements Trace {
         modelWithTrace.append("\n--GENERAL RESULT--\n");
         printTraceResult(traceResult, modelWithTrace);
 
-        modelWithTrace.append("\n\n--CALC RESULT--\n");
+        modelWithTrace.append("\n--CALC RESULT--");
         AbstractCalculatedPolicy mainPolicy = traceResult.getMainPolicy();
         if (mainPolicy instanceof CalculatedPolicySet) {
             List<CalculatedPolicy> calcPolicies = ((CalculatedPolicySet) mainPolicy).getPolicies();

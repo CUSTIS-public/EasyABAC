@@ -1,0 +1,37 @@
+package custis.easyabac.generation.util.algorithm;
+
+import custis.easyabac.core.init.EasyAbacInitException;
+import custis.easyabac.core.model.abac.Function;
+
+import java.util.List;
+import java.util.UUID;
+
+public class FunctionUtils {
+
+    public static final String UNKNOWN_PREFIX = "!#$-";
+    public static final String ACTION = "!ACTION!";
+
+    public static String newUnknownResult() {
+        return UNKNOWN_PREFIX + UUID.randomUUID().toString();
+    }
+
+    public static String generateValue(Function function, List<String> values, boolean expectedResult) throws EasyAbacInitException {
+        switch (function) {
+            case EQUAL:
+                return generateEqualValue(values, expectedResult);
+        }
+        throw new IllegalStateException("Function " + function.getEasyName() + " is not implemented");
+    }
+
+    private static String generateEqualValue(List<String> values, boolean expectedResult) throws EasyAbacInitException {
+        if (values.size() > 1) {
+            throw new EasyAbacInitException("Function " + Function.EQUAL.getEasyName() + " should have 1 argument");
+        }
+        String value = values.get(0);
+        if (expectedResult) {
+            return value;
+        } else {
+            return newUnknownResult();
+        }
+    }
+}

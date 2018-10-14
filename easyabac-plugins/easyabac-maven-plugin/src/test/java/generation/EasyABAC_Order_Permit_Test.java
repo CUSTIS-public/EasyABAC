@@ -3,7 +3,6 @@ package generation;
 import custis.easyabac.api.test.EasyAbacBaseTestClass;
 import generation.model.Order;
 import generation.model.OrderAction;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -17,7 +16,6 @@ public class EasyABAC_Order_Permit_Test extends EasyAbacBaseTestClass {
         super(loadModel(EasyABAC_Order_Permit_Test.class, "test.yaml"));
     }
 
-    @Ignore
     @Test
     public void test_PERMIT() throws Exception {
         getPermissionChecker(Order.class).ensurePermitted(resource, action);

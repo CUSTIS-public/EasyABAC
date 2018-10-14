@@ -98,7 +98,7 @@ public class AttributeValueExtractor {
                     field.setAccessible(true);
                     Object value = field.get(object);
 
-                    attributes.add(new AuthAttribute(entityName + ".actionId", value.toString()));
+                    attributes.add(new AuthAttribute(entityName + ".action", entityName + "." + value.toString()));
                 } catch (IllegalAccessException e) {
                     log.error(e.getMessage());
                 }

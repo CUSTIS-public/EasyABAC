@@ -17,11 +17,13 @@ import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.api.NotPermittedException;
 import custis.easyabac.api.test.EasyAbacBaseTestClass;
 import custis.easyabac.api.test.TestDescription;
+import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.Rule;
 import custis.easyabac.core.model.abac.attribute.Resource;
 import custis.easyabac.generation.util.algorithm.CombinationAlgorithmFactory;
+import custis.easyabac.generation.util.algorithm.FunctionUtils;
 import custis.easyabac.generation.util.algorithm.TestGenerationAlgorithm;
 import custis.easyabac.pdp.AuthResponse;
 import org.junit.Ignore;
@@ -29,10 +31,13 @@ import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static custis.easyabac.generation.util.CompleteGenerator.MODEL_SUFFIX;
 import static custis.easyabac.generation.util.ModelGenerator.ACTION_SUFFIX;
@@ -45,7 +50,7 @@ public class TestGenerator {
 
     public static final String DATA_FILE_SUFFIX = ".yaml";
 
-    public static void createTests(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException {
+    public static void createTests(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException, EasyAbacInitException {
         if (resource.getActions() == null || resource.getActions().isEmpty()) {
             return;
         }
@@ -57,7 +62,7 @@ public class TestGenerator {
         createPermitTestClass(resource, packageName, sourceRoot, resourceRoot, abacAuthModel, modelFileName);
     }
 
-    private static void createDenyTestClass(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException {
+    private static void createDenyTestClass(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException, EasyAbacInitException {
         CompilationUnit testUnit = new CompilationUnit(packageName);
         String resourceName = capitalize(resource.getId());
         String testName = "EasyABAC_" + resourceName + "_Deny_Test";
@@ -65,13 +70,13 @@ public class TestGenerator {
 
         createConstructor(type, testName, modelFileName);
         createTest(type, resourceName, DENY);
-        createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, DENY);
+        createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, DENY, packageName);
 
         testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
         sourceRoot.add(testUnit);
     }
 
-    private static void createPermitTestClass(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException {
+    private static void createPermitTestClass(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException, EasyAbacInitException {
         CompilationUnit testUnit = new CompilationUnit(packageName);
         String resourceName = capitalize(resource.getId());
         String testName = "EasyABAC_" + resourceName + "_Permit_Test";
@@ -79,7 +84,7 @@ public class TestGenerator {
 
         createConstructor(type, testName, modelFileName);
         createTest(type, resourceName, PERMIT);
-        createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, PERMIT);
+        createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, PERMIT, packageName);
 
         testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
         sourceRoot.add(testUnit);
@@ -92,18 +97,36 @@ public class TestGenerator {
         body.addStatement("super(loadModel(" + testName + ".class, \"" + modelFileName + "\"));");
     }
 
-    private static void createData(ClassOrInterfaceDeclaration type, AbacAuthModel abacAuthModel, String testName, Resource resource, SourceRoot resourceRoot, String resourceName, AuthResponse.Decision decision) throws IOException {
+    private static void createData(ClassOrInterfaceDeclaration type, AbacAuthModel abacAuthModel, String testName, Resource resource, SourceRoot resourceRoot, String resourceName, AuthResponse.Decision decision, String packageName) throws IOException, EasyAbacInitException {
         createDataMethod(type, testName, decision, resourceName);
 
-        TestGenerationAlgorithm algorithm = CombinationAlgorithmFactory.createByCode(abacAuthModel.getCombiningAlgorithm());
-        TestDataHolder testDataHolder = new TestDataHolder();
-        algorithm.generatePolicies(abacAuthModel.getPolicies(), testDataHolder);
+        TestGenerationAlgorithm algorithm = CombinationAlgorithmFactory.getByCode(abacAuthModel.getCombiningAlgorithm());
+        List<Map<String, String>> tests = algorithm.generatePolicies(abacAuthModel.getPolicies(), decision == PERMIT);
 
         Yaml yaml = new Yaml();
-        for (int i = 0; i < testDataHolder.getPermitTests().size(); i++) {
-            TestDescription permitTest = testDataHolder.getPermitTests().get(i);
-            FileWriter writer = new FileWriter(resourceRoot + "/" + resource.getId().toLowerCase() + "_" + decision.name().toLowerCase() + "_" + i + DATA_FILE_SUFFIX);
-            yaml.dump(permitTest, writer);
+        for (int i = 0; i < tests.size(); i++) {
+            TestDescription testDescription = new TestDescription();
+            Map<String, String> data = tests.get(i);
+            String action = data.remove(FunctionUtils.ACTION);
+            testDescription.setAction(action);
+            Map<String, Map<String, Object>> structMap = new HashMap<>();
+            data.entrySet().stream()
+                    .forEach(stringStringEntry -> {
+                        String key = stringStringEntry.getKey();
+                        String entity = key.substring(0, key.indexOf("."));
+                        Map<String, Object> attrMap = structMap.computeIfAbsent(entity, s -> new HashMap<>());
+                        attrMap.put(key.substring(entity.length() + 1), stringStringEntry.getValue());
+                    });
+
+            testDescription.setAttributes(structMap);
+
+            String dataFileName = resourceRoot.getRoot().toString() + "/" + packageName + "/" + resource.getId().toLowerCase() + "_" + decision.name().toLowerCase() + "_" + i + DATA_FILE_SUFFIX;
+            File dataFile = new File(dataFileName);
+            if (!dataFile.exists()) {
+                dataFile.createNewFile();
+            }
+            FileWriter writer = new FileWriter(dataFile);
+            yaml.dump(testDescription, writer);
         }
     }
 
@@ -123,7 +146,6 @@ public class TestGenerator {
     private static void createTest(ClassOrInterfaceDeclaration type, String resourceName, AuthResponse.Decision decision) {
         MethodDeclaration method = type.addMethod("test_" + decision.name(), Modifier.PUBLIC);
         method.addThrownException(Exception.class);
-        method.addMarkerAnnotation(Ignore.class);
         if (decision == DENY) {
             NormalAnnotationExpr annotation = method.addAndGetAnnotation(Test.class);
             annotation.addPair("expected", new ClassExpr(new ClassOrInterfaceType(NotPermittedException.class.getSimpleName())));
@@ -170,7 +192,6 @@ public class TestGenerator {
         String enumValue = value.toUpperCase();
 
         MethodDeclaration method = type.addMethod("test_" + enumValue + "_Deny_" + rule.getId(), Modifier.PUBLIC);
-        method.addMarkerAnnotation(Ignore.class);
         NormalAnnotationExpr annotation = method.addAndGetAnnotation(Test.class);
         annotation.addPair("expected", new ClassExpr(new ClassOrInterfaceType(NotPermittedException.class.getSimpleName())));
 

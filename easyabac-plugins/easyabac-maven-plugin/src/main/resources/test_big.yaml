@@ -46,3 +46,20 @@ permissions:
       operation: AND
       conditions:
       - order.branchId == subject.branchId
+
+- title: Операционист
+  accessToActions: [order.create]
+  rules:
+    - title: Доступ операциониста
+      operation: AND
+      conditions:
+      - subject.role == 'OPERATOR'
+
+- title: Менеджер
+  accessToActions: [order.approve, order.reject]
+  rules:
+    - title: Доступ менеджера
+      operation: AND
+      conditions:
+      - subject.role == 'MANAGER'
+      - subject.maxOrderAmount > order.amount

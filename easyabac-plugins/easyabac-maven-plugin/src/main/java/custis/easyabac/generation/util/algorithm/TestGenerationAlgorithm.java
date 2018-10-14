@@ -1,13 +1,15 @@
 package custis.easyabac.generation.util.algorithm;
 
+import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.Rule;
-import custis.easyabac.generation.util.TestDataHolder;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TestGenerationAlgorithm {
-    void generatePolicies(final List<Policy> policies, final TestDataHolder testDataHolder);
+    List<Map<String, String>> generatePolicies(final List<Policy> policies, boolean expectedResult) throws EasyAbacInitException;
 
-    void generateRules(final List<Rule> rules, final TestDataHolder testDataHolder);
+    List<Map<String, String>> generateRules(List<Rule> rules, boolean expectedResult) throws EasyAbacInitException;
+
 }

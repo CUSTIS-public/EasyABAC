@@ -1,12 +1,5 @@
+!!custis.easyabac.api.test.TestDescription
 action: order.approve
 attributes:
-  order:
-    id: order_id_0
-    amount: 500
-    branchId: branchId_0
-    customerId: customerId_0
-  subject:
-    id: subject_id_0
-    role: MANAGER
-    branchId: branchId_0
-    maxOrderAmount: 600
+  subject: {branchId: '!#$-09cb59f3-a3bd-4f66-b6c1-f467979da501'}
+  order: {branchId: '!#$-09cb59f3-a3bd-4f66-b6c1-f467979da501'}

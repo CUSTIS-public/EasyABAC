@@ -16,7 +16,7 @@ public class Order {
      * Authorization attribute "Сумма заказа"
      */
     @AuthorizationAttribute(id = "amount")
-    private int amount;
+    private Integer amount;
 
     /**
      * Authorization attribute "ИД филиала"
@@ -33,7 +33,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(String id, int amount, String branchId, String customerId) {
+    public Order(String id, Integer amount, String branchId, String customerId) {
         this.id = id;
         this.amount = amount;
         this.branchId = branchId;
@@ -49,11 +49,11 @@ public class Order {
         this.id = id;
     }
 
-    public int getAmount() {
+    public Integer getAmount() {
         return this.amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(Integer amount) {
         this.amount = amount;
     }
 
