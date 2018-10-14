@@ -54,7 +54,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
         List<String> accessToActions = permitPolicy.getTarget().getAccessToActions();
         // every action should be tested
         for (String accessToAction : accessToActions) {
-            List<Map<String, String>> permitValues = generateValues(permitPolicy, Effect.PERMIT);
+            List<Map<String, String>> permitValues = generateValues(permitPolicy, Effect.PERMIT, new HashMap<>());
             for (Map<String, String> permitValue : permitValues) {
                 permitValue.put(ACTION, accessToAction);
                 LOGGER.info("Permitted value " + permitValue);
@@ -65,7 +65,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
                 for (Policy policy : denyOrNA) {
                     if (policy.getTarget().getAccessToActions().contains(accessToAction)) {
                         LOGGER.info("Policy[{}] with equal action in target{}", policy.getId(), policy.getTarget().getAccessToActions());
-                        TestGenerationAlgorithm ruleCombinationAlgorithm = getByCode(policy.getCombiningAlgorithm());
+                        generateValues(policy, Effect.DENY, new HashMap<>()); // FIXME сделать комбинацию
                     }
                 }
             }
@@ -80,7 +80,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
         List<String> accessToActions = denyPolicy.getTarget().getAccessToActions();
         // every action should be tested
         for (String accessToAction : accessToActions) {
-            List<Map<String, String>> deniedValues = generateValues(denyPolicy, Effect.DENY);
+            List<Map<String, String>> deniedValues = generateValues(denyPolicy, Effect.DENY, new HashMap<>());
             for (Map<String, String> denyValue : deniedValues) {
                 denyValue.put(ACTION, accessToAction);
                 LOGGER.info("Denied value " + denyValue);
@@ -91,7 +91,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
                 for (Policy policy : permitOrNA) {
                     if (policy.getTarget().getAccessToActions().contains(accessToAction)) {
                         LOGGER.info("Policy[{}] with equal action in target{}", policy.getId(), policy.getTarget().getAccessToActions());
-                        TestGenerationAlgorithm ruleCombinationAlgorithm = getByCode(policy.getCombiningAlgorithm());
+                        generateValues(policy, Effect.PERMIT, new HashMap<>()); // FIXME сделать комбинацию
                     }
                 }
             }
@@ -102,15 +102,15 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
 
     /**
      * Different cases to generate permit for policy
-     * @param permitPolicy
+     * @param policy
      */
-    private List<Map<String, String>> generateValues(Policy permitPolicy, Effect expectedEffect) throws EasyAbacInitException {
-        TestGenerationAlgorithm ruleCombinationAlgorithm = getByCode(permitPolicy.getCombiningAlgorithm());
-        return ruleCombinationAlgorithm.generateRules(permitPolicy.getRules(), expectedEffect);
+    private List<Map<String, String>> generateValues(Policy policy, Effect expectedEffect, Map<String, String> existingValues) throws EasyAbacInitException {
+        TestGenerationAlgorithm ruleCombinationAlgorithm = getByCode(policy.getCombiningAlgorithm());
+        return ruleCombinationAlgorithm.generateRules(policy.getRules(), expectedEffect, existingValues);
     }
 
     @Override
-    public List<Map<String, String>> generateRules(List<Rule> rules, Effect expectedEffect) throws EasyAbacInitException {
+    public List<Map<String, String>> generateRules(List<Rule> rules, Effect expectedEffect, Map<String, String> existingValues) throws EasyAbacInitException {
         List<Map<String, String>> values = new ArrayList<>();
 
 
@@ -118,7 +118,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
             for (int i = 0; i < rules.size(); i++) {
                 // permit tests
                 Rule rule = rules.get(i);
-                List<Map<String, String>> satisfiedRules = generateRule(rule, rule.getEffect() == expectedEffect, new HashMap<>());
+                List<Map<String, String>> satisfiedRules = generateRule(rule, rule.getEffect() == expectedEffect, existingValues);
                 if (i > 0) {
                     List<Rule> previousRules = rules.subList(0, i);
                     // others not important
@@ -136,7 +136,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
             for (int i = 0; i < rules.size(); i++) {
                 Rule rule = rules.get(i);
                 if (satisfiedRules.isEmpty()) {
-                    satisfiedRules = generateRule(rule, rule.getEffect() == expectedEffect, new HashMap<>());
+                    satisfiedRules = generateRule(rule, rule.getEffect() == expectedEffect, existingValues);
                 } else {
                     List<Map<String, String>> newSatisfiedRules = new ArrayList<>();
                     for (Map<String, String> satisfiedRule : satisfiedRules) {
