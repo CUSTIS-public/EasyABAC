@@ -10,6 +10,10 @@ public class BalanaFunctionsFactory {
                 return new BalanaStringFunctions();
             case INT:
                 return new BalanaIntegerFunctions();
+            case DATE:
+                return new BalanaDateFunctions();
+            case TIME:
+                return new BalanaTimeFunctions();
             default:
                 throw new BalanaPolicyBuildException("Functions for data type " + dataType + " are not supported yet");
         }

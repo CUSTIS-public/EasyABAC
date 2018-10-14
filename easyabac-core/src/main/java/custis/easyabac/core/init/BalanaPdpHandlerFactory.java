@@ -6,6 +6,7 @@ import custis.easyabac.core.trace.PolicyElementsFactory;
 import org.wso2.balana.PDP;
 import org.wso2.balana.finder.AttributeFinderModule;
 import org.wso2.balana.finder.PolicyFinderModule;
+import org.wso2.balana.finder.impl.CurrentEnvModule;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class BalanaPdpHandlerFactory implements PdpHandlerFactory {
         for (Datasource datasource : datasources) {
             finderModules.add(new DatasourceAttributeFinderModule(datasource, cache));
         }
+
+        finderModules.add(new CurrentEnvModule());
 
         PDP pdp = PolicyElementsFactory.newPDP(policyModules, finderModules, useProxy);
 
