@@ -116,7 +116,9 @@ public class DefaultTrace implements Trace {
 
             CalculatedAttribute calcFirst = attributes.get(makeXacmlName(model.getFirstOperand().getId()));
             if (calcFirst != null) {
-                modelWithTrace.append(model.getFirstOperand().getId() + " " + calcFirst.getValues()).append(", ");
+                modelWithTrace.append(model.getFirstOperand().getId()).append(" ").append(calcFirst.getValues()).append(", ");
+            } else {
+                modelWithTrace.append(model.getFirstOperand().getId()).append(" [n/a]").append(", ");
             }
 
             if (model.getSecondOperandAttribute() != null) {

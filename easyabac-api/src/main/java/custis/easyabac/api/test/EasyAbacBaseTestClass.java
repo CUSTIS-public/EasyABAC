@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 @RunWith(Parameterized.class)
 public abstract class EasyAbacBaseTestClass {
 
+    public static final String SUBJECT_SYNONYM = "subject";
+
     protected final AbacAuthModel model;
 
     public EasyAbacBaseTestClass(InputStream modelSource) throws EasyAbacInitException {
@@ -55,20 +57,21 @@ public abstract class EasyAbacBaseTestClass {
         EasyAbac.Builder builder = new EasyAbac.Builder(model);
 
         // subject extender
-        builder.subjectAttributesProvider(() -> testDescription.getAttributesByCode("subject").entrySet()
-                .stream()
-                .map(stringObjectEntry -> {
-                    Attribute attribute = model.getAttributes().get("subject." + stringObjectEntry.getKey());
-                    return new AttributeWithValue(attribute, Collections.singletonList(stringObjectEntry.getValue().toString()));
-                }).collect(Collectors.toList()));
-
+        if (testDescription.containsAttributesByCode(SUBJECT_SYNONYM)) {
+            builder.subjectAttributesProvider(() -> testDescription.getAttributesByCode(SUBJECT_SYNONYM).entrySet()
+                    .stream()
+                    .map(stringObjectEntry -> {
+                        Attribute attribute = model.getAttributes().get(SUBJECT_SYNONYM + "." + stringObjectEntry.getKey());
+                        return new AttributeWithValue(attribute, Collections.singletonList(stringObjectEntry.getValue().toString()));
+                    }).collect(Collectors.toList()));
+        }
         // TODO environment extender
 
         // other datasources
         List<Datasource> datasources = new ArrayList<>();
         for (Map.Entry<String, Map<String, Object>> entry : testDescription.getAttributes().entrySet()) {
             String entryKey = entry.getKey();
-            if (!entryKey.equals("subject") && !entryKey.equals(getEntityCode(entityClass))) {
+            if (!entryKey.equals(SUBJECT_SYNONYM) && !entryKey.equals(getEntityCode(entityClass))) {
                 for (Map.Entry<String, Object> valEntry : entry.getValue().entrySet()) {
                     datasources.add(new SimpleDatasource(entry.getKey() + "." + valEntry.getKey(), valEntry.getValue().toString()));
                 }
@@ -128,7 +131,8 @@ public abstract class EasyAbacBaseTestClass {
             for (String fileName : folder.list((dir, name) -> name.startsWith(finalEntityCode + "_" + decision.name().toLowerCase()))) {
                 Object[] testData = new Object[3];
                 TestDescription testDescription = getTestDescription(folder, fileName);
-                testData[0] = createResource(entityClass, testDescription.getAttributesByCode(entityCode));
+                Map<String, Object> resourceMap = testDescription.getAttributesByCode(entityCode);
+                testData[0] = createResource(entityClass, resourceMap == null ? Collections.emptyMap() : resourceMap);
                 testData[1] = createAction(actionClass, testDescription.getShortAction());
                 testData[2] = testDescription;
                 data.add(testData);

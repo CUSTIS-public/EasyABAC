@@ -19,6 +19,7 @@ import custis.easyabac.api.test.EasyAbacBaseTestClass;
 import custis.easyabac.api.test.TestDescription;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.abac.AbacAuthModel;
+import custis.easyabac.core.model.abac.Effect;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.Rule;
 import custis.easyabac.core.model.abac.attribute.Resource;
@@ -70,10 +71,12 @@ public class TestGenerator {
 
         createConstructor(type, testName, modelFileName);
         createTest(type, resourceName, DENY);
-        createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, DENY, packageName);
+        boolean atLeastOne = createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, DENY, packageName);
 
-        testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
-        sourceRoot.add(testUnit);
+        if (atLeastOne) {
+            testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
+            sourceRoot.add(testUnit);
+        }
     }
 
     private static void createPermitTestClass(Resource resource, String packageName, SourceRoot sourceRoot, SourceRoot resourceRoot, AbacAuthModel abacAuthModel, String modelFileName) throws IOException, EasyAbacInitException {
@@ -84,10 +87,12 @@ public class TestGenerator {
 
         createConstructor(type, testName, modelFileName);
         createTest(type, resourceName, PERMIT);
-        createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, PERMIT, packageName);
+        boolean atLeastOne = createData(type, abacAuthModel, testName, resource, resourceRoot, resourceName, PERMIT, packageName);
 
-        testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
-        sourceRoot.add(testUnit);
+        if (atLeastOne) {
+            testUnit.setStorage(resolvePathForSourceFile(sourceRoot, packageName, testName));
+            sourceRoot.add(testUnit);
+        }
     }
 
     private static void createConstructor(ClassOrInterfaceDeclaration type, String testName, String modelFileName) {
@@ -97,11 +102,11 @@ public class TestGenerator {
         body.addStatement("super(loadModel(" + testName + ".class, \"" + modelFileName + "\"));");
     }
 
-    private static void createData(ClassOrInterfaceDeclaration type, AbacAuthModel abacAuthModel, String testName, Resource resource, SourceRoot resourceRoot, String resourceName, AuthResponse.Decision decision, String packageName) throws IOException, EasyAbacInitException {
+    private static boolean createData(ClassOrInterfaceDeclaration type, AbacAuthModel abacAuthModel, String testName, Resource resource, SourceRoot resourceRoot, String resourceName, AuthResponse.Decision decision, String packageName) throws IOException, EasyAbacInitException {
         createDataMethod(type, testName, decision, resourceName);
 
         TestGenerationAlgorithm algorithm = CombinationAlgorithmFactory.getByCode(abacAuthModel.getCombiningAlgorithm());
-        List<Map<String, String>> tests = algorithm.generatePolicies(abacAuthModel.getPolicies(), decision == PERMIT);
+        List<Map<String, String>> tests = algorithm.generatePolicies(abacAuthModel.getPolicies(), decision == PERMIT ? Effect.PERMIT : Effect.DENY);
 
         Yaml yaml = new Yaml();
         for (int i = 0; i < tests.size(); i++) {
@@ -128,6 +133,7 @@ public class TestGenerator {
             FileWriter writer = new FileWriter(dataFile);
             yaml.dump(testDescription, writer);
         }
+        return tests.size() > 0;
     }
 
     private static void createDataMethod(ClassOrInterfaceDeclaration type, String testName, AuthResponse.Decision decision, String resourceName) {

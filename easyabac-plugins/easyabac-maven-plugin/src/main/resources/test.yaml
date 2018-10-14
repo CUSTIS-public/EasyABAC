@@ -39,10 +39,29 @@ resources:
 
 
 permissions:
-- title: Работа только с заказами своего филиала
-  accessToActions: [order.create, order.approve, order.reject, order.view]
+- title: Менеджер
+  accessToActions: [order.view]
   rules:
-    - title: Только свой филиал
+    - title: Филиал совпадает с филиалом клиента
+      operation: AND
+      conditions:
+      - customer.branchId == subject.branchId
+      - subject.role == 'MANAGER'
+    - title: Филиал совпадает с филиалом заказа
       operation: AND
       conditions:
       - order.branchId == subject.branchId
+      - subject.role == 'MANAGER'
+- title: Операционист
+  accessToActions: [order.view]
+  rules:
+  - title: Филиал совпадает с филиалом клиента
+    operation: AND
+    conditions:
+    - customer.branchId == subject.branchId
+    - subject.role == 'OPERATOR'
+  - title: Филиал совпадает с филиалом заказа
+    operation: AND
+    conditions:
+    - order.branchId == subject.branchId
+    - subject.role == 'OPERATOR'

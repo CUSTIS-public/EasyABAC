@@ -1,6 +1,7 @@
 package custis.easyabac.generation.util.algorithm;
 
 import custis.easyabac.core.init.EasyAbacInitException;
+import custis.easyabac.core.model.abac.Effect;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.Rule;
 import org.slf4j.Logger;
@@ -10,15 +11,16 @@ import java.util.*;
 
 import static custis.easyabac.generation.util.algorithm.CombinationAlgorithmFactory.getByCode;
 import static custis.easyabac.generation.util.algorithm.FunctionUtils.ACTION;
+import static custis.easyabac.generation.util.algorithm.RuleGenerationUtils.generateRule;
 
 public class DenyUnlessPermit implements TestGenerationAlgorithm {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DenyUnlessPermit.class);
 
     @Override
-    public List<Map<String, String>> generatePolicies(List<Policy> policies, boolean expectedResult) throws EasyAbacInitException {
+    public List<Map<String, String>> generatePolicies(List<Policy> policies, Effect expectedEffect) throws EasyAbacInitException {
         List<Map<String, String>> tests = new ArrayList<>();
-        if (expectedResult) {
+        if (expectedEffect == Effect.PERMIT) {
             // we want permit
             for (int i = 0; i < policies.size(); i++) {
                 // permit tests
@@ -52,7 +54,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
         List<String> accessToActions = permitPolicy.getTarget().getAccessToActions();
         // every action should be tested
         for (String accessToAction : accessToActions) {
-            List<Map<String, String>> permitValues = generateValues(permitPolicy, true);
+            List<Map<String, String>> permitValues = generateValues(permitPolicy, Effect.PERMIT);
             for (Map<String, String> permitValue : permitValues) {
                 permitValue.put(ACTION, accessToAction);
                 LOGGER.info("Permitted value " + permitValue);
@@ -78,7 +80,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
         List<String> accessToActions = denyPolicy.getTarget().getAccessToActions();
         // every action should be tested
         for (String accessToAction : accessToActions) {
-            List<Map<String, String>> deniedValues = generateValues(denyPolicy, false);
+            List<Map<String, String>> deniedValues = generateValues(denyPolicy, Effect.DENY);
             for (Map<String, String> denyValue : deniedValues) {
                 denyValue.put(ACTION, accessToAction);
                 LOGGER.info("Denied value " + denyValue);
@@ -102,22 +104,52 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
      * Different cases to generate permit for policy
      * @param permitPolicy
      */
-    private List<Map<String, String>> generateValues(Policy permitPolicy, boolean expectedResult) throws EasyAbacInitException {
+    private List<Map<String, String>> generateValues(Policy permitPolicy, Effect expectedEffect) throws EasyAbacInitException {
         TestGenerationAlgorithm ruleCombinationAlgorithm = getByCode(permitPolicy.getCombiningAlgorithm());
-        return ruleCombinationAlgorithm.generateRules(permitPolicy.getRules(), expectedResult);
+        return ruleCombinationAlgorithm.generateRules(permitPolicy.getRules(), expectedEffect);
     }
 
     @Override
-    public List<Map<String, String>> generateRules(List<Rule> rules, boolean expectedResult) throws EasyAbacInitException {
+    public List<Map<String, String>> generateRules(List<Rule> rules, Effect expectedEffect) throws EasyAbacInitException {
         List<Map<String, String>> values = new ArrayList<>();
 
 
-        Rule rule = rules.get(0); // FIXME not so dummy
-        if (expectedResult) {
-            values = RuleGenerationUtils.generateRule(rule, expectedResult, new HashMap<>());
+        if (expectedEffect == Effect.PERMIT) {
+            for (int i = 0; i < rules.size(); i++) {
+                // permit tests
+                Rule rule = rules.get(i);
+                List<Map<String, String>> satisfiedRules = generateRule(rule, rule.getEffect() == expectedEffect, new HashMap<>());
+                if (i > 0) {
+                    List<Rule> previousRules = rules.subList(0, i);
+                    // others not important
+                    for (Map<String, String> satisfiedRule : satisfiedRules) {
+                        for (Rule previousRule : previousRules) {
+                            values.addAll(generateRule(previousRule, previousRule.getEffect() != expectedEffect, satisfiedRule));
+                        }
+                    }
+                } else {
+                    values.addAll(satisfiedRules);
+                }
+            }
         } else {
-            values = RuleGenerationUtils.generateRule(rule, expectedResult, new HashMap<>());
+            List<Map<String, String>> satisfiedRules = new ArrayList<>();
+            for (int i = 0; i < rules.size(); i++) {
+                Rule rule = rules.get(i);
+                if (satisfiedRules.isEmpty()) {
+                    satisfiedRules = generateRule(rule, rule.getEffect() == expectedEffect, new HashMap<>());
+                } else {
+                    List<Map<String, String>> newSatisfiedRules = new ArrayList<>();
+                    for (Map<String, String> satisfiedRule : satisfiedRules) {
+                        newSatisfiedRules.addAll(generateRule(rule, rule.getEffect() == expectedEffect, satisfiedRule));
+                    }
+                    satisfiedRules = newSatisfiedRules;
+                }
+
+            }
+            values = satisfiedRules;
         }
+
+
         return values;
     }
 

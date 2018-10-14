@@ -105,7 +105,7 @@ public class AuthModelTransformer {
         for (int i = 0; i < easyRules.size(); i++) {
             EasyRule easyRule = easyRules.get(i);
             List<Condition> conditions = transformConditions(easyRule);
-            Rule rule = new Rule("rule" + i, easyRule.getTitle(), easyRule.getOperation(), conditions);
+            Rule rule = new Rule("rule" + i, easyRule.getTitle(), easyRule.getEffect(), easyRule.getOperation(), conditions);
 
             rules.add(rule);
         }

@@ -1,5 +1,6 @@
 !!custis.easyabac.api.test.TestDescription
-action: order.create
+action: order.view
 attributes:
-  subject: {branchId: '!#$-5be4b4b6-bbf1-4f5e-bd73-5c0c6c4e83c0'}
-  order: {branchId: '!#$-03582fc5-cf75-40ee-95e6-57788a9cb54a'}
+  subject: {branchId: '!NEGATE!-!UNKNOWN!-kdKV0'}
+  customer: {branchId: '!UNKNOWN!-kdKV0'}
+  order: {branchId: '!NEGATE!-!NEGATE!-!UNKNOWN!-kdKV0'}

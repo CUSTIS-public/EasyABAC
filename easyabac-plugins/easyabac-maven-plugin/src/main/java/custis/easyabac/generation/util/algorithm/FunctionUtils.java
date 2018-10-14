@@ -2,17 +2,18 @@ package custis.easyabac.generation.util.algorithm;
 
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.abac.Function;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.List;
-import java.util.UUID;
 
 public class FunctionUtils {
 
-    public static final String UNKNOWN_PREFIX = "!#$-";
+    public static final String UNKNOWN_PREFIX = "!UNKNOWN!-";
+    public static final String NEGATE_PREFIX = "!NEGATE!-";
     public static final String ACTION = "!ACTION!";
 
     public static String newUnknownResult() {
-        return UNKNOWN_PREFIX + UUID.randomUUID().toString();
+        return UNKNOWN_PREFIX + RandomStringUtils.randomAlphanumeric(5);
     }
 
     public static String generateValue(Function function, List<String> values, boolean expectedResult) throws EasyAbacInitException {
@@ -31,7 +32,7 @@ public class FunctionUtils {
         if (expectedResult) {
             return value;
         } else {
-            return newUnknownResult();
+            return NEGATE_PREFIX + value;
         }
     }
 }
