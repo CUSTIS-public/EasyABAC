@@ -26,7 +26,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
+import static custis.easyabac.core.init.BalanaAttributesFactory.ATTRIBUTE_REQUEST_ID;
 
 /**
  * Holder of Trace process

@@ -195,7 +195,7 @@ class BalanaPolicyBuilder {
                 asList(createAttributeDesignator(firstOperand, true), secondAttr));
     }
 
-    //FIXME Duplicate of AttributesFactory.getAttributeValue
+    //FIXME Duplicate of BalanaAttributesFactory.getAttributeValue
     private AttributeValue createAttributeValue(String value, DataType dataType, String conditionId) {
         try {
             return StandardAttributeFactory.getFactory().createValue(

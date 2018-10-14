@@ -1,9 +1,9 @@
 package custis.easyabac.core.init;
 
-public class AttributesConstants {
-    public static final String ENV_TIME = "env.time";
-    public static final String ENV_DATE = "env.date";
-    public static final String ENV_TODAY = "env.today";
-    public static final String ENV_DATETIME = "env.datetime";
-    public static final String ENV_NOW = "env.now";
+class AttributesConstants {
+    static final String ENV_TIME = "env.time";
+    static final String ENV_DATE = "env.date";
+    static final String ENV_TODAY = "env.today";
+    static final String ENV_DATETIME = "env.datetime";
+    static final String ENV_NOW = "env.now";
 }

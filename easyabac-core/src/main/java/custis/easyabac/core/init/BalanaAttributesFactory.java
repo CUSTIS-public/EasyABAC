@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AttributesFactory {
+public class BalanaAttributesFactory {
 
     public static final URI ATTRIBUTE_REQUEST_ID = URI.create("request-id");
 
@@ -28,7 +28,7 @@ public class AttributesFactory {
     }
 
 
-    public static Attribute balanaAttribute(String xacmlId, DataType type, List<String> values, boolean includeInResult) throws EasyAbacInitException {
+    static Attribute balanaAttribute(String xacmlId, DataType type, List<String> values, boolean includeInResult) throws EasyAbacInitException {
         List<AttributeValue> balanaAttributeValues = new ArrayList<>();
 
         for (String value : values) {
@@ -39,7 +39,7 @@ public class AttributesFactory {
         return generalAttribute(xacmlId, type.getXacmlName(), balanaAttributeValues, includeInResult);
     }
 
-    public static BagAttribute balanaBagAttributeValues(DataType type, List<String> values) throws EasyAbacInitException {
+    static BagAttribute balanaBagAttributeValues(DataType type, List<String> values) throws EasyAbacInitException {
         List<AttributeValue> balanaAttributeValues = new ArrayList<>();
 
         for (String value : values) {
@@ -56,7 +56,7 @@ public class AttributesFactory {
         return new BagAttribute(xacmlName, balanaAttributeValues);
     }
 
-    public static AttributeValue getAttributeValue(DataType type, String value) throws EasyAbacInitException {
+    private static AttributeValue getAttributeValue(DataType type, String value) throws EasyAbacInitException {
         AttributeValue balanaAttributeValue;
         switch (type) {
             case STRING:

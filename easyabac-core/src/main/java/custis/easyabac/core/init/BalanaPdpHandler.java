@@ -26,8 +26,8 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
-import static custis.easyabac.core.init.AttributesFactory.balanaAttribute;
+import static custis.easyabac.core.init.BalanaAttributesFactory.ATTRIBUTE_REQUEST_ID;
+import static custis.easyabac.core.init.BalanaAttributesFactory.balanaAttribute;
 import static custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider.instantiate;
 import static custis.easyabac.pdp.AuthResponse.Decision.getByIndex;
 import static java.util.stream.Collectors.toSet;
