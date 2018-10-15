@@ -18,6 +18,7 @@
         <module>easyabac-api</module>
         <module>easyabac-spring-boot-starter</module>
         <module>easyabac-plugins/easyabac-maven-plugin</module>
+        <module>easyabac-benchmark</module>
     </modules>
 
     <properties>
