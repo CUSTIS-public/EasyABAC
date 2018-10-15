@@ -4,6 +4,7 @@ import custis.easyabac.core.model.abac.attribute.DataType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.ParsingException;
+import org.wso2.balana.UnknownIdentifierException;
 import org.wso2.balana.attr.AttributeValue;
 import org.wso2.balana.attr.BagAttribute;
 import org.wso2.balana.attr.StandardAttributeFactory;
