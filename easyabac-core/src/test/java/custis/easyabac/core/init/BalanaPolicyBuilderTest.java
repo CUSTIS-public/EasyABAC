@@ -4,6 +4,7 @@ import custis.easyabac.core.model.abac.*;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
+import org.hamcrest.core.IsNot;
 import org.junit.Before;
 import org.junit.Test;
 import org.wso2.balana.AbstractPolicy;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
 import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 
@@ -161,6 +163,44 @@ public class BalanaPolicyBuilderTest {
                     Apply a = (Apply) c;
                     return a.getFunction().getIdentifier().equals(URI.create("urn:oasis:names:tc:xacml:1.0:function:time-less-than-or-equal"));
                 }));
+    }
+
+    @Test
+    public void shouldCreateBagAttributes_whenSubsetFunctionIsUsed() {
+        Rule ruleWithSubset = new Rule("bag_rule", "Rule with subset", Operation.AND, singletonList(
+                new Condition("brc1", false, new Attribute("order.status", DataType.STRING, Category.RESOURCE, true),
+                        new Attribute("manager.availableStatuses", DataType.STRING, Category.SUBJECT, true),
+                        Function.SUBSET)
+        ));
+
+        org.wso2.balana.Policy policy = new SamplePolicyBuilder()
+                .rules(singletonList(ruleWithSubset))
+                .build();
+
+        String xmlPolicy = policy.encode();
+        assertThat(xmlPolicy, hasXPath("//:Apply[@FunctionId=\"urn:oasis:names:tc:xacml:1.0:function:string-subset\"]")
+                .withNamespaceContext(POLICY_NAMESPACES));
+        assertThat(xmlPolicy, not(hasXPath("//:Apply[@FunctionId=\"urn:oasis:names:tc:xacml:1.0:function:string-one-and-only\"]")
+                .withNamespaceContext(POLICY_NAMESPACES)));
+    }
+
+    @Test
+    public void shouldCreateBagAttributes_whenOneOfFunctionIsUsed() {
+        Rule ruleWithSubset = new Rule("bag_rule", "Rule with subset", Operation.AND, singletonList(
+                new Condition("brc1", false, new Attribute("order.status", DataType.STRING, Category.RESOURCE, true),
+                        new Attribute("manager.availableStatuses", DataType.STRING, Category.SUBJECT, true),
+                        Function.ONE_OF)
+        ));
+
+        org.wso2.balana.Policy policy = new SamplePolicyBuilder()
+                .rules(singletonList(ruleWithSubset))
+                .build();
+
+        String xmlPolicy = policy.encode();
+        assertThat(xmlPolicy, hasXPath("//:Apply[@FunctionId=\"urn:oasis:names:tc:xacml:1.0:function:string-at-least-one-member-of\"]")
+                .withNamespaceContext(POLICY_NAMESPACES));
+        assertThat(xmlPolicy, not(hasXPath("//:Apply[@FunctionId=\"urn:oasis:names:tc:xacml:1.0:function:string-one-and-only\"]")
+                .withNamespaceContext(POLICY_NAMESPACES)));
     }
 
     @Test
