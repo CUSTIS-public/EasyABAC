@@ -50,7 +50,7 @@ public class GettingMethodsTest {
 
     @BeforeClass
     public static void initialize() throws EasyAbacInitException {
-        EasyAbac.Builder builder = new EasyAbac.Builder(EnsureMethods.class.getResourceAsStream("deny.yaml"), ModelType.EASY_YAML);
+        EasyAbac.Builder builder = new EasyAbac.Builder(EnsureMethods.class.getResourceAsStream("/deny.yaml"), ModelType.EASY_YAML);
         attributiveAuthorizationService = builder.build();
         factory = new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);
         checker = factory.getPermissionChecker(GettingMethods.class);
