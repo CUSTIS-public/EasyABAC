@@ -47,7 +47,8 @@ public class BalanaTraceHandler {
             finalizeTraceResult();
         }
 
-        EvaluationResult evalCtx = evaluationCtx.getAttribute(URI.create(DataType.STRING.getXacmlName()), ATTRIBUTE_REQUEST_ID, "", URI.create(Category.ENV.getXacmlName()));
+        EvaluationResult evalCtx = evaluationCtx.getAttribute(URI.create(DataType.STRING.getXacmlName()),
+                URI.create(ATTRIBUTE_REQUEST_ID), "", URI.create(Category.ENV.getXacmlName()));
         RequestId requestId = null;
         if (!evalCtx.indeterminate()) {
             List values = evalCtx.getAttributeValue().getChildren();
@@ -71,11 +72,11 @@ public class BalanaTraceHandler {
         for (Attributes attributes : ((XACML3EvaluationCtx) evalCtx).getAttributesSet()) {
             for (org.wso2.balana.ctx.Attribute attribute : attributes.getAttributes()) {
                 List<String> convertedValues = attribute.getValues()
-                                                        .stream()
-                                                        .map(
-                                                                attributeValue -> attributeValue.encode()
-                                                        )
-                                                        .collect(Collectors.toList());
+                        .stream()
+                        .map(
+                                attributeValue -> attributeValue.encode()
+                        )
+                        .collect(Collectors.toList());
                 traceResult.putAttribute(CalculatedAttribute.of(attribute.getId().toString(), convertedValues));
             }
         }
@@ -94,13 +95,6 @@ public class BalanaTraceHandler {
     public void onFindPolicyEnd(PolicyFinderResult policyFinderResult) {
         // nothing to do
     }
-
-
-
-
-
-
-
 
 
     public void onPolicyMatchStart(AbstractPolicy policy) {
@@ -203,19 +197,6 @@ public class BalanaTraceHandler {
         AbstractCalculatedPolicy abstractCalculatedPolicy = (AbstractCalculatedPolicy) callStack.pop();
         abstractCalculatedPolicy.setResult(CalculatedResult.of(realResult.getDecision()));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public void onPolicyCombineStart(PolicyCombiningAlgorithm combiningAlgorithm) {

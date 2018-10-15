@@ -1,6 +1,8 @@
 package custis.easyabac.core.init;
 
 import custis.easyabac.core.model.abac.attribute.DataType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.ParsingException;
 import org.wso2.balana.UnknownIdentifierException;
 import org.wso2.balana.attr.AttributeValue;
@@ -10,14 +12,13 @@ import org.wso2.balana.ctx.Attribute;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class BalanaAttributesFactory {
 
-    private final static Log log = LogFactory.getLog(FileBasedPolicyFinderModule.class);
+    private final static Log log = LogFactory.getLog(BalanaAttributesFactory.class);
 
     public static final String ATTRIBUTE_REQUEST_ID = "request-id";
 
@@ -68,7 +69,6 @@ public class BalanaAttributesFactory {
             throw new EasyAbacInitException("getAttributeValue createValue", e);
         }
 
-        }
         return balanaAttributeValue;
     }
 

@@ -71,7 +71,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
-//        MdpAuthRequest requestContext = generate(attributes);
+        MdpAuthRequest requestContext = generate(attributes);
         MultiAuthRequest multiAuthRequest = prepareMultiRequest(attributes);
 //        for (RequestExtender extender : requestExtenders) {
 //            extender.extend(requestContext);
@@ -84,8 +84,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
             e.printStackTrace();
         }
 
-//        audit.onMultipleRequest(requestContext, result);
-        MdpAuthResponse result = pdpHandler.evaluate(requestContext);
         result.getResults().forEach((requestId, authResponse) -> {
             TraceResult traceResult = authResponse.getTraceResult();
             if (!pdpHandler.xacmlPolicyMode()) {
@@ -93,8 +91,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
             }
             trace.handleTrace(abacAuthModel, traceResult);
         });
-
-        audit.onMultipleRequest(requestContext, result);
+//TODO починить
+//        audit.onMultipleRequest(multiAuthRequest, result);
 
         return result.getResults();
     }
