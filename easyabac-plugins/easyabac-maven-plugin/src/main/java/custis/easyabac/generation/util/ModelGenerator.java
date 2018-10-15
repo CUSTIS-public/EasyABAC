@@ -86,7 +86,7 @@ public class ModelGenerator {
             put(DataType.BOOLEAN, new ClassOrInterfaceType("Boolean"));
             put(DataType.DATE, new ClassOrInterfaceType("Date"));
             put(DataType.DATE_TIME, new ClassOrInterfaceType("Date"));
-            put(DataType.TIME, new ClassOrInterfaceType("Date"));
+            put(DataType.TIME, new ClassOrInterfaceType("String"));
         }
     };
 
