@@ -1,0 +1,203 @@
+<PolicySet xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" Version="1.0"
+           PolicySetId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy-set"
+           PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-unless-permit">
+    <Target>
+    </Target>
+    <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+            PolicyId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy0" Version="1.0"
+            RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit">
+        <Description>Менеджер</Description>
+        <Target>
+            <AnyOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">order.view</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:attr:order.action"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                             MustBePresent="true"/>
+                    </Match>
+                </AllOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">order.approve</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:attr:order.action"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                             MustBePresent="true"/>
+                    </Match>
+                </AllOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">order.reject</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:attr:order.action"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                             MustBePresent="true"/>
+                    </Match>
+                </AllOf>
+            </AnyOf>
+        </Target>
+        <Rule RuleId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy0:rule0" Effect="Permit">
+            <Description>Филиал совпадает с филиалом клиента</Description>
+            <Condition>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:customer.branchId"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:subject.branchId"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                    </Apply>
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:subject.role"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">MANAGER</AttributeValue>
+                    </Apply>
+                </Apply>
+            </Condition>
+        </Rule>
+        <Rule RuleId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy0:rule1" Effect="Permit">
+            <Description>Филиал совпадает с филиалом заказа</Description>
+            <Condition>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:order.branchId"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:subject.branchId"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                    </Apply>
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:subject.role"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">MANAGER</AttributeValue>
+                    </Apply>
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-greater-than">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:subject.maxOrderAmount"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#integer"
+                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:order.amount"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#integer"
+                                                 Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                    </Apply>
+                </Apply>
+            </Condition>
+        </Rule>
+    </Policy>
+    <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+            PolicyId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy1" Version="1.0"
+            RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit">
+        <Description>Операционист</Description>
+        <Target>
+            <AnyOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">order.view</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:attr:order.action"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                             MustBePresent="true"/>
+                    </Match>
+                </AllOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">order.create</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:attr:order.action"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                             MustBePresent="true"/>
+                    </Match>
+                </AllOf>
+            </AnyOf>
+        </Target>
+        <Rule RuleId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy1:rule0" Effect="Permit">
+            <Description>Филиал совпадает с филиалом клиента</Description>
+            <Condition>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:customer.branchId"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:subject.branchId"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                    </Apply>
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:subject.role"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">OPERATOR</AttributeValue>
+                    </Apply>
+                </Apply>
+            </Condition>
+        </Rule>
+        <Rule RuleId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy1:rule1" Effect="Permit">
+            <Description>Филиал совпадает с филиалом заказа</Description>
+            <Condition>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:order.branchId"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:subject.branchId"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                    </Apply>
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:subject.role"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                                 MustBePresent="true"/>
+                        </Apply>
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">OPERATOR</AttributeValue>
+                    </Apply>
+                </Apply>
+            </Condition>
+        </Rule>
+    </Policy>
+</PolicySet>
