@@ -22,6 +22,8 @@ import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.Effect;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.Rule;
+import custis.easyabac.core.model.abac.attribute.Attribute;
+import custis.easyabac.core.model.abac.attribute.DataType;
 import custis.easyabac.core.model.abac.attribute.Resource;
 import custis.easyabac.generation.util.algorithm.CombinationAlgorithmFactory;
 import custis.easyabac.generation.util.algorithm.FunctionUtils;
@@ -43,6 +45,7 @@ import java.util.Map;
 import static custis.easyabac.generation.util.CompleteGenerator.MODEL_SUFFIX;
 import static custis.easyabac.generation.util.ModelGenerator.ACTION_SUFFIX;
 import static custis.easyabac.generation.util.ModelGenerator.resolvePathForSourceFile;
+import static custis.easyabac.generation.util.algorithm.FunctionUtils.ANY_FUNCTION;
 import static custis.easyabac.pdp.AuthResponse.Decision.DENY;
 import static custis.easyabac.pdp.AuthResponse.Decision.PERMIT;
 import static org.apache.commons.lang3.StringUtils.capitalize;
@@ -114,8 +117,11 @@ public class TestGenerator {
             Map<String, String> data = tests.get(i);
             String action = data.remove(FunctionUtils.ACTION);
             testDescription.setAction(action);
+
+            Map<String, Object> prettyData = beautifyValues(abacAuthModel, data);
+
             Map<String, Map<String, Object>> structMap = new HashMap<>();
-            data.entrySet().stream()
+            prettyData.entrySet().stream()
                     .forEach(stringStringEntry -> {
                         String key = stringStringEntry.getKey();
                         String entity = key.substring(0, key.indexOf("."));
@@ -123,9 +129,13 @@ public class TestGenerator {
                         attrMap.put(key.substring(entity.length() + 1), stringStringEntry.getValue());
                     });
 
+
             testDescription.setAttributes(structMap);
 
-            String dataFileName = resourceRoot.getRoot().toString() + "/" + packageName + "/" + resource.getId().toLowerCase() + "_" + decision.name().toLowerCase() + "_" + i + DATA_FILE_SUFFIX;
+            // creating folders
+            String folderName = resourceRoot.getRoot().toString() + "/" + packageName.replace(".", "/");
+            new File(folderName).mkdirs();
+            String dataFileName = folderName + "/" + resource.getId().toLowerCase() + "_" + decision.name().toLowerCase() + "_" + i + DATA_FILE_SUFFIX;
             File dataFile = new File(dataFileName);
             if (!dataFile.exists()) {
                 dataFile.createNewFile();
@@ -134,6 +144,72 @@ public class TestGenerator {
             yaml.dump(testDescription, writer);
         }
         return tests.size() > 0;
+    }
+
+    /**
+     * Making values pretty and make concrete type
+     */
+    private static Map<String, Object> beautifyValues(AbacAuthModel abacAuthModel, Map<String, String> data) {
+        Map<String, Object> beautifullMap = new HashMap<>();
+        Map<String, Object> mapping = new HashMap<>();
+        Map<String, Integer> attributeCounter = new HashMap<>();
+        Map<String, Attribute> attributes = abacAuthModel.getAttributes();
+
+
+        // process terminal elements
+        data.forEach((attributeKey, value) -> {
+            Attribute attribute = attributes.get(attributeKey);
+            Object newValue = value;
+
+            if (value.startsWith(FunctionUtils.UNKNOWN_PREFIX)) {
+                // should be beautified
+                if (mapping.containsKey(value)) {
+                    newValue = mapping.get(value);
+                } else {
+                    Integer counter = attributeCounter.computeIfAbsent(attributeKey, s -> 0);
+                    ++counter;
+
+                    if (attribute.getType() == DataType.STRING) {
+                        newValue = attributeKey + "_" + counter;
+                    } else if (attribute.getType() == DataType.INT) {
+                        newValue = 1000; // to be in positive range
+                    }
+                    mapping.put(value, newValue);
+                }
+            }
+            beautifullMap.put(attributeKey, newValue);
+        });
+
+        // process function elements
+        beautifullMap.forEach((attributeKey, value) -> {
+            Attribute attribute = attributes.get(attributeKey);
+            if (value instanceof String) {
+                // possible function
+                String strValue = value.toString();
+                if (strValue.startsWith(ANY_FUNCTION)) {
+                    Object newValue = processFunctional(strValue, beautifullMap, mapping, attributeKey);
+                    mapping.put(strValue, newValue);
+                    beautifullMap.put(attributeKey, newValue);
+                }
+            }
+
+
+        });
+
+        return beautifullMap;
+    }
+
+    private static Object processFunctional(String strValue, Map<String, Object> beautifullMap, Map<String, Object> mapping, String attributeKey) {
+        if (strValue.startsWith(ANY_FUNCTION)) {
+            String withoutPrefix = strValue.substring(ANY_FUNCTION.length() + FunctionUtils.FUNCTION_CODE_LENGTH);
+            String function = strValue.substring(0, ANY_FUNCTION.length() + FunctionUtils.FUNCTION_CODE_LENGTH);
+            Object nestedValue = processFunctional(withoutPrefix, beautifullMap, mapping, attributeKey);
+            // apply function
+            return FunctionUtils.calculateValue(nestedValue, function);
+
+        } else {
+            return mapping.getOrDefault(strValue, strValue);
+        }
     }
 
     private static void createDataMethod(ClassOrInterfaceDeclaration type, String testName, AuthResponse.Decision decision, String resourceName) {
