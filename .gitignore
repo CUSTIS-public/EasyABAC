@@ -66,4 +66,4 @@ fabric.properties
 hs_err_pid*
 .idea/
 easyabac-core/target/
-/easyabac-core/audit4j.conf.yml
+**/audit4j.conf.yml
