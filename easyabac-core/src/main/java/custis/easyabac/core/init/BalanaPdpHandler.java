@@ -7,13 +7,15 @@ import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
+import custis.easyabac.core.trace.balana.BalanaTraceHandler;
+import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
+import custis.easyabac.core.trace.model.TraceResult;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.MultiAuthRequest;
 import custis.easyabac.pdp.MultiAuthResponse;
 import custis.easyabac.pdp.RequestId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.balana.Balana;
 import org.wso2.balana.PDP;
 import org.wso2.balana.PDPConfig;
 import org.wso2.balana.attr.StringAttribute;
@@ -23,19 +25,15 @@ import org.wso2.balana.ctx.AttributeAssignment;
 import org.wso2.balana.ctx.ResponseCtx;
 import org.wso2.balana.ctx.xacml3.RequestCtx;
 import org.wso2.balana.ctx.xacml3.Result;
-import org.wso2.balana.finder.AttributeFinder;
-import org.wso2.balana.finder.AttributeFinderModule;
-import org.wso2.balana.finder.PolicyFinder;
-import org.wso2.balana.finder.PolicyFinderModule;
 import org.wso2.balana.xacml3.*;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
-import static custis.easyabac.core.init.AttributesFactory.balanaAttribute;
+import static custis.easyabac.core.init.BalanaAttributesFactory.ATTRIBUTE_REQUEST_ID;
+import static custis.easyabac.core.init.BalanaAttributesFactory.balanaAttribute;
+import static custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider.instantiate;
 import static custis.easyabac.pdp.AuthResponse.Decision.getByIndex;
 import static java.util.stream.Collectors.toSet;
 
@@ -44,9 +42,11 @@ public class BalanaPdpHandler implements PdpHandler {
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
     private final PDP pdp;
+    private final boolean xacmlPolicyMode;
 
-    private BalanaPdpHandler(PDP pdp) {
+    public BalanaPdpHandler(PDP pdp, boolean xacmlPolicyMode) {
         this.pdp = pdp;
+        this.xacmlPolicyMode = xacmlPolicyMode;
     }
 
     @Override
@@ -63,13 +63,16 @@ public class BalanaPdpHandler implements PdpHandler {
         if (log.isDebugEnabled()) {
             requestCtx.encode(System.out);
         }
+
+        BalanaTraceHandler balanaTraceHandler = instantiate();
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
 
         if (log.isDebugEnabled()) {
             log.debug(responseCtx.encode());
         }
 
-        return createResponse(responseCtx.getResults().iterator().next());
+        Map<RequestId, TraceResult> results = BalanaTraceHandlerProvider.get().getResults();
+        return createResponse(responseCtx.getResults().iterator().next(), results.get(null));
     }
 
     @Override
@@ -98,6 +101,7 @@ public class BalanaPdpHandler implements PdpHandler {
 
         RequestCtx requestCtx = new RequestCtx(null, attributesSet, false, false, multiRequests, null);
 
+        BalanaTraceHandler balanaTraceHandler = instantiate();
         if (log.isDebugEnabled()) {
             requestCtx.encode(System.out);
         }
@@ -127,6 +131,8 @@ public class BalanaPdpHandler implements PdpHandler {
             StringAttribute value = (StringAttribute) requestId.get().getValue();
 
             results.put(RequestId.of(value.getValue()), createResponse(abstractResult));
+            Map<RequestId, TraceResult> traceResults = BalanaTraceHandlerProvider.get().getResults();
+            results.put(RequestId.of(requestId.get().encode()), createResponse(abstractResult, traceResults.get(requestId.get())));
 
         }
 
@@ -172,7 +178,12 @@ public class BalanaPdpHandler implements PdpHandler {
         return balanaAttribute(attribute.getXacmlName(), attribute.getType(), attributeWithValue.getValues(), includeInResult);
     }
 
-    private AuthResponse createResponse(AbstractResult abstractResult) {
+    @Override
+    public boolean xacmlPolicyMode() {
+        return xacmlPolicyMode;
+    }
+
+    private AuthResponse createResponse(AbstractResult abstractResult, TraceResult traceResult) {
         AuthResponse.Decision decision = getByIndex(abstractResult.getDecision());
         Set<AttributeAssignment> assignments = abstractResult.getObligations()
                 .stream()
@@ -185,7 +196,7 @@ public class BalanaPdpHandler implements PdpHandler {
         }
 
 
-        return new AuthResponse(decision, obligations);
+        return new AuthResponse(decision, obligations, traceResult);
     }
 
     public static PdpHandler getInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache) {

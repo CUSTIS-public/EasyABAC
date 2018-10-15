@@ -37,7 +37,13 @@ public class EntityGenerator {
 
             String attributeId = attribute.getId();
             attributeId = attributeId.substring(attributeId.lastIndexOf(".") + 1);
-            FieldDeclaration field = type.addField(getTypeForModelType(attribute.getType()), ModelGenerator.escape(attributeId), Modifier.PRIVATE);
+            FieldDeclaration field = null;
+            if (attribute.isMultiple()) {
+                field = type.addField("List<" + getTypeForModelType(attribute.getType()) + ">", ModelGenerator.escape(attributeId), Modifier.PRIVATE);
+            } else {
+                field = type.addField(getTypeForModelType(attribute.getType()), ModelGenerator.escape(attributeId), Modifier.PRIVATE);
+
+            }
             fields.add(field);
 
             NormalAnnotationExpr annotation = field.addAndGetAnnotation(AuthorizationAttribute.class.getSimpleName());

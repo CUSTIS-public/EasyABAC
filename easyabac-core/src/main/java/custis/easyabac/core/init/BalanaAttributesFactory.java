@@ -1,30 +1,28 @@
 package custis.easyabac.core.init;
 
 import custis.easyabac.core.model.abac.attribute.DataType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.ParsingException;
 import org.wso2.balana.UnknownIdentifierException;
 import org.wso2.balana.attr.AttributeValue;
 import org.wso2.balana.attr.BagAttribute;
 import org.wso2.balana.attr.StandardAttributeFactory;
 import org.wso2.balana.ctx.Attribute;
-import org.wso2.balana.finder.impl.FileBasedPolicyFinderModule;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class AttributesFactory {
+public class BalanaAttributesFactory {
 
     private final static Log log = LogFactory.getLog(FileBasedPolicyFinderModule.class);
 
     public static final String ATTRIBUTE_REQUEST_ID = "request-id";
 
 
-    public static Attribute balanaAttribute(String xacmlId, DataType type, List<String> values, boolean includeInResult) throws EasyAbacInitException {
+    static Attribute balanaAttribute(String xacmlId, DataType type, List<String> values, boolean includeInResult) throws EasyAbacInitException {
         List<AttributeValue> balanaAttributeValues = new ArrayList<>();
 
         for (String value : values) {
@@ -35,7 +33,7 @@ public class AttributesFactory {
         return generalAttribute(xacmlId, type.getXacmlName(), balanaAttributeValues, includeInResult);
     }
 
-    public static BagAttribute balanaBagAttributeValues(DataType type, List<String> values) throws EasyAbacInitException {
+    static BagAttribute balanaBagAttributeValues(DataType type, List<String> values) throws EasyAbacInitException {
         List<AttributeValue> balanaAttributeValues = new ArrayList<>();
 
         for (String value : values) {
@@ -70,6 +68,7 @@ public class AttributesFactory {
             throw new EasyAbacInitException("getAttributeValue createValue", e);
         }
 
+        }
         return balanaAttributeValue;
     }
 
