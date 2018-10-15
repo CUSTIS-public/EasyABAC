@@ -12,7 +12,10 @@ import org.wso2.balana.cond.Apply;
 import org.wso2.balana.cond.Condition;
 import org.wso2.balana.cond.Evaluatable;
 import org.wso2.balana.cond.Expression;
-import org.wso2.balana.finder.*;
+import org.wso2.balana.finder.AttributeFinder;
+import org.wso2.balana.finder.AttributeFinderModule;
+import org.wso2.balana.finder.PolicyFinder;
+import org.wso2.balana.finder.PolicyFinderModule;
 import org.wso2.balana.xacml3.AdviceExpression;
 
 import java.util.ArrayList;
@@ -162,13 +165,6 @@ public class PolicyElementsFactory {
         result.addAdvice(new SimpleConditionInterceptor(index));
 
         return (Expression) result.getProxy();
-    }
-
-    public static PolicyFinderResult createPolicyFinderResult(PolicyFinderResult policyFinderResult, PolicyFinder policyFinder) {
-        ProxyFactory result = new ProxyFactory();
-        result.setTarget(policyFinderResult);
-        result.addAdvice(new PolicyFinderResultInterceptor(policyFinder));
-        return (PolicyFinderResult) result.getProxy();
     }
 
     public static AbstractPolicy createAbstractPolicy(AbstractPolicy policy, final PolicyFinder policyFinder) {

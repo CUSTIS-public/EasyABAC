@@ -32,12 +32,12 @@ public class BalanaPdpHandlerFactory implements PdpHandlerFactory {
 
     @Override
     public PdpHandler newInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache) {
-        return getInstance(new EasyPolicyFinderModule(abacAuthModel), datasources, cache, useProxy, false);
+        return getInstance(new EasyPolicyFinderModule(abacAuthModel, useProxy), datasources, cache, useProxy, false);
     }
 
     @Override
     public PdpHandler newXacmlInstance(InputStream policyXacml, List<Datasource> datasources, Cache cache) {
-        return getInstance(new InputStreamPolicyFinderModule(policyXacml), datasources, cache, useProxy, true);
+        return getInstance(new InputStreamPolicyFinderModule(policyXacml, useProxy), datasources, cache, useProxy, true);
     }
 
     public static PdpHandler getInstance(PolicyFinderModule policyFinderModule, List<Datasource> datasources, Cache cache, boolean useProxy, boolean xacmlPolicyMode) {

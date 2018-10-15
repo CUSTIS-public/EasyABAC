@@ -7,6 +7,7 @@ import custis.easyabac.core.model.abac.attribute.DataType;
 import custis.easyabac.core.trace.model.*;
 import custis.easyabac.pdp.RequestId;
 import org.wso2.balana.*;
+import org.wso2.balana.attr.AttributeValue;
 import org.wso2.balana.attr.BagAttribute;
 import org.wso2.balana.combine.PolicyCombiningAlgorithm;
 import org.wso2.balana.combine.RuleCombiningAlgorithm;
@@ -26,7 +27,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static custis.easyabac.core.init.AttributesFactory.ATTRIBUTE_REQUEST_ID;
+import static custis.easyabac.core.init.BalanaAttributesFactory.ATTRIBUTE_REQUEST_ID;
 
 /**
  * Holder of Trace process
@@ -78,6 +79,16 @@ public class BalanaTraceHandler {
                 traceResult.putAttribute(CalculatedAttribute.of(attribute.getId().toString(), convertedValues));
             }
         }
+
+        attributeMap.forEach((attribute, bagAttribute) -> {
+            Iterator iter = bagAttribute.iterator();
+            List<String> convertedValues = new ArrayList<>();
+            while (iter.hasNext()) {
+                AttributeValue val = (AttributeValue) iter.next();
+                convertedValues.add(val.encode());
+            }
+            traceResult.putAttribute(CalculatedAttribute.of(attribute.getId(), convertedValues));
+        });
     }
 
     public void onFindPolicyEnd(PolicyFinderResult policyFinderResult) {

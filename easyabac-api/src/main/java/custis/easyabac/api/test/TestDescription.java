@@ -31,4 +31,8 @@ public class TestDescription {
     public Map<String, Object> getAttributesByCode(String code) {
         return attributes.get(code);
     }
+
+    public boolean containsAttributesByCode(String code) {
+        return attributes.containsKey(code);
+    }
 }
