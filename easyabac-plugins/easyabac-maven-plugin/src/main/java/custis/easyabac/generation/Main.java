@@ -21,7 +21,7 @@ public class Main {
         Path testResourcePath = CodeGenerationUtils.mavenModuleRoot(ModelGenerator.class).resolve("src/test/resources");
         String bPackage = "generation";
 
-        CompleteGenerator.generate(is, testSourcePath, testResourcePath, bPackage);
+        CompleteGenerator.generate(is, testSourcePath, testResourcePath, bPackage, "test.yaml");
 
     }
 }

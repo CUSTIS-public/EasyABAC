@@ -38,7 +38,7 @@ public class ModelGenerationMojo extends EasyAbacBaseMojo {
     }
 
     private void findAndCreateTests() throws Exception {
-        FileInputStream is = new FileInputStream(project.getBasedir() + "/" + policyFile);
+        FileInputStream is = new FileInputStream(project.getBasedir() + "/" + modelFile);
         AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML, is);
 
         Path rootPath = project.getBasedir().toPath().resolve(sourcePath);

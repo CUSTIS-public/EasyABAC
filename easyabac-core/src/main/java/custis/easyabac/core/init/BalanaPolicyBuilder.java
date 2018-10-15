@@ -2,26 +2,31 @@ package custis.easyabac.core.init;
 
 import custis.easyabac.core.init.functions.BalanaFunctions;
 import custis.easyabac.core.init.functions.BalanaFunctionsFactory;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.Operation;
+import custis.easyabac.core.model.abac.*;
 import custis.easyabac.core.model.abac.Policy;
-import custis.easyabac.core.model.abac.TargetCondition;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
 import org.wso2.balana.*;
+import org.wso2.balana.Rule;
 import org.wso2.balana.attr.AttributeValue;
 import org.wso2.balana.attr.StandardAttributeFactory;
 import org.wso2.balana.attr.xacml3.AttributeDesignator;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitPolicyAlg;
 import org.wso2.balana.combine.xacml3.DenyUnlessPermitRuleAlg;
 import org.wso2.balana.cond.*;
+import org.wso2.balana.cond.Condition;
+import org.wso2.balana.cond.Function;
 import org.wso2.balana.ctx.xacml3.Result;
 import org.wso2.balana.finder.impl.CurrentEnvModule;
 import org.wso2.balana.xacml3.*;
+import org.wso2.balana.xacml3.Target;
 
 import java.net.URI;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static custis.easyabac.core.init.BalanaModelTransformer.*;
@@ -107,7 +112,7 @@ class BalanaPolicyBuilder {
 
     private Rule buildBalanaRule(custis.easyabac.core.model.abac.Rule rule, String policyId) {
         return new Rule(balanaRuleId(policyId, rule.getId()),
-                Result.DECISION_PERMIT,
+                rule.getEffect() == Effect.PERMIT ? Result.DECISION_PERMIT : Result.DECISION_DENY,
                 rule.getTitle(),
                 null,
                 buildRuleCondition(rule.getConditions(), rule.getOperation()),
