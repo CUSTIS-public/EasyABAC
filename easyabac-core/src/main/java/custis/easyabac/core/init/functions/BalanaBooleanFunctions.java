@@ -1,6 +1,7 @@
 package custis.easyabac.core.init.functions;
 
 import custis.easyabac.core.init.BalanaPolicyBuildException;
+import custis.easyabac.core.model.abac.attribute.DataType;
 import org.wso2.balana.cond.ConditionBagFunction;
 import org.wso2.balana.cond.EqualFunction;
 import org.wso2.balana.cond.Function;
@@ -56,5 +57,15 @@ public class BalanaBooleanFunctions implements BalanaFunctions {
     @Override
     public Function oneAndOnly() {
         return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:boolean-one-and-only");
+    }
+
+    @Override
+    public DataType supportedType() {
+        return DataType.BOOLEAN;
+    }
+
+    @Override
+    public boolean isSupported(custis.easyabac.core.model.abac.Function f) {
+        return f == custis.easyabac.core.model.abac.Function.EQUAL || f == custis.easyabac.core.model.abac.Function.IN;
     }
 }
