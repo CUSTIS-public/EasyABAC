@@ -28,6 +28,6 @@ permissions:
   - title: проверяем возможность доступа к отчету в зависимости от категории
     operation: OR #это здесь просто, что бы проверить загрузку. Возможные операции:  AND, OR, NAND, NOR
     conditions:
-    - report.category == subject.allowed-categories
+    - report.category in subject.allowed-categories
   returnAttributes:
     [subject.allowed-categories]

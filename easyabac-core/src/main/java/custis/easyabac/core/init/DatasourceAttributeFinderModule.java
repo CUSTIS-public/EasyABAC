@@ -62,7 +62,7 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
         List<String> cachedValue = null;
         if (cache != null) {
             try {
-                cachedValue = cache.get(datasource.getParams(), datasource.getReturnAttribute());
+                cachedValue = cache.get(datasource.getParams(), datasource.getReturnAttributeId());
             } catch (RuntimeException e) {
                 log.error("cache error", e);
             }
@@ -71,7 +71,7 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
         if (cachedValue != null) {
             BagAttribute bagAttribute = null;
             try {
-                bagAttribute = AttributesFactory.balanaBagAttributeValues(datasource.getReturnAttribute().getType(), returnValue);
+                bagAttribute = BalanaAttributesFactory.balanaBagAttributeValues(datasource.getReturnAttribute().getType(), cachedValue);
             } catch (EasyAbacInitException e) {
                 return getMissingEvaluationResult(e.getMessage());
             }
@@ -91,7 +91,7 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
         }
 
         if (cache != null && cachedValue == null && returnValue != null) {
-            cache.set(datasource.getParams(), datasource.getReturnAttribute(), datasource.getExpire(), returnValue);
+            cache.set(datasource.getParams(), datasource.getReturnAttributeId(), datasource.getExpire(), returnValue);
         }
 
 
@@ -101,7 +101,7 @@ public class DatasourceAttributeFinderModule extends AttributeFinderModule {
 
         BagAttribute bagAttribute = null;
         try {
-            bagAttribute = AttributesFactory.balanaBagAttributeValues(datasource.getReturnAttribute().getType(), returnValue);
+            bagAttribute = BalanaAttributesFactory.balanaBagAttributeValues(datasource.getReturnAttribute().getType(), returnValue);
         } catch (EasyAbacInitException e) {
             return getMissingEvaluationResult(e.getMessage());
         }

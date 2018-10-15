@@ -8,6 +8,7 @@ import custis.easyabac.core.model.abac.attribute.DataType;
 import custis.easyabac.core.model.abac.attribute.Resource;
 import custis.easyabac.core.model.easy.*;
 
+import java.io.StringReader;
 import java.util.*;
 
 public class AuthModelTransformer {
@@ -23,6 +24,23 @@ public class AuthModelTransformer {
     private Map<String, Attribute> attributes = new HashMap<>();
 
     private List<Policy> policyList = new ArrayList<>();
+
+    private static final Map<String, Attribute> ENV_ATTRIBUTES;
+    static {
+        ENV_ATTRIBUTES = new HashMap<>();
+        ENV_ATTRIBUTES.put(AttributesConstants.ENV_TIME,
+                new Attribute(AttributesConstants.ENV_TIME, DataType.TIME, Category.ENV, false));
+
+        ENV_ATTRIBUTES.put(AttributesConstants.ENV_DATE,
+                new Attribute(AttributesConstants.ENV_DATE, DataType.DATE, Category.ENV, false));
+        ENV_ATTRIBUTES.put(AttributesConstants.ENV_TODAY,
+                new Attribute(AttributesConstants.ENV_TODAY, DataType.DATE, Category.ENV, false));
+
+        ENV_ATTRIBUTES.put(AttributesConstants.ENV_DATETIME,
+                new Attribute(AttributesConstants.ENV_DATETIME, DataType.DATE_TIME, Category.ENV, false));
+        ENV_ATTRIBUTES.put(AttributesConstants.ENV_NOW,
+                new Attribute(AttributesConstants.ENV_NOW, DataType.DATE_TIME, Category.ENV, false));
+    }
 
 
     public AuthModelTransformer(EasyAuthModel easyAuthModel) {
@@ -50,7 +68,7 @@ public class AuthModelTransformer {
 
             List<Attribute> returnAttributes = transformReturnAttributes(permission.getReturnAttributes());
 
-            policyList.add(new Policy(IdGenerator.newId(), permission.getTitle(), target, rules, returnAttributes));
+            policyList.add(new Policy("policy" + i, permission.getTitle(), target, rules, returnAttributes));
         }
     }
 
@@ -104,7 +122,7 @@ public class AuthModelTransformer {
         for (int i = 0; i < easyRules.size(); i++) {
             EasyRule easyRule = easyRules.get(i);
             List<Condition> conditions = transformConditions(easyRule);
-            Rule rule = new Rule("policy_" + policyId + "_rule_" + i, easyRule.getTitle(), easyRule.getOperation(), conditions);
+            Rule rule = new Rule("rule" + i, easyRule.getTitle(), easyRule.getEffect(), easyRule.getOperation(), conditions);
 
             rules.add(rule);
         }
@@ -123,15 +141,12 @@ public class AuthModelTransformer {
     }
 
     private Condition parseCondition(String conditionExpression) throws EasyAbacInitException {
-        boolean negation = false;
-        String[] lexems = conditionExpression.split(" "); // FIXME исправить
-        Attribute firstOperand = findAttributeById(lexems[0]);
-        Function function = Function.findByEasyName(lexems[1]);
-        if (lexems[2].startsWith("'") && lexems[2].endsWith("'")) {
-            return new Condition(IdGenerator.newId(), negation, firstOperand, Arrays.asList(lexems[2].substring(1, lexems[2].length() - 1)), function);
-        } else {
-            Attribute secondOperandAttribute = findAttributeById(lexems[2]);
-            return new Condition(IdGenerator.newId(), negation, firstOperand, secondOperandAttribute, function);
+        PolicyExpressionParser expressionParser = new PolicyExpressionParser(new StringReader(conditionExpression));
+        expressionParser.setAttributes(this.attributes);
+        try {
+            return expressionParser.parseRuleCondition(false);
+        } catch (ParseException e) {
+            throw new EasyAbacInitException("Failed to parse rule condition", e);
         }
     }
 
@@ -164,6 +179,8 @@ public class AuthModelTransformer {
 
                 attributes.put(attribute.getId(), attribute);
             }
+
+            this.attributes.putAll(ENV_ATTRIBUTES);
 
             Resource resource = new Resource(resourceName, easyResource.getTitle(), easyResource.getActions(), resourceAttributes);
 
@@ -205,8 +222,16 @@ public class AuthModelTransformer {
         }
     }
 
-    private String makeXacmlName(String attributeId) {
+    public static String makeXacmlName(String attributeId) {
         return XACML_ATTR_PREFIX + attributeId;
+    }
+
+    public static String modeModelAttributeIdFromXacml(String xacmlName) {
+        if (xacmlName.startsWith(XACML_ATTR_PREFIX)) {
+            return xacmlName.substring(XACML_ATTR_PREFIX.length());
+        } else {
+            return xacmlName;
+        }
     }
 
     private String makeAttributeId(String resourceName, String id) {

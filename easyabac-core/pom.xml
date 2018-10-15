@@ -14,6 +14,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <properties>
         <argLine>-Dfile.encoding=UTF-8 -Duser.timezone=UTC</argLine>
+        <xmlunit.version>2.6.2</xmlunit.version>
     </properties>
 
     <dependencies>
@@ -31,6 +32,11 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.23</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>5.0.9.RELEASE</version>
         </dependency>
         <!--logs-->
         <dependency>
@@ -56,6 +62,17 @@
             <version>2.5.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-core</artifactId>
+            <version>${xmlunit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xmlunit</groupId>
+            <artifactId>xmlunit-matchers</artifactId>
+            <version>${xmlunit.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -68,6 +85,25 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javacc-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <packageName>custis.easyabac.core.model.abac</packageName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-parser</id>
+                        <goals>
+                            <goal>javacc</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

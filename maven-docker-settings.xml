@@ -1,19 +1,19 @@
 <settings>
     <localRepository>/usr/maven/repository</localRepository>
-
+    
     <servers>
         <server>
-            <resourceId>CustisNexusSnapshots</resourceId>
+            <id>CustisNexusSnapshots</id>
             <username>gitlabci</username>
             <password>ZF4aaHXAwqOu</password>
         </server>
         <server>
-            <resourceId>CustisNexusThirdParty</resourceId>
+            <id>CustisNexusThirdParty</id>
             <username>gitlabci</username>
             <password>ZF4aaHXAwqOu</password>
         </server>
         <server>
-            <resourceId>CustisCentral</resourceId>
+            <id>CustisCentral</id>
             <username>gitlabci</username>
             <password>ZF4aaHXAwqOu</password>
         </server>
@@ -21,10 +21,10 @@
 
     <profiles>
         <profile>
-            <resourceId>use-custis-nexus</resourceId>
+            <id>use-custis-nexus</id>
             <repositories>
                 <repository>
-                    <resourceId>CustisNexusSnapshots</resourceId>
+                    <id>CustisNexusSnapshots</id>
                     <name>Custis Snapshots</name>
                     <url>https://nexus.custis.ru/repository/custis-snapshots/</url>
                     <releases>
@@ -35,7 +35,7 @@
                     </snapshots>
                 </repository>
                 <repository>
-                    <resourceId>CustisNexusThirdParty</resourceId>
+                    <id>CustisNexusThirdParty</id>
                     <name>Custis ThirdParty</name>
                     <url>https://nexus.custis.ru/repository/custis-thirdparty/</url>
                     <releases>
@@ -46,7 +46,7 @@
                     </snapshots>
                 </repository>
                 <repository>
-                    <resourceId>CustisCentral</resourceId>
+                    <id>CustisCentral</id>
                     <name>Custis Central Mirror</name>
                     <url>https://nexus.custis.ru/repository/maven-central/</url>
                     <releases>

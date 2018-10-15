@@ -1,0 +1,5 @@
+!!custis.easyabac.api.test.TestDescription
+action: order.create
+attributes:
+  subject: {branchId: order.branchId_1, role: OPERATOR$}
+  order: {branchId: order.branchId_1}

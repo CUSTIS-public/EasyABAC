@@ -28,12 +28,12 @@ public class Subject {
      * Authorization attribute "Максимальный заказ"
      */
     @AuthorizationAttribute(id = "maxOrderAmount")
-    private String maxOrderAmount;
+    private Integer maxOrderAmount;
 
     public Subject() {
     }
 
-    public Subject(String id, String role, String branchId, String maxOrderAmount) {
+    public Subject(String id, String role, String branchId, Integer maxOrderAmount) {
         this.id = id;
         this.role = role;
         this.branchId = branchId;
@@ -65,11 +65,11 @@ public class Subject {
         this.branchId = branchId;
     }
 
-    public String getMaxOrderAmount() {
+    public Integer getMaxOrderAmount() {
         return this.maxOrderAmount;
     }
 
-    public void setMaxOrderAmount(String maxOrderAmount) {
+    public void setMaxOrderAmount(Integer maxOrderAmount) {
         this.maxOrderAmount = maxOrderAmount;
     }
 }

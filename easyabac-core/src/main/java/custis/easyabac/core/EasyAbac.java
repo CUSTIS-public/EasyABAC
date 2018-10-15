@@ -16,6 +16,7 @@ import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.trace.DefaultTrace;
 import custis.easyabac.core.trace.Trace;
+import custis.easyabac.core.trace.model.TraceResult;
 import custis.easyabac.pdp.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,13 +35,15 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private final List<Datasource> datasources;
     private final List<RequestExtender> requestExtenders;
     private final Audit audit;
+    private final Trace trace;
 
-    private EasyAbac(PdpHandler pdpHandler, AbacAuthModel abacAuthModel, List<Datasource> datasources, List<RequestExtender> requestExtenders, Audit audit) {
+    private EasyAbac(PdpHandler pdpHandler, AbacAuthModel abacAuthModel, List<Datasource> datasources, List<RequestExtender> requestExtenders, Audit audit, Trace trace) {
         this.pdpHandler = pdpHandler;
         this.abacAuthModel = abacAuthModel;
         this.datasources = datasources;
         this.requestExtenders = requestExtenders;
         this.audit = audit;
+        this.trace = trace;
     }
 
     @Override
@@ -53,11 +56,16 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
 
+            TraceResult traceResult = result.getTraceResult();
+            if (!pdpHandler.xacmlPolicyMode()) {
+                traceResult.populateByModel(abacAuthModel);
+            }
+            trace.handleTrace(abacAuthModel, traceResult);
             performAudit(attributeWithValueList, result);
 
             return result;
         } catch (Exception e) {
-            log.error(e);
+            log.error("authorize", e);
             return new AuthResponse(e.getMessage());
         }
     }
@@ -71,6 +79,13 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
 
         MdpAuthResponse result = pdpHandler.evaluate(requestContext);
+        result.getResults().forEach((requestId, authResponse) -> {
+            TraceResult traceResult = authResponse.getTraceResult();
+            if (!pdpHandler.xacmlPolicyMode()) {
+                traceResult.populateByModel(abacAuthModel);
+            }
+            trace.handleTrace(abacAuthModel, traceResult);
+        });
 
         performAudit(requestContext, result);
 
@@ -172,31 +187,34 @@ public class EasyAbac implements AttributiveAuthorizationService {
     }
 
     public static class Builder {
-        private final InputStream easyModel;
-        private final ModelType modelType;
 
-        private PdpHandler pdpHandler;
-        private AbacAuthModel abacAuthModel;
+        private final AbacAuthModel abacAuthModel;
+
+        private PdpHandlerFactory pdpHandlerFactory = BalanaPdpHandlerFactory.PROXY_INSTANCE;
         private List<Datasource> datasources = Collections.emptyList();
         private Cache cache;
         private Trace trace = DefaultTrace.INSTANCE;
         private Audit audit = DefaultAudit.INSTANCE;
-        private PdpType pdpType = PdpType.BALANA;
         private SubjectAttributesProvider subjectAttributesProvider = DummySubjectAttributesProvider.INSTANCE;
         private InputStream xacmlPolicy;
 
-        public Builder(String easyModel, ModelType modelType) {
-            this.easyModel = new ByteArrayInputStream(easyModel.getBytes());
-            this.modelType = modelType;
+        public Builder(AbacAuthModel abacAuthModel) {
+            this.abacAuthModel = abacAuthModel;
         }
 
-        public Builder(InputStream easyModel, ModelType modelType) {
-            this.easyModel = easyModel;
-            this.modelType = modelType;
+        public Builder(String easyModel, ModelType modelType) throws EasyAbacInitException {
+            this(new ByteArrayInputStream(easyModel.getBytes()), modelType);
         }
 
-        public Builder pdpType(PdpType pdpType) {
-            this.pdpType = pdpType;
+        public Builder(InputStream easyModel, ModelType modelType) throws EasyAbacInitException {
+            this.abacAuthModel = AbacAuthModelFactory.getInstance(modelType, easyModel);
+        }
+
+        public Builder pdpHandlerFactory(PdpHandlerFactory pdpHandlerFactory) {
+            if (xacmlPolicy != null && !pdpHandlerFactory.supportsXacmlPolicies()) {
+                throw new IllegalArgumentException(pdpHandlerFactory.getClass().getName() + " should supports XACML!");
+            }
+            this.pdpHandlerFactory = pdpHandlerFactory;
             return this;
         }
 
@@ -225,19 +243,25 @@ public class EasyAbac implements AttributiveAuthorizationService {
             return this;
         }
 
-        public Builder xacmlPolicy(InputStream xacmlPolicy) {
+        public Builder useXacmlPolicy(InputStream xacmlPolicy) {
+            if (!pdpHandlerFactory.supportsXacmlPolicies()) {
+                throw new IllegalArgumentException(pdpHandlerFactory.getClass().getName() + " doesn't supports XACML!");
+            }
             this.xacmlPolicy = xacmlPolicy;
             return this;
         }
 
 
         public AttributiveAuthorizationService build() throws EasyAbacInitException {
-
-            abacAuthModel = AbacAuthModelFactory.getInstance(modelType, easyModel);
-
             enrichDatasources(datasources, abacAuthModel);
 
-            pdpHandler = PdpHandlerFactory.getPdpHandler(pdpType, modelType, abacAuthModel, xacmlPolicy, datasources, cache);
+            PdpHandler pdpHandler = null;
+            if (xacmlPolicy != null) {
+                // this is xacml source
+                pdpHandler = pdpHandlerFactory.newXacmlInstance(xacmlPolicy, datasources, cache);
+            } else {
+                pdpHandler = pdpHandlerFactory.newInstance(abacAuthModel, datasources, cache);
+            }
 
             List<RequestExtender> extenders = new ArrayList<>();
             extenders.add(new SubjectAttributesExtender(subjectAttributesProvider));
@@ -250,7 +274,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             }
 
-            return new EasyAbac(pdpHandler, abacAuthModel, datasources, extenders, audit);
+            return new EasyAbac(pdpHandler, abacAuthModel, datasources, extenders, audit, trace);
         }
 
         private void enrichDatasources(List<Datasource> datasources, AbacAuthModel abacAuthModel) throws EasyAbacInitException {
