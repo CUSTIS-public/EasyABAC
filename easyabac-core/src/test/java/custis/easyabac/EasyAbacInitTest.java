@@ -92,8 +92,8 @@ public class EasyAbacInitTest {
 
         Map<RequestId, AuthResponse> responseMap = authorizationService.authorizeMultiple(requestMap);
 
-        Assert.assertEquals(AuthResponse.Decision.PERMIT, responseMap.get(editBobRequestId).getDecision().name());
-        Assert.assertEquals(AuthResponse.Decision.DENY, responseMap.get(viewPeterRequestId).getDecision().name());
+        Assert.assertEquals(AuthResponse.Decision.PERMIT, responseMap.get(editBobRequestId).getDecision());
+        Assert.assertEquals(AuthResponse.Decision.DENY, responseMap.get(viewPeterRequestId).getDecision());
 
     }
 
