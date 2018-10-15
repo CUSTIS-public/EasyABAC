@@ -1,5 +1,6 @@
 package custis.easyabac.core.init.functions;
 
+import custis.easyabac.core.model.abac.attribute.DataType;
 import org.wso2.balana.cond.*;
 
 public class BalanaIntegerFunctions implements BalanaFunctions {
@@ -36,12 +37,12 @@ public class BalanaIntegerFunctions implements BalanaFunctions {
 
     @Override
     public Function oneOf() {
-        return null;
+        return new ConditionSetFunction("urn:oasis:names:tc:xacml:1.0:function:integer-at-least-one-member-of");
     }
 
     @Override
     public Function subset() {
-        return null;
+        return new ConditionSetFunction("urn:oasis:names:tc:xacml:1.0:function:integer-subset");
     }
 
     @Override
@@ -52,5 +53,10 @@ public class BalanaIntegerFunctions implements BalanaFunctions {
     @Override
     public Function oneAndOnly() {
         return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:integer-one-and-only");
+    }
+
+    @Override
+    public DataType supportedType() {
+        return DataType.INT;
     }
 }

@@ -1,6 +1,5 @@
 !!custis.easyabac.api.test.TestDescription
-action: order.view
+action: order.approve
 attributes:
-  subject: {branchId: '!N/A!-mUjXn', role: MANAGER}
-  customer: {branchId: '!N/A!-mUjXn'}
-  order: {branchId: '!N/A!-mUjXn'}
+  subject: {branchId: customer.branchId_1, role: MANAGER}
+  customer: {branchId: customer.branchId_1}

@@ -3,35 +3,35 @@ package custis.easyabac.core.init.functions;
 import custis.easyabac.core.model.abac.attribute.DataType;
 import org.wso2.balana.cond.*;
 
-public class BalanaDateFunctions implements BalanaFunctions {
+public class BalanaDateTimeFunctions implements BalanaFunctions {
     @Override
     public Function equal() {
-        return new EqualFunction(EqualFunction.NAME_DATE_EQUAL);
+        return new EqualFunction(EqualFunction.NAME_DATETIME_EQUAL);
     }
 
     @Override
     public Function greater() {
-        return new ComparisonFunction(ComparisonFunction.NAME_DATE_GREATER_THAN);
+        return new ComparisonFunction(ComparisonFunction.NAME_DATETIME_GREATER_THAN);
     }
 
     @Override
     public Function less() {
-        return new ComparisonFunction(ComparisonFunction.NAME_DATE_LESS_THAN);
+        return new ComparisonFunction(ComparisonFunction.NAME_DATETIME_LESS_THAN);
     }
 
     @Override
     public Function greaterOrEqual() {
-        return new ComparisonFunction(ComparisonFunction.NAME_DATE_GREATER_THAN_OR_EQUAL);
+        return new ComparisonFunction(ComparisonFunction.NAME_DATETIME_GREATER_THAN_OR_EQUAL);
     }
 
     @Override
     public Function lessOrEqual() {
-        return new ComparisonFunction(ComparisonFunction.NAME_DATE_LESS_THAN_OR_EQUAL);
+        return new ComparisonFunction(ComparisonFunction.NAME_DATETIME_LESS_THAN_OR_EQUAL);
     }
 
     @Override
     public Function in() {
-        return new ConditionBagFunction("urn:oasis:names:tc:xacml:1.0:function:date-is-in");
+        return new ConditionBagFunction("urn:oasis:names:tc:xacml:1.0:function:dateTime-is-in");
     }
 
     @Override
@@ -46,12 +46,12 @@ public class BalanaDateFunctions implements BalanaFunctions {
 
     @Override
     public Function bag() {
-        return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:date-bag");
+        return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:dateTime-bag");
     }
 
     @Override
     public Function oneAndOnly() {
-        return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:date-one-and-only");
+        return new GeneralBagFunction("urn:oasis:names:tc:xacml:1.0:function:dateTime-one-and-only");
     }
 
     @Override

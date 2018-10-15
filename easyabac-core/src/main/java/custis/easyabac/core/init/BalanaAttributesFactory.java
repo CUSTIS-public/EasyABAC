@@ -46,7 +46,7 @@ public class BalanaAttributesFactory {
         try {
             xacmlName = new URI(type.getXacmlName());
         } catch (URISyntaxException e) {
-            throw new EasyAbacInitException("balanaBagAttributeValues", e);
+            throw new EasyAbacInitException(e.getMessage());
         }
         return new BagAttribute(xacmlName, balanaAttributeValues);
     }

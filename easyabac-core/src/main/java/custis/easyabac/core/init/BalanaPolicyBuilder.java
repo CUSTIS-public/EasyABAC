@@ -161,25 +161,25 @@ class BalanaPolicyBuilder {
         Attribute firstOperand = condition.getFirstOperand();
         final DataType firstOperandType = firstOperand.getType();
 
-        BalanaFunctions balanaFunctions = BalanaFunctionsFactory.getFunctions(firstOperandType);
-        final Function function = balanaFunctions.pick(condition.getFunction());
+        BalanaFunctions bFunc = BalanaFunctionsFactory.getFunctions(firstOperandType);
+        custis.easyabac.core.model.abac.Function cf = condition.getFunction();
+        final Function function = bFunc.pick(cf);
 
         final Attribute secondOperandAttribute = condition.getSecondOperandAttribute();
         Expression secondAttr;
 
-        final boolean requiresBagAttribute = balanaFunctions.requiresBagAttribute(condition.getFunction());
         if (secondOperandAttribute != null) {
-            secondAttr = createAttributeDesignator(secondOperandAttribute, !requiresBagAttribute);
+            secondAttr = createAttributeDesignator(secondOperandAttribute, !bFunc.requiresRightBagAttribute(cf));
         } else {
             final String conditionId = condition.getId();
             if (condition.getSecondOperandValue() != null && !condition.getSecondOperandValue().isEmpty()) {
-                if (requiresBagAttribute) {
+                if (bFunc.requiresBagOfValues(cf)) {
 
                     List<AttributeValue> attrValues = condition.getSecondOperandValue().stream()
                             .map(s -> createAttributeValue(s, firstOperandType, conditionId))
                             .collect(toList());
 
-                    secondAttr = new Apply(balanaFunctions.bag(), attrValues);
+                    secondAttr = new Apply(bFunc.bag(), attrValues);
                 } else {
                     if (condition.getSecondOperandValue().size() != 1) {
                         throw new BalanaPolicyBuildException(
@@ -195,9 +195,8 @@ class BalanaPolicyBuilder {
             }
         }
 
-        //TODO add more sophisticated logic to identify cases when both arguments are bags
         return new Apply(function,
-                asList(createAttributeDesignator(firstOperand, true), secondAttr));
+                asList(createAttributeDesignator(firstOperand, !bFunc.requiresLeftBagAttribute(cf)), secondAttr));
     }
 
     //FIXME Duplicate of BalanaAttributesFactory.getAttributeValue

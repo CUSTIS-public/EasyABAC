@@ -24,10 +24,6 @@ public class ModelGenerationMojo extends EasyAbacBaseMojo {
     @Parameter( property = "modelPackage", defaultValue = "easyabac.model" )
     private String modelPackage;
 
-    @Parameter( property = "permissioncheckerPackage", defaultValue = "easyabac.permissionchecker" )
-    private String checkersPackage;
-
-
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -38,7 +34,7 @@ public class ModelGenerationMojo extends EasyAbacBaseMojo {
     }
 
     private void findAndCreateTests() throws Exception {
-        FileInputStream is = new FileInputStream(project.getBasedir() + "/" + modelFile);
+        FileInputStream is = new FileInputStream(project.getBasedir() + "/" + resourcePath + "/" + modelFile);
         AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML, is);
 
         Path rootPath = project.getBasedir().toPath().resolve(sourcePath);
@@ -47,7 +43,6 @@ public class ModelGenerationMojo extends EasyAbacBaseMojo {
         for (Resource entry : model.getResources().values()) {
             EntityGenerator.createEntity(entry, modelPackage, sourceRoot);
             ActionGenerator.createAction(entry, modelPackage, sourceRoot);
-
         }
 
 

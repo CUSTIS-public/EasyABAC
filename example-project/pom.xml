@@ -132,12 +132,15 @@
                 <artifactId>easyabac-maven-plugin</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
                 <configuration>
-                    <sourcePath>src/main/java</sourcePath>
-                    <testPath>src/test/java</testPath>
                     <modelFile>policy.yaml</modelFile>
+                    <sourcePath>src/main/java</sourcePath>
+                    <resourcePath>src/main/resources</resourcePath>
+                    <testPath>src/test/java</testPath>
+                    <testResourcePath>src/test/resources</testResourcePath>
+
                     <testBasePackage>custis.easyabac.autogen</testBasePackage>
-                    <modelPackage>custis.easyabac.demo.model</modelPackage>
-                    <permissioncheckerPackage>custis.easyabac.demo.permissionchecker</permissioncheckerPackage>
+
+                    <modelPackage>custis.easyabac.demo.authz.model</modelPackage>
                 </configuration>
             </plugin>
         </plugins>

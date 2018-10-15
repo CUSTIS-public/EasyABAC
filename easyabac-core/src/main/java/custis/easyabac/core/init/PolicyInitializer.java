@@ -21,7 +21,7 @@ public class PolicyInitializer {
 
         PolicyFinder policyFinder = new PolicyFinder();
 
-        PolicyFinderModule stringPolicyFinderModule = new InputStreamPolicyFinderModule(policyXacml);
+        PolicyFinderModule stringPolicyFinderModule = new InputStreamPolicyFinderModule(policyXacml, false);
         Set<PolicyFinderModule> policyModules = new HashSet<>();
 
         policyModules.add(stringPolicyFinderModule);
