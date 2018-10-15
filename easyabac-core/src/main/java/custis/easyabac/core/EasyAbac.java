@@ -72,12 +72,18 @@ public class EasyAbac implements AttributiveAuthorizationService {
     @Override
     public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
         MdpAuthRequest requestContext = generate(attributes);
+        MultiAuthRequest multiAuthRequest = prepareMultiRequest(attributes);
+//        for (RequestExtender extender : requestExtenders) {
+//            extender.extend(requestContext);
+//        }
 
-        for (RequestExtender extender : requestExtenders) {
-            extender.extend(requestContext);
+        MultiAuthResponse result = null;
+        try {
+            result = pdpHandler.evaluate(multiAuthRequest);
+        } catch (EasyAbacInitException e) {
+            e.printStackTrace();
         }
 
-        MdpAuthResponse result = pdpHandler.evaluate(requestContext);
         result.getResults().forEach((requestId, authResponse) -> {
             TraceResult traceResult = authResponse.getTraceResult();
             if (!pdpHandler.xacmlPolicyMode()) {
@@ -85,8 +91,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
             }
             trace.handleTrace(abacAuthModel, traceResult);
         });
-
-        audit.onMultipleRequest(requestContext, result);
+//TODO починить
+//        audit.onMultipleRequest(multiAuthRequest, result);
 
         return result.getResults();
     }
@@ -107,8 +113,40 @@ public class EasyAbac implements AttributiveAuthorizationService {
         return request;
     }
 
+    private MultiAuthRequest prepareMultiRequest(Map<RequestId, List<AuthAttribute>> authAttributes) {
+
+        Map<String, Attribute> attributes = new HashMap<>();
+        Map<RequestId, List<AttributeWithValue>> requests = new HashMap<>();
+
+        for (RequestId requestId : authAttributes.keySet()) {
+            List<AttributeWithValue> attributeWithValues;
+            try {
+                attributeWithValues = new ArrayList<>();
+                for (AuthAttribute authAttribute : authAttributes.get(requestId)) {
+
+                    Attribute attribute = attributes.get(authAttribute.getId());
+                    if (attribute == null) {
+                        attribute = findAttribute(abacAuthModel.getAttributes(), authAttribute.getId());
+                        attributes.put(attribute.getId(), attribute);
+                    }
+
+                    AttributeWithValue attributeWithValue = new AttributeWithValue(attribute, authAttribute.getValues());
+                    attributeWithValues.add(attributeWithValue);
+                }
+            } catch (EasyAbacInitException e) {
+                log.error(e.getMessage(), e);
+                break;
+            }
+            requests.put(requestId, attributeWithValues);
+
+        }
+        return new MultiAuthRequest(attributes, requests);
+    }
+
+
     private MdpAuthRequest prepareSimpleMdpAuthRequest(Map<RequestId, List<AuthAttribute>> attributes) {
         MdpAuthRequest request = new MdpAuthRequest();
+
         attributes.forEach((requestId, authAttributes) -> {
 
             MdpAuthRequest.RequestReference reference = new MdpAuthRequest.RequestReference();
@@ -129,8 +167,10 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     private List<AttributeWithValue> computeAttributeValues(List<AuthAttribute> authAttributes) throws EasyAbacInitException {
         List<AttributeWithValue> attributeWithValueList = new ArrayList<>();
+
         for (AuthAttribute authAttribute : authAttributes) {
             Attribute attribute = findAttribute(abacAuthModel.getAttributes(), authAttribute.getId());
+
             AttributeWithValue attributeWithValue = new AttributeWithValue(attribute, authAttribute.getValues());
             attributeWithValueList.add(attributeWithValue);
         }

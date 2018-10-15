@@ -47,14 +47,19 @@ public class BalanaTraceHandler {
             finalizeTraceResult();
         }
 
-        EvaluationResult evalCtx = evaluationCtx.getAttribute(URI.create(DataType.STRING.getXacmlName()), ATTRIBUTE_REQUEST_ID, "", URI.create(Category.ENV.getXacmlName()));
-        RequestId requestId = null;
-        if (!evalCtx.indeterminate()) {
-            List values = evalCtx.getAttributeValue().getChildren();
-            if (!values.isEmpty()) {
-                requestId = RequestId.of(values.get(0).toString());
-            }
-        }
+//        EvaluationResult evalCtx = evaluationCtx.getAttribute(URI.create(DataType.STRING.getXacmlName()),
+//                URI.create(ATTRIBUTE_REQUEST_ID), "", URI.create(Category.ENV.getXacmlName()));
+//        RequestId requestId = null;
+//        if (!evalCtx.indeterminate()) {
+//            List values = evalCtx.getAttributeValue().getChildren();
+//            if (!values.isEmpty()) {
+//                requestId = RequestId.of(values.get(0).toString());
+//            }
+//        }
+
+        String requestIdValue = extractRequestId(evaluationCtx);
+
+        RequestId requestId = RequestId.of(requestIdValue);
 
         TraceResult traceResult = new TraceResult(requestId);
         traceResults.put(requestId, traceResult);
@@ -62,6 +67,28 @@ public class BalanaTraceHandler {
         callStack.push(traceResult);
 
     }
+
+    private String extractRequestId(EvaluationCtx context) {
+
+        EvaluationResult result = context.getAttribute(URI.create(DataType.STRING.getXacmlName()),
+                URI.create(ATTRIBUTE_REQUEST_ID), "", URI.create(Category.ENV.getXacmlName()));
+        BagAttribute returnBag = (BagAttribute) (result.getAttributeValue());
+        return ((AttributeValue) returnBag.iterator().next()).encode();
+////        if (result.indeterminate()) {
+////            throw new EasyAbacDatasourceException(errorMessage);
+////        }
+//
+//        if (result != null && result.getAttributeValue() != null && result.getAttributeValue().isBag()) {
+//
+////            if (returnBag.isEmpty()) {
+////                throw new EasyAbacDatasourceException(errorMessage);
+////            }
+//
+//        } else {
+////            throw new EasyAbacDatasourceException(errorMessage);
+//        }
+    }
+
 
     private void finalizeTraceResult() {
         TraceResult traceResult = (TraceResult) callStack.pop();
@@ -71,11 +98,11 @@ public class BalanaTraceHandler {
         for (Attributes attributes : ((XACML3EvaluationCtx) evalCtx).getAttributesSet()) {
             for (org.wso2.balana.ctx.Attribute attribute : attributes.getAttributes()) {
                 List<String> convertedValues = attribute.getValues()
-                                                        .stream()
-                                                        .map(
-                                                                attributeValue -> attributeValue.encode()
-                                                        )
-                                                        .collect(Collectors.toList());
+                        .stream()
+                        .map(
+                                attributeValue -> attributeValue.encode()
+                        )
+                        .collect(Collectors.toList());
                 traceResult.putAttribute(CalculatedAttribute.of(attribute.getId().toString(), convertedValues));
             }
         }
@@ -94,13 +121,6 @@ public class BalanaTraceHandler {
     public void onFindPolicyEnd(PolicyFinderResult policyFinderResult) {
         // nothing to do
     }
-
-
-
-
-
-
-
 
 
     public void onPolicyMatchStart(AbstractPolicy policy) {
@@ -203,19 +223,6 @@ public class BalanaTraceHandler {
         AbstractCalculatedPolicy abstractCalculatedPolicy = (AbstractCalculatedPolicy) callStack.pop();
         abstractCalculatedPolicy.setResult(CalculatedResult.of(realResult.getDecision()));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public void onPolicyCombineStart(PolicyCombiningAlgorithm combiningAlgorithm) {
