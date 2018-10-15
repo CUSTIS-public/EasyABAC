@@ -1,11 +1,13 @@
 package custis.easyabac.api.getting;
 
+import custis.easyabac.api.checking.EnsureMethods;
 import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
+import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.init.EasyAbacInitException;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.DummyAttributiveAuthorizationService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -17,7 +19,7 @@ import static java.util.Arrays.asList;
 
 public class GettingMethodsTest {
 
-    private static AttributiveAuthorizationService attributiveAuthorizationService = new DummyAttributiveAuthorizationService(AuthResponse.Decision.DENY);
+    private static AttributiveAuthorizationService attributiveAuthorizationService;
     private static EasyABACPermissionCheckerFactory factory;
     private static GettingMethods checker;
 
@@ -47,7 +49,9 @@ public class GettingMethodsTest {
     }
 
     @BeforeClass
-    public static void initialize() {
+    public static void initialize() throws EasyAbacInitException {
+        EasyAbac.Builder builder = new EasyAbac.Builder(EnsureMethods.class.getResourceAsStream("deny.yaml"), ModelType.EASY_YAML);
+        attributiveAuthorizationService = builder.build();
         factory = new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);
         checker = factory.getPermissionChecker(GettingMethods.class);
     }
