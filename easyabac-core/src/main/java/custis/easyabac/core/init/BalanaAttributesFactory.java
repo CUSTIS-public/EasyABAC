@@ -4,12 +4,10 @@ import custis.easyabac.core.model.abac.attribute.DataType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.balana.ParsingException;
-import org.wso2.balana.UnknownIdentifierException;
 import org.wso2.balana.attr.AttributeValue;
 import org.wso2.balana.attr.BagAttribute;
 import org.wso2.balana.attr.StandardAttributeFactory;
 import org.wso2.balana.ctx.Attribute;
-import org.wso2.balana.finder.impl.FileBasedPolicyFinderModule;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,9 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AttributesFactory {
+public class BalanaAttributesFactory {
 
-    private final static Log log = LogFactory.getLog(FileBasedPolicyFinderModule.class);
+    private final static Log log = LogFactory.getLog(BalanaAttributesFactory.class);
 
     public static final URI ATTRIBUTE_REQUEST_ID = URI.create("request-id");
 
@@ -35,7 +33,7 @@ public class AttributesFactory {
     }
 
 
-    public static Attribute balanaAttribute(String xacmlId, DataType type, List<String> values, boolean includeInResult) throws EasyAbacInitException {
+    static Attribute balanaAttribute(String xacmlId, DataType type, List<String> values, boolean includeInResult) throws EasyAbacInitException {
         List<AttributeValue> balanaAttributeValues = new ArrayList<>();
 
         for (String value : values) {
@@ -46,7 +44,7 @@ public class AttributesFactory {
         return generalAttribute(xacmlId, type.getXacmlName(), balanaAttributeValues, includeInResult);
     }
 
-    public static BagAttribute balanaBagAttributeValues(DataType type, List<String> values) throws EasyAbacInitException {
+    static BagAttribute balanaBagAttributeValues(DataType type, List<String> values) throws EasyAbacInitException {
         List<AttributeValue> balanaAttributeValues = new ArrayList<>();
 
         for (String value : values) {
@@ -58,7 +56,7 @@ public class AttributesFactory {
         try {
             xacmlName = new URI(type.getXacmlName());
         } catch (URISyntaxException e) {
-            throw new EasyAbacInitException("balanaBagAttributeValues", e);
+            throw new EasyAbacInitException(e.getMessage());
         }
         return new BagAttribute(xacmlName, balanaAttributeValues);
     }

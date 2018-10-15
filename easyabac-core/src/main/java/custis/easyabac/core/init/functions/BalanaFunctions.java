@@ -1,11 +1,10 @@
 package custis.easyabac.core.init.functions;
 
 import custis.easyabac.core.init.BalanaPolicyBuildException;
+import custis.easyabac.core.model.abac.attribute.DataType;
 import org.wso2.balana.cond.Function;
 
-import static custis.easyabac.core.model.abac.Function.IN;
-import static custis.easyabac.core.model.abac.Function.ONE_OF;
-import static custis.easyabac.core.model.abac.Function.SUBSET;
+import static custis.easyabac.core.model.abac.Function.*;
 
 public interface BalanaFunctions {
     Function equal();
@@ -23,7 +22,13 @@ public interface BalanaFunctions {
         return true;
     }
 
+    DataType supportedType();
+
     default Function pick(custis.easyabac.core.model.abac.Function f) {
+        if (!isSupported(f)) {
+            throw new BalanaPolicyBuildException(String.format("Function %s is not supported for type %s", f, supportedType()));
+        }
+
         switch (f) {
             case EQUAL:
                 return equal();
@@ -42,11 +47,19 @@ public interface BalanaFunctions {
             case SUBSET:
                 return subset();
             default:
-                throw new BalanaPolicyBuildException("Unsupported function: " + f);
+                throw new BalanaPolicyBuildException(String.format("Unknown function: %s", f));
         }
     }
 
-    default boolean requiresBagAttribute(custis.easyabac.core.model.abac.Function f) {
-        return f == IN | f == ONE_OF | f == SUBSET;
+    default boolean requiresBagOfValues(custis.easyabac.core.model.abac.Function f) {
+        return f == IN || f == ONE_OF || f == SUBSET;
+    }
+
+    default boolean requiresRightBagAttribute(custis.easyabac.core.model.abac.Function f) {
+        return f == IN || f == ONE_OF || f == SUBSET;
+    }
+
+    default boolean requiresLeftBagAttribute(custis.easyabac.core.model.abac.Function f) {
+        return f == ONE_OF || f == SUBSET;
     }
 }

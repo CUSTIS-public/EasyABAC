@@ -4,7 +4,6 @@ import custis.easyabac.api.NotPermittedException;
 import custis.easyabac.api.test.EasyAbacBaseTestClass;
 import generation.model.Order;
 import generation.model.OrderAction;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -14,7 +13,10 @@ import static custis.easyabac.pdp.AuthResponse.Decision.DENY;
 
 public class EasyABAC_Order_Deny_Test extends EasyAbacBaseTestClass {
 
-    @Ignore
+    public EasyABAC_Order_Deny_Test() throws Exception {
+        super(loadModel(EasyABAC_Order_Deny_Test.class, "test.yaml"));
+    }
+
     @Test(expected = NotPermittedException.class)
     public void test_DENY() throws Exception {
         getPermissionChecker(Order.class).ensurePermitted(resource, action);
