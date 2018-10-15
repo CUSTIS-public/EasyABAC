@@ -32,7 +32,7 @@ public class InputStreamPolicyFinderModule extends PolicyFinderModule {
     private PolicyCombiningAlgorithm combiningAlg;
     private final InputStream policyXacmlStream;
 
-    public InputStreamPolicyFinderModule(InputStream policyXacmlStream) {
+    public InputStreamPolicyFinderModule(InputStream policyXacmlStream, boolean useProxy) {
         policies = new HashMap<>();
         this.policyXacmlStream = policyXacmlStream;
     }

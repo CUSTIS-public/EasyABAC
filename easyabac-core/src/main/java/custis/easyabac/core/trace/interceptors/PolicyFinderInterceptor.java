@@ -9,8 +9,6 @@ import org.wso2.balana.finder.PolicyFinderResult;
 
 import java.lang.reflect.Method;
 
-import static custis.easyabac.core.trace.PolicyElementsFactory.createPolicyFinderResult;
-
 public class PolicyFinderInterceptor implements MethodInterceptor {
 
     private final PolicyFinder policyFinder;
@@ -29,7 +27,7 @@ public class PolicyFinderInterceptor implements MethodInterceptor {
             Object invokeSuperResult = invocation.proceed();
             PolicyFinderResult policyFinderResult = (PolicyFinderResult) invokeSuperResult;
             BalanaTraceHandlerProvider.get().onFindPolicyEnd(policyFinderResult);
-            return createPolicyFinderResult(policyFinderResult, policyFinder);
+            return policyFinderResult;
         } else {
             return invocation.proceed();
         }
