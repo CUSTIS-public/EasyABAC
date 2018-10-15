@@ -132,7 +132,7 @@
                 <artifactId>easyabac-maven-plugin</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
                 <configuration>
-                    <sourcePath>src/main/java</sourcePath>
+                    <sourcePath>src/main/java</sourcePath>permissioncheckerPackage
                     <testPath>src/test/java</testPath>
                     <modelFile>policy.yaml</modelFile>
                     <testBasePackage>custis.easyabac.autogen</testBasePackage>

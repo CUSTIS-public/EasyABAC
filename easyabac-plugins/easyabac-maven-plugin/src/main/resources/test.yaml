@@ -40,20 +40,23 @@ resources:
 
 permissions:
 - title: Менеджер
-  accessToActions: [order.view]
+  accessToActions: [order.view, order.approve, order.reject]
   rules:
     - title: Филиал совпадает с филиалом клиента
       operation: AND
       conditions:
       - customer.branchId == subject.branchId
       - subject.role == 'MANAGER'
+
     - title: Филиал совпадает с филиалом заказа
       operation: AND
       conditions:
       - order.branchId == subject.branchId
       - subject.role == 'MANAGER'
+      - subject.maxOrderAmount > order.amount
+
 - title: Операционист
-  accessToActions: [order.view]
+  accessToActions: [order.view, order.create]
   rules:
   - title: Филиал совпадает с филиалом клиента
     operation: AND

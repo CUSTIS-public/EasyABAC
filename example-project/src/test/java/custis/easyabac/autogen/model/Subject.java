@@ -15,8 +15,8 @@ public class Subject {
     /**
      * Authorization attribute "Роль сотрудника "Менеджер" / Операционист"
      */
-    @AuthorizationAttribute(id = "roles")
-    private String roles;
+    @AuthorizationAttribute(id = "role")
+    private String role;
 
     /**
      * Authorization attribute "ИД филиала"
@@ -24,13 +24,20 @@ public class Subject {
     @AuthorizationAttribute(id = "branchId")
     private String branchId;
 
+    /**
+     * Authorization attribute "Максимальный заказ"
+     */
+    @AuthorizationAttribute(id = "maxOrderAmount")
+    private Integer maxOrderAmount;
+
     public Subject() {
     }
 
-    public Subject(String id, String roles, String branchId) {
+    public Subject(String id, String role, String branchId, Integer maxOrderAmount) {
         this.id = id;
-        this.roles = roles;
+        this.role = role;
         this.branchId = branchId;
+        this.maxOrderAmount = maxOrderAmount;
     }
 
     // Simple getters and setters
@@ -42,12 +49,12 @@ public class Subject {
         this.id = id;
     }
 
-    public String getRoles() {
-        return this.roles;
+    public String getRole() {
+        return this.role;
     }
 
-    public void setRoles(String roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getBranchId() {
@@ -56,5 +63,13 @@ public class Subject {
 
     public void setBranchId(String branchId) {
         this.branchId = branchId;
+    }
+
+    public Integer getMaxOrderAmount() {
+        return this.maxOrderAmount;
+    }
+
+    public void setMaxOrderAmount(Integer maxOrderAmount) {
+        this.maxOrderAmount = maxOrderAmount;
     }
 }

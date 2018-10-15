@@ -11,6 +11,7 @@ resources:
       title: ИД филиала
     - id: maxOrderAmount
       title: Максимальный заказ
+      type: int
   customer:
     title: Клиент
     attributes:
@@ -30,6 +31,7 @@ resources:
       title: ИД заказа
     - id: amount
       title: Сумма заказа
+      type: int
     - id: branchId
       title: ИД филиала
     - id: customerId
@@ -37,40 +39,28 @@ resources:
 
 
 permissions:
-- title: Ограничение на изменение заказа
-  accessToActions: [order.create, order.approve, order.reject]
+- title: Операционист
+  accessToActions: [order.view]
   rules:
-    rule1:
-      title: Только в рабочее время
-      operation: AND
-      conditions:
-        - env.time >= 09:00
-        - env.time <= 17:00
-
-- title: Работа только с заказами своего филиала
-  accessToActions: [order.create, order.approve, order.reject, order.view]
-  rules:
-    rule1:
-      title: Только свой филиал
-      operation: AND
-      conditions:
-      - order.branchId == subject.branchId
+  - title: Доступ операциониста
+    operation: AND
+    conditions:
+    - order.branchId == subject.branchId
 
 - title: Операционист
   accessToActions: [order.create]
   rules:
-    rule1:
-      title: Доступ операциониста
-      operation: AND
-      conditions:
-      - subject.role == 'OPERATOR'
+  - title: Доступ операциониста
+    operation: AND
+    conditions:
+    - order.branchId == subject.branchId
+    - subject.role == 'OPERATOR'
 
 - title: Менеджер
   accessToActions: [order.approve, order.reject]
   rules:
-    rule1:
-      title: Доступ менеджера
-      operation: AND
-      conditions:
-      - subject.role == 'MANAGER'
-      - subject.maxOrderAmount > order.amount
+  - title: Доступ менеджера
+    operation: AND
+    conditions:
+    - subject.role == 'MANAGER'
+    - subject.maxOrderAmount > order.amount

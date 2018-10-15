@@ -1,6 +1,6 @@
 !!custis.easyabac.api.test.TestDescription
 action: order.view
 attributes:
-  subject: {branchId: '!N/A!-lVeCE'}
-  customer: {branchId: '!N/A!-6r4n5'}
-  order: {branchId: '!N/A!-ZwmrU'}
+  subject: {branchId: customer.branchId_1$}
+  customer: {branchId: customer.branchId_1}
+  order: {branchId: customer.branchId_1$$}
