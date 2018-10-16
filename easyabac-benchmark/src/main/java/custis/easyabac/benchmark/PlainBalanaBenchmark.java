@@ -154,13 +154,13 @@ public class PlainBalanaBenchmark {
         blackhole.consume(responseCtx);
     }
 
-    @Benchmark
+//    @Benchmark
     public void ensureRejectSameClientOrderPermitted(PlainBalanaState state, Blackhole blackhole) {
         ResponseCtx responseCtx = state.pdp.evaluate(state.rejectSameClientOrderRequest);
         blackhole.consume(responseCtx);
     }
 
-    @Benchmark
+//    @Benchmark
     public void ensureApproveByNonManagerDenied(PlainBalanaState state, Blackhole blackhole) {
         ResponseCtx responseCtx = state.pdp.evaluate(state.approveByNonManagerRequest);
         blackhole.consume(responseCtx);

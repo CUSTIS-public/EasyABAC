@@ -15,7 +15,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttributeAuthorizationBenchmark {
+public class AttributeAuthorizationProxyBenchmark {
 
     @State(Scope.Benchmark)
     public static class AttributeAuthorizationState {
@@ -29,7 +29,7 @@ public class AttributeAuthorizationBenchmark {
             AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
                     getClass().getResourceAsStream("/OrdersPolicy.yaml"));
             this.authorizationService = new EasyAbac.Builder(model)
-                    .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+                    .pdpHandlerFactory(BalanaPdpHandlerFactory.PROXY_INSTANCE)
                     .build();
         }
 
