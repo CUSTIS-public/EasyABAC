@@ -2,6 +2,7 @@ package custis.easyabac.benchmark;
 
 import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.init.AbacAuthModelFactory;
+import custis.easyabac.core.init.BalanaPdpHandlerFactory;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
@@ -27,7 +28,9 @@ public class AttributeAuthorizationBenchmark {
         public void initService() throws EasyAbacInitException {
             AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
                     getClass().getResourceAsStream("/OrdersPolicy.yaml"));
-            this.authorizationService = new EasyAbac.Builder(model).build();
+            this.authorizationService = new EasyAbac.Builder(model)
+                    .pdpHandlerFactory(BalanaPdpHandlerFactory.PROXY_INSTANCE)
+                    .build();
         }
 
         @Setup(Level.Trial)
@@ -35,7 +38,7 @@ public class AttributeAuthorizationBenchmark {
             List<AuthAttribute> authAttributes = new ArrayList<>();
             authAttributes.add(new AuthAttribute("order.action", "order.approve"));
             authAttributes.add(new AuthAttribute("subject.role", "OPERATOR"));
-            authAttributes.add(new AuthAttribute("customer.branchId", "1234"));
+            authAttributes.add(new AuthAttribute("order.branchId", "1234"));
             authAttributes.add(new AuthAttribute("subject.branchId", "1234"));
 
             this.approveByNonManagerRequest = authAttributes;
@@ -46,7 +49,7 @@ public class AttributeAuthorizationBenchmark {
             List<AuthAttribute> authAttributes = new ArrayList<>();
             authAttributes.add(new AuthAttribute("order.action", "order.reject"));
             authAttributes.add(new AuthAttribute("subject.role", "MANAGER"));
-            authAttributes.add(new AuthAttribute("customer.branchId", "1234"));
+            authAttributes.add(new AuthAttribute("order.branchId", "1234"));
             authAttributes.add(new AuthAttribute("subject.branchId", "1234"));
 
             this.rejectSameClientOrderRequest = authAttributes;

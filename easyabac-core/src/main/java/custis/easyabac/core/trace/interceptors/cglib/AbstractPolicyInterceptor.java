@@ -11,12 +11,6 @@ import java.lang.reflect.Method;
 
 class AbstractPolicyInterceptor implements MethodInterceptor {
 
-    private final AbstractPolicy policy;
-
-    public AbstractPolicyInterceptor(AbstractPolicy policy) {
-        this.policy = policy;
-    }
-
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         String methodName = method.getName();

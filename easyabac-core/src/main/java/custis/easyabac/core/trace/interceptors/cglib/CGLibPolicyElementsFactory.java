@@ -28,11 +28,9 @@ public class CGLibPolicyElementsFactory {
         if (useProxy) {
             PDPConfig pdpConfig = newPDPConfig(policyFinderModules, attributeFinderModules);
 
-            PDP original = new PDP(pdpConfig);
-
             Enhancer enhancer = new Enhancer();
             enhancer.setSuperclass(PDP.class);
-            enhancer.setCallback(new PDPInterceptor(original));
+            enhancer.setCallback(new PDPInterceptor());
             PDP pdp = (PDP) enhancer.create(new Class[]{PDPConfig.class}, new Object[]{pdpConfig});
             return pdp;
         } else {
@@ -50,20 +48,23 @@ public class CGLibPolicyElementsFactory {
 
         PolicyFinder policyFinder = newPolicyFinder();
         policyFinder.setModules(policyFinderModules);
-        policyFinder.init();
         return new PDPConfig(attributeFinder, policyFinder, null);
     }
 
     private static PolicyFinder newPolicyFinder() {
-        PolicyFinder original = new PolicyFinder();
-        PolicyFinderInterceptor handler = new PolicyFinderInterceptor(original);
-        return (PolicyFinder) Enhancer.create(PolicyFinder.class, handler);
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(PolicyFinder.class);
+        enhancer.setCallback(new PolicyFinderInterceptor());
+        PolicyFinder policyFinder = (PolicyFinder) enhancer.create();
+        return policyFinder;
     }
 
     private static AttributeFinder newAttributeFinder() {
-        AttributeFinder original = new AttributeFinder();
-        AttributeFinderInterceptor handler = new AttributeFinderInterceptor(original);
-        return (AttributeFinder) Enhancer.create(AttributeFinder.class, handler);
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(AttributeFinder.class);
+        enhancer.setCallback(new AttributeFinderInterceptor());
+        AttributeFinder attributeFinder = (AttributeFinder) enhancer.create();
+        return attributeFinder;
     }
 
     private static PolicyCombiningAlgorithm createPolicyCombiningAlgorithm(CombiningAlgorithm combiningAlg) {
@@ -71,7 +72,7 @@ public class CGLibPolicyElementsFactory {
             return (PolicyCombiningAlgorithm) combiningAlg;
         }
 
-        PolicyCombiningAlgorithmInterceptor handler = new PolicyCombiningAlgorithmInterceptor(combiningAlg);
+        PolicyCombiningAlgorithmInterceptor handler = new PolicyCombiningAlgorithmInterceptor();
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(combiningAlg.getClass());
         enhancer.setCallback(handler);
@@ -89,16 +90,7 @@ public class CGLibPolicyElementsFactory {
 
         };
 
-        Rule target = new Rule((URI) constructorParameters[0],
-                (int) constructorParameters[1],
-                (String) constructorParameters[2],
-                (AbstractTarget) constructorParameters[3],
-                (Condition) constructorParameters[4],
-                (Set) constructorParameters[5],
-                (Set) constructorParameters[6],
-                (int) constructorParameters[7]);
-
-        RuleInterceptor handler = new RuleInterceptor(target);
+        RuleInterceptor handler = new RuleInterceptor();
 
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(Rule.class);
@@ -117,7 +109,7 @@ public class CGLibPolicyElementsFactory {
         if (combiningAlg == null) {
             return (RuleCombiningAlgorithm) combiningAlg;
         }
-        RuleCombiningAlgorithmInterceptor handler = new RuleCombiningAlgorithmInterceptor((RuleCombiningAlgorithm) combiningAlg);
+        RuleCombiningAlgorithmInterceptor handler = new RuleCombiningAlgorithmInterceptor();
         return (RuleCombiningAlgorithm) Enhancer.create(combiningAlg.getClass(), handler);
     }
 
@@ -128,9 +120,7 @@ public class CGLibPolicyElementsFactory {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(Condition.class);
         Expression expression = createRuleApplyCondition((Expression) condition.getChildren().get(0));
-        Condition target = new Condition(expression); // only xacml > 2
-        ConditionInterceptor handler = new ConditionInterceptor(target);
-        enhancer.setCallback(handler);
+        enhancer.setCallback(new ConditionInterceptor());
         return (Condition) enhancer.create(new Class[] {Expression.class}, new Object[] { expression});
     }
 
@@ -144,8 +134,7 @@ public class CGLibPolicyElementsFactory {
             objects.add(createSimpleRule(exp, i));
         }
 
-        Apply target = new Apply(((Apply) expression).getFunction(), objects);
-        RuleApplyInterceptor handler = new RuleApplyInterceptor(target);
+        RuleApplyInterceptor handler = new RuleApplyInterceptor();
 
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(Apply.class);
@@ -158,8 +147,13 @@ public class CGLibPolicyElementsFactory {
         if (expression == null) {
             return expression;
         }
-        SimpleConditionInterceptor handler = new SimpleConditionInterceptor(expression, index);
-        return (Expression) Enhancer.create(Expression.class, new Class [] {Evaluatable.class}, handler);
+        SimpleConditionInterceptor handler = new SimpleConditionInterceptor(index);
+
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(expression.getClass());
+        enhancer.setInterfaces(new Class[] {Evaluatable.class});
+        enhancer.setCallback(handler);
+        return (Expression) enhancer.create(new Class[]{Function.class, List.class}, new Object[]{((Apply) expression).getFunction(), ((Apply) expression).getChildren()});
     }
 
     public static AbstractPolicy createAbstractPolicy(AbstractPolicy policy, final PolicyFinder policyFinder) {
@@ -167,8 +161,6 @@ public class CGLibPolicyElementsFactory {
 
         Class[] constructorClasses = null;
         Object[] constructorParameters = null;
-
-        AbstractPolicy abstractPolicy = null;
         if (policy instanceof Policy) {
             enhancer.setSuperclass(Policy.class);
             constructorClasses = new Class[] {
@@ -189,7 +181,8 @@ public class CGLibPolicyElementsFactory {
                     policy.getObligationExpressions(), ((Policy) policy).getVariableDefinitions()
 
             };
-        } else if (policy instanceof PolicySet) {
+
+        } else  if (policy instanceof PolicySet) {
             enhancer.setSuperclass(PolicySet.class);
             constructorClasses = new Class[] {
                     URI.class, String.class, PolicyCombiningAlgorithm.class, String.class,
@@ -220,12 +213,11 @@ public class CGLibPolicyElementsFactory {
                     policyFinder, policy.getMetaData()
             };
         } else {
-            LOGGER.error("Unknown AbstractPolicy implementation");
+            LOGGER.error("Неизвестная реализация AbstractPolicy");
             return policy;
         }
 
-        AbstractPolicyInterceptor handler = new AbstractPolicyInterceptor(policy);
-        enhancer.setCallback(handler);
+        enhancer.setCallback(new AbstractPolicyInterceptor());
 
         return (AbstractPolicy) enhancer.create(constructorClasses, constructorParameters);
     }

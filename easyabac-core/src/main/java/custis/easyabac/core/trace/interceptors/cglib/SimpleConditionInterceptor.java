@@ -4,17 +4,14 @@ import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.wso2.balana.cond.EvaluationResult;
-import org.wso2.balana.cond.Expression;
 
 import java.lang.reflect.Method;
 
 class SimpleConditionInterceptor implements MethodInterceptor {
 
-    private final Expression expression;
     private final int index;
 
-    public SimpleConditionInterceptor(Expression expression, int index) {
-        this.expression = expression;
+    public SimpleConditionInterceptor(int index) {
         this.index = index;
     }
 
@@ -27,10 +24,10 @@ class SimpleConditionInterceptor implements MethodInterceptor {
 
         if (methodName.equals("evaluate")) {
             BalanaTraceHandlerProvider.get().onSimpleConditionStart(index);
-            realResult = method.invoke(expression, args);
+            realResult = methodProxy.invokeSuper(o, args);
             BalanaTraceHandlerProvider.get().onSimpleCondition((EvaluationResult) realResult);
         } else {
-            realResult = method.invoke(expression, args);
+            realResult = methodProxy.invokeSuper(o, args);
         }
 
         return realResult;

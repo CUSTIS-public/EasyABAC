@@ -10,25 +10,19 @@ import java.lang.reflect.Method;
 
 class ConditionInterceptor implements MethodInterceptor {
 
-    private final Condition condition;
-
-    public ConditionInterceptor(Condition condition) {
-        this.condition = condition;
-    }
-
     @Override
-    public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+    public Object intercept(Object o, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         String methodName = method.getName();
-
+        Condition condition = (Condition) o;
         Object realResult = null;
 
 
         if (methodName.equals("evaluate")) {
             BalanaTraceHandlerProvider.get().onConditionEvaluateStart(condition);
-            method.invoke(condition, args);
+            realResult = proxy.invokeSuper(condition, args);
             BalanaTraceHandlerProvider.get().onConditionEvaluateEnd((EvaluationResult) realResult);
         } else {
-            method.invoke(condition, args);
+            realResult = proxy.invokeSuper(condition, args);
         }
 
         return realResult;

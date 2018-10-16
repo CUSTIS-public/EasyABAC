@@ -40,6 +40,15 @@ public class PlainBalanaBenchmark {
 
         @Setup(Level.Trial)
         public void prepareApproveByNonManagerRequest() throws EasyAbacInitException {
+            Set<Attribute> resourceAttrsSet = new HashSet<>();
+            Attribute orderBranchId = balanaAttribute("urn:attr:order.branchId",
+                    DataType.STRING,
+                    singletonList("1234"), false);
+            resourceAttrsSet.add(orderBranchId);
+            Attributes resourceAttrs = new Attributes(
+                    URI.create("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"), resourceAttrsSet);
+
+
             Set<Attribute> subjectAttrsSet = new HashSet<>();
             Attribute subjectBranchIdAttr = balanaAttribute("urn:attr:subject.branchId",
                     DataType.STRING,
@@ -54,6 +63,7 @@ public class PlainBalanaBenchmark {
 
             Set<Attributes> allAttrs = new HashSet<>();
             allAttrs.add(prepareActionAttributes("order.approve"));
+            allAttrs.add(resourceAttrs);
             allAttrs.add(subjectAttrs);
 
             this.approveByNonManagerRequest = new RequestCtx(allAttrs, null);
@@ -72,10 +82,10 @@ public class PlainBalanaBenchmark {
         @Setup(Level.Trial)
         public void prepareRejectSameClientOrderRequest() throws EasyAbacInitException {
             Set<Attribute> resourceAttrsSet = new HashSet<>();
-            Attribute customerBranchIdAttr = balanaAttribute("urn:attr:customer.branchId",
+            Attribute orderBranchId = balanaAttribute("urn:attr:order.branchId",
                     DataType.STRING,
                     singletonList("1234"), false);
-            resourceAttrsSet.add(customerBranchIdAttr);
+            resourceAttrsSet.add(orderBranchId);
             Attributes resourceAttrs = new Attributes(
                     URI.create("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"), resourceAttrsSet);
 

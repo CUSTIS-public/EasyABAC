@@ -10,25 +10,19 @@ import java.lang.reflect.Method;
 
 class RuleApplyInterceptor implements MethodInterceptor {
 
-    private final Expression expression;
-
-    public RuleApplyInterceptor(Expression expression) {
-        this.expression = expression;
-    }
-
     @Override
-    public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         String methodName = method.getName();
 
         Object realResult = null;
 
 
         if (methodName.equals("evaluate")) {
-            BalanaTraceHandlerProvider.get().onRuleExpressionStart(expression);
-            realResult = method.invoke(expression, args);
+            BalanaTraceHandlerProvider.get().onRuleExpressionStart((Expression) obj);
+            realResult = proxy.invokeSuper(obj, args);
             BalanaTraceHandlerProvider.get().onRuleExpressionEnd((EvaluationResult) realResult);
         } else {
-            realResult = method.invoke(expression, args);
+            realResult = proxy.invokeSuper(obj, args);
         }
 
         return realResult;

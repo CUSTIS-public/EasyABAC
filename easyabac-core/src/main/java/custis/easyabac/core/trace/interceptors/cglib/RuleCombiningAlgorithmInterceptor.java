@@ -10,25 +10,19 @@ import java.lang.reflect.Method;
 
 class RuleCombiningAlgorithmInterceptor implements MethodInterceptor {
 
-    private final RuleCombiningAlgorithm combiningAlg;
-
-    public RuleCombiningAlgorithmInterceptor(RuleCombiningAlgorithm combiningAlg) {
-        this.combiningAlg = combiningAlg;
-    }
-
     @Override
-    public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         String methodName = method.getName();
 
         Object realResult = null;
 
 
         if (methodName.equals("combine")) {
-            BalanaTraceHandlerProvider.get().onRuleCombineStart(combiningAlg);
-            realResult = method.invoke(combiningAlg, args);
+            BalanaTraceHandlerProvider.get().onRuleCombineStart((RuleCombiningAlgorithm) obj);
+            realResult = proxy.invokeSuper(obj, args);
             BalanaTraceHandlerProvider.get().onRuleCombineEnd((AbstractResult) realResult);
         } else {
-            realResult = method.invoke(combiningAlg, args);
+            realResult = proxy.invokeSuper(obj, args);
         }
 
         return realResult;
