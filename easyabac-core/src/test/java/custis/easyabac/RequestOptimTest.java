@@ -82,7 +82,7 @@ public class RequestOptimTest {
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
         authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "bob"));
         authAttrList.add(new AuthAttribute(SUBJECT_ROLE, "USER"));
-        RequestId editBobRequestId = RequestId.newRandom();
+        RequestId editBobRequestId = RequestId.of("editBobRequestId");
         requestMap.put(editBobRequestId, authAttrList);
 
         authAttrList = new ArrayList<>();
@@ -90,7 +90,7 @@ public class RequestOptimTest {
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.view"));
         authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "peter"));
         authAttrList.add(new AuthAttribute(SUBJECT_ROLE, "USER"));
-        RequestId viewPeterRequestId = RequestId.newRandom();
+        RequestId viewPeterRequestId = RequestId.of("viewPeterRequestId");
         requestMap.put(viewPeterRequestId, authAttrList);
 
         authAttrList = new ArrayList<>();
@@ -98,7 +98,7 @@ public class RequestOptimTest {
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.view"));
         authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "alice"));
         authAttrList.add(new AuthAttribute(SUBJECT_ROLE, "USER"));
-        RequestId viewAliceRequestId = RequestId.newRandom();
+        RequestId viewAliceRequestId = RequestId.of("viewAliceRequestId");
         requestMap.put(viewAliceRequestId, authAttrList);
 
         Map<RequestId, AuthResponse> responseMap = authorizationService.authorizeMultiple(requestMap);
