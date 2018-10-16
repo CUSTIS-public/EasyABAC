@@ -24,6 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EasyAbac implements AttributiveAuthorizationService {
 
@@ -250,6 +252,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
         public AttributiveAuthorizationService build() throws EasyAbacInitException {
             enrichDatasources(datasources, abacAuthModel);
 
+            groupAttributesByAction(datasources, abacAuthModel);
+
             PdpHandler pdpHandler = null;
             if (xacmlPolicy != null) {
                 // this is xacml source
@@ -270,6 +274,41 @@ public class EasyAbac implements AttributiveAuthorizationService {
             }
 
             return new EasyAbac(pdpHandler, abacAuthModel, datasources, extenders, audit, trace);
+        }
+
+        private void groupAttributesByAction(List<Datasource> datasources, AbacAuthModel abacAuthModel) {
+            Set<String> actions = abacAuthModel.getPolicies().stream().flatMap(policy -> policy.getTarget().getAccessToActions().stream()).collect(Collectors.toSet());
+
+            List<Attribute> attributes = abacAuthModel.getPolicies().stream().flatMap(policy -> policy.getRules().stream()
+                    .flatMap(rule -> rule.getConditions().stream()
+                            .flatMap(condition -> Arrays.asList(condition.getFirstOperand()).stream())))
+                    .collect(Collectors.toList());
+
+            Map<String, Map<String, Attribute>> attributesByActionMap = new HashMap<>();
+            for (String action : actions) {
+                List<Attribute> attributesByAction = abacAuthModel.getPolicies().stream()
+                        .filter(policy -> policy.getTarget().getAccessToActions().contains(action))
+                        .flatMap(policy -> policy.getRules().stream()
+                                .flatMap(rule -> rule.getConditions().stream()
+                                        .flatMap(condition -> Stream.of(condition.getFirstOperand(), condition.getSecondOperandAttribute()).filter(Objects::nonNull))))
+                        .distinct().collect(Collectors.toList());
+
+
+                List<Attribute> attributeFromParams = attributesByAction.stream()
+                        .flatMap(attribute -> datasources.stream()
+                                .filter(datasource -> datasource.getReturnAttribute().equals(attribute))
+                                .flatMap(datasource -> datasource.getParams().stream().map(param -> param.getAttributeParam())))
+                        .distinct().collect(Collectors.toList());
+
+                attributesByAction.addAll(attributeFromParams);
+
+                Map<String, Attribute> collect = attributesByAction.stream().distinct().collect(Collectors.toMap(Attribute::getId, a -> a));
+
+                attributesByActionMap.put(action, collect);
+            }
+
+            System.out.println(attributesByActionMap);
+
         }
 
         private void enrichDatasources(List<Datasource> datasources, AbacAuthModel abacAuthModel) throws EasyAbacInitException {

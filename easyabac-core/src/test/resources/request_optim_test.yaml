@@ -27,13 +27,23 @@ resources:
 permissions:
 - title: политика редактирования отчета в зависимости от категории
   accessToActions:
-    [report.edit, report.remove]
+    [report.edit]
   rules:
   - title: проверяем возможность доступа к отчету в зависимости от категории
     operation: AND
     conditions:
     - report.category in subject.allowed-categories
     - subject.role in ['ADMIN', 'USER']
+  returnAttributes:
+    [subject.allowed-categories]
+- title: политика удаления отчета в зависимости от категории
+  accessToActions:
+    [report.remove]
+  rules:
+  - title: проверяем возможность доступа к отчету в зависимости от категории
+    operation: AND
+    conditions:
+    - report.category in subject.allowed-categories
   returnAttributes:
     [subject.allowed-categories]
 - title: политика просмотра в зависимости от роли субъекта
