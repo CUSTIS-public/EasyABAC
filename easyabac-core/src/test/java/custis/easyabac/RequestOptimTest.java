@@ -87,9 +87,9 @@ public class RequestOptimTest {
 
         authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(REPORT_ID, "2"));
+        authAttrList.add(new AuthAttribute(SUBJECT_ROLE, "USER"));
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.view"));
         authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "peter"));
-        authAttrList.add(new AuthAttribute(SUBJECT_ROLE, "USER"));
         RequestId viewPeterRequestId = RequestId.of("viewPeterRequestId");
         requestMap.put(viewPeterRequestId, authAttrList);
 

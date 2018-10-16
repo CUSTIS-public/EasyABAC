@@ -83,6 +83,21 @@ public class EasyAbac implements AttributiveAuthorizationService {
 //        for (RequestExtender extender : requestExtenders) {
 //            extender.extend(requestContext);
 //        }
+        Map<RequestId, List<RequestId>> requestIdOptimizedMap = null;
+        if (options.isOptimizeRequest()) {
+
+            requestIdOptimizedMap = new HashMap<>();
+            Map<RequestId, List<AttributeWithValue>> requests = multiAuthRequest.getRequests();
+            Map<RequestId, List<AttributeWithValue>> optimizedRequests = optimizeMultiRequest(requests);
+
+            for (RequestId optimRequestId : optimizedRequests.keySet()) {
+                List<RequestId> collect = requests.keySet().stream().filter(requestId -> requests.get(requestId).equals(optimizedRequests.get(optimRequestId))).collect(Collectors.toList());
+                requestIdOptimizedMap.put(optimRequestId, collect);
+            }
+
+            multiAuthRequest = new MultiAuthRequest(multiAuthRequest.getAttributes(), optimizedRequests);
+        }
+
 
         MultiAuthResponse result = null;
         try {
@@ -91,6 +106,17 @@ public class EasyAbac implements AttributiveAuthorizationService {
             log.error("authorizeMultiple ", e);
         }
 
+        if (options.isOptimizeRequest()) {
+            Map<RequestId, AuthResponse> detailedResult = new HashMap<>();
+            for (RequestId optimRequestId : result.getResults().keySet()) {
+                List<RequestId> requestIds = requestIdOptimizedMap.get(optimRequestId);
+                AuthResponse authResponse = result.getResults().get(optimRequestId);
+                requestIds.forEach(requestId -> detailedResult.put(requestId, authResponse));
+            }
+            result = new MultiAuthResponse(detailedResult);
+        }
+
+
         result.getResults().forEach((requestId, authResponse) -> {
             TraceResult traceResult = authResponse.getTraceResult();
             if (!pdpHandler.xacmlPolicyMode()) {
@@ -98,10 +124,18 @@ public class EasyAbac implements AttributiveAuthorizationService {
             }
             trace.handleTrace(abacAuthModel, traceResult);
         });
+
 //TODO починить
 //        audit.onMultipleRequest(multiAuthRequest, result);
 
         return result.getResults();
+    }
+
+    private Map<RequestId, List<AttributeWithValue>> optimizeMultiRequest(Map<RequestId, List<AttributeWithValue>> request) {
+
+        Collection<List<AttributeWithValue>> requests = request.values();
+
+        return requests.stream().distinct().collect(Collectors.toMap(o -> RequestId.newRandom(), o -> o));
     }
 
 
@@ -128,6 +162,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
             requests.put(requestId, attributeWithValuesByRequest);
 
         }
+
+
         return new MultiAuthRequest(allAttributes, requests);
     }
 
@@ -138,7 +174,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
                     if (attributeWithValue.getAttribute().getCategory().equals(Category.ACTION)) {
                         return true;
                     }
-                    ;
                     Map<String, Attribute> stringAttributeMap = attributesByAction.get(actionFromRequest);
 
                     return stringAttributeMap.get(attributeWithValue.getAttribute().getId()) != null;
@@ -147,6 +182,9 @@ public class EasyAbac implements AttributiveAuthorizationService {
     }
 
     private List<AttributeWithValue> enrichAttributes(List<AuthAttribute> authAttributesByRequest, Map<String, Attribute> allAttributes) {
+        // Сортировка нужна для правильного сравнения для выявления дубликатов
+        authAttributesByRequest.sort(Comparator.comparing(AuthAttribute::getId));
+
         List<AttributeWithValue> attributeWithValues = new ArrayList<>();
         for (AuthAttribute authAttribute : authAttributesByRequest) {
 
@@ -309,7 +347,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
                                         .flatMap(condition -> Stream.of(condition.getFirstOperand(), condition.getSecondOperandAttribute()).filter(Objects::nonNull))))
                         .distinct().collect(Collectors.toList());
 
-
+                // TODO: 16.10.18 добавить цикл для зависимых датасорсов
                 List<Attribute> attributeFromParams = attributesByAction.stream()
                         .flatMap(attribute -> datasources.stream()
                                 .filter(datasource -> datasource.getReturnAttribute().equals(attribute))
