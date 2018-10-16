@@ -71,7 +71,7 @@ public class PermissionCheckerBenchmark {
         return hasException;
     }
 
-    @Benchmark
+//    @Benchmark
     public boolean ensureRejectSameClientOrderPermitted() {
         boolean hasException;
         try {
@@ -83,7 +83,7 @@ public class PermissionCheckerBenchmark {
         return hasException;
     }
 
-    @Benchmark
+//    @Benchmark
     public boolean ensureApproveByNonManagerDenied() {
         boolean hasException;
         try {
@@ -107,7 +107,7 @@ public class PermissionCheckerBenchmark {
         public List<AttributeWithValue> provide() {
             List<AttributeWithValue> authAttributes = new ArrayList<>();
 
-            //TODO очень подозрительно, что пришлось здесь использовать makeXacmlName
+            //TODO очень подозрительно, что пришлось здесь использовать makeXacmlName, иначе Balana находила 2 атрибута subject.branchId
             authAttributes.add(new AttributeWithValue(
                     new Attribute(makeXacmlName("subject.id"), Category.SUBJECT, DataType.STRING),
                     singletonList(subject.getId())));
