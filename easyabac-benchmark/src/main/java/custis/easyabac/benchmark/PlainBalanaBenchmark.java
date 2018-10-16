@@ -40,7 +40,7 @@ public class PlainBalanaBenchmark {
 
         @Setup(Level.Trial)
         public void prepareApproveByNonManagerRequest() throws EasyAbacInitException {
-            final String action = "order.reject";
+            final String action = "order.approve";
             Set<Attribute> actionAttrsSet = new HashSet<>();
             Attribute actionAttr = balanaAttribute("urn:attr:order.action",
                     DataType.STRING,
@@ -56,7 +56,7 @@ public class PlainBalanaBenchmark {
             subjectAttrsSet.add(subjectBranchIdAttr);
             Attribute subjectRoleAttr = balanaAttribute("urn:attr:subject.role",
                     DataType.STRING,
-                    singletonList("MANAGER"), false);
+                    singletonList("OPERATOR"), false);
             subjectAttrsSet.add(subjectRoleAttr);
             Attributes subjectAttrs = new Attributes(
                     URI.create("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"), subjectAttrsSet);
@@ -172,15 +172,12 @@ public class PlainBalanaBenchmark {
         blackhole.consume(responseCtx);
     }
 
-    /*
     public static void main(String[] args) throws EasyAbacInitException {
         PlainBalanaState state = new PlainBalanaState();
         state.initPDP();
-        state.prepareApproveSameBranchOrderRequest();
-        state.prepareRejectSameClientOrderRequest();
         state.prepareApproveByNonManagerRequest();
 
-        ResponseCtx ctx = new PlainBalanaBenchmark().ensureApproveByNonManagerDenied(state);
+        ResponseCtx ctx = state.pdp.evaluate(state.approveByNonManagerRequest);
         System.out.printf("Response is %s\n", ctx.getResults().iterator().next().getDecision());
-    }*/
+    }
 }
