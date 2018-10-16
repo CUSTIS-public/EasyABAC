@@ -48,6 +48,12 @@ public class BalanaPdpHandler implements PdpHandler {
 
     @Override
     public AuthResponse evaluate(List<AttributeWithValue> attributeWithValues) {
+
+        RequestId requestId = RequestId.newRandom();
+        AttributeWithValue requestIdAttribute = new AttributeWithValue(new custis.easyabac.core.model.abac.attribute.Attribute(ATTRIBUTE_REQUEST_ID, Category.ENV, DataType.STRING),
+                Collections.singletonList(requestId.getId()));
+        attributeWithValues.add(requestIdAttribute);
+
         Map<Category, Attributes> attributesMap;
 
         try {
@@ -69,7 +75,7 @@ public class BalanaPdpHandler implements PdpHandler {
         }
 
         Map<RequestId, TraceResult> results = BalanaTraceHandlerProvider.get().getResults();
-        return createResponse(responseCtx.getResults().iterator().next(), results.get(null));
+        return createResponse(responseCtx.getResults().iterator().next(), results.get(requestId));
     }
 
     @Override

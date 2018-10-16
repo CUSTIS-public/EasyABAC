@@ -39,6 +39,7 @@ public class SampleCache implements Cache {
 
     private String makeKey(Set<Param> params, String returnAttributeId) {
         StringBuilder keyBuilder = new StringBuilder();
+        //TODO сортировать по attributeParamId
         for (Param param : params) {
             keyBuilder.append(param.getAttributeParamId()).append(":").append(param.getValue()).append(":");
         }
