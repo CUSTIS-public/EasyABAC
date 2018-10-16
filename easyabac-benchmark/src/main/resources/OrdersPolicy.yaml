@@ -43,13 +43,6 @@ permissions:
   accessToActions: [order.view, order.approve, order.reject]
   rules:
     - title: Филиал совпадает с филиалом клиента
-      operation: AND
-      conditions:
-      - customer.branchId == subject.branchId
-      - subject.role == 'MANAGER'
-
-    - title: Филиал совпадает с филиалом заказа
-      operation: AND
       conditions:
       - order.branchId == subject.branchId
       - subject.role == 'MANAGER'
@@ -62,9 +55,4 @@ permissions:
     operation: AND
     conditions:
     - customer.branchId == subject.branchId
-    - subject.role == 'OPERATOR'
-  - title: Филиал совпадает с филиалом заказа
-    operation: AND
-    conditions:
-    - order.branchId == subject.branchId
     - subject.role == 'OPERATOR'

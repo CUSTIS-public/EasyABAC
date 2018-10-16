@@ -64,31 +64,35 @@ public class BalanaTraceHandler {
     }
 
     private void finalizeTraceResult() {
-        TraceResult traceResult = (TraceResult) callStack.pop();
-        EvaluationCtx evalCtx = (EvaluationCtx) callStack.pop();
+        try {
+            TraceResult traceResult = (TraceResult) callStack.pop();
+            EvaluationCtx evalCtx = (EvaluationCtx) callStack.pop();
 
 
-        for (Attributes attributes : ((XACML3EvaluationCtx) evalCtx).getAttributesSet()) {
-            for (org.wso2.balana.ctx.Attribute attribute : attributes.getAttributes()) {
-                List<String> convertedValues = attribute.getValues()
-                                                        .stream()
-                                                        .map(
-                                                                attributeValue -> attributeValue.encode()
-                                                        )
-                                                        .collect(Collectors.toList());
-                traceResult.putAttribute(CalculatedAttribute.of(attribute.getId().toString(), convertedValues));
+            for (Attributes attributes : ((XACML3EvaluationCtx) evalCtx).getAttributesSet()) {
+                for (org.wso2.balana.ctx.Attribute attribute : attributes.getAttributes()) {
+                    List<String> convertedValues = attribute.getValues()
+                            .stream()
+                            .map(
+                                    attributeValue -> attributeValue.encode()
+                            )
+                            .collect(Collectors.toList());
+                    traceResult.putAttribute(CalculatedAttribute.of(attribute.getId().toString(), convertedValues));
+                }
             }
+
+            attributeMap.forEach((attribute, bagAttribute) -> {
+                Iterator iter = bagAttribute.iterator();
+                List<String> convertedValues = new ArrayList<>();
+                while (iter.hasNext()) {
+                    AttributeValue val = (AttributeValue) iter.next();
+                    convertedValues.add(val.encode());
+                }
+                traceResult.putAttribute(CalculatedAttribute.of(attribute.getId(), convertedValues));
+            });
+        } catch (EmptyStackException e) {
+
         }
-
-        attributeMap.forEach((attribute, bagAttribute) -> {
-            Iterator iter = bagAttribute.iterator();
-            List<String> convertedValues = new ArrayList<>();
-            while (iter.hasNext()) {
-                AttributeValue val = (AttributeValue) iter.next();
-                convertedValues.add(val.encode());
-            }
-            traceResult.putAttribute(CalculatedAttribute.of(attribute.getId(), convertedValues));
-        });
     }
 
     public void onFindPolicyEnd(PolicyFinderResult policyFinderResult) {

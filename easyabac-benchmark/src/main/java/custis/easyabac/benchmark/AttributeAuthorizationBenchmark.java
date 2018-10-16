@@ -27,7 +27,9 @@ public class AttributeAuthorizationBenchmark extends AbstractAuthorizationBenchm
         public void initService() throws EasyAbacInitException {
             AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
                     getClass().getResourceAsStream("/OrdersPolicy.yaml"));
-            this.authorizationService = new EasyAbac.Builder(model).build();
+            this.authorizationService = new EasyAbac.Builder(model)
+                    .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+                    .build();
         }
 
     }
