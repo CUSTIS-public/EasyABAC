@@ -51,19 +51,34 @@ public class RequestOptimTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, REPORT_CATEGORY);
 
         authorizationService = new EasyAbac.Builder(easyModel, ModelType.EASY_YAML)
-                .datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).audit(null).build();
+                .datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).build();
     }
 
 
     @Test
-    public void unuseAttributes() {
+    public void unuseAttributesOneRequest() {
+
+        List<AuthAttribute> authAttrList = new ArrayList<>();
+        authAttrList.add(new AuthAttribute(REPORT_ID, "2"));
+        authAttrList.add(new AuthAttribute(REPORT_BRANCH, "3"));
+        authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
+        authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "bob"));
+        authAttrList.add(new AuthAttribute(SUBJECT_ROLE, "USER"));
+
+        AuthResponse authResponse = authorizationService.authorize(authAttrList);
+
+        Assert.assertEquals(AuthResponse.Decision.PERMIT, authResponse.getDecision());
+    }
+
+    @Test
+    public void unuseAttributesMultiRequest() {
 
         Map<RequestId, List<AuthAttribute>> requestMap = new HashMap<>();
 
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(REPORT_ID, "2"));
-//        authAttrList.add(new AuthAttribute(REPORT_BRANCH, "3"));
+        authAttrList.add(new AuthAttribute(REPORT_BRANCH, "3"));
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
         authAttrList.add(new AuthAttribute(SUBJECT_SUBJECT_ID, "bob"));
         authAttrList.add(new AuthAttribute(SUBJECT_ROLE, "USER"));

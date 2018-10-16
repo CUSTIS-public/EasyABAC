@@ -47,8 +47,9 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public AuthResponse authorize(List<AuthAttribute> authAttributes) {
+        Map<String, Attribute> allAttributes = new HashMap<>();
         try {
-            List<AttributeWithValue> attributeWithValueList = computeAttributeValues(authAttributes);
+            List<AttributeWithValue> attributeWithValueList = enrichAttributes(authAttributes, allAttributes);
             for (RequestExtender extender : requestExtenders) {
                 extender.extend(attributeWithValueList);
             }
@@ -71,7 +72,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
-//        MdpAuthRequest requestContext = generate(attributes);
+
         MultiAuthRequest multiAuthRequest = prepareMultiRequest(attributes);
 //        for (RequestExtender extender : requestExtenders) {
 //            extender.extend(requestContext);
@@ -115,32 +116,39 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     private MultiAuthRequest prepareMultiRequest(Map<RequestId, List<AuthAttribute>> authAttributes) {
 
-        Map<String, Attribute> attributes = new HashMap<>();
+        Map<String, Attribute> allAttributes = new HashMap<>();
         Map<RequestId, List<AttributeWithValue>> requests = new HashMap<>();
 
         for (RequestId requestId : authAttributes.keySet()) {
-            List<AttributeWithValue> attributeWithValues;
-            try {
-                attributeWithValues = new ArrayList<>();
-                for (AuthAttribute authAttribute : authAttributes.get(requestId)) {
+            List<AuthAttribute> authAttributesByRequest = authAttributes.get(requestId);
 
-                    Attribute attribute = attributes.get(authAttribute.getId());
-                    if (attribute == null) {
-                        attribute = findAttribute(abacAuthModel.getAttributes(), authAttribute.getId());
-                        attributes.put(attribute.getId(), attribute);
-                    }
+            List<AttributeWithValue> attributeWithValuesByRequest = enrichAttributes(authAttributesByRequest, allAttributes);
 
-                    AttributeWithValue attributeWithValue = new AttributeWithValue(attribute, authAttribute.getValues());
-                    attributeWithValues.add(attributeWithValue);
-                }
-            } catch (EasyAbacInitException e) {
-                log.error(e.getMessage(), e);
-                break;
-            }
-            requests.put(requestId, attributeWithValues);
+            requests.put(requestId, attributeWithValuesByRequest);
 
         }
-        return new MultiAuthRequest(attributes, requests);
+        return new MultiAuthRequest(allAttributes, requests);
+    }
+
+    private List<AttributeWithValue> enrichAttributes(List<AuthAttribute> authAttributesByRequest, Map<String, Attribute> allAttributes) {
+        List<AttributeWithValue> attributeWithValues = new ArrayList<>();
+        for (AuthAttribute authAttribute : authAttributesByRequest) {
+
+            Attribute attribute = allAttributes.get(authAttribute.getId());
+            if (attribute == null) {
+                try {
+                    attribute = findAttribute(abacAuthModel.getAttributes(), authAttribute.getId());
+                } catch (EasyAbacInitException e) {
+                    log.warn(e.getMessage(), e);
+                    continue;
+                }
+                allAttributes.put(attribute.getId(), attribute);
+            }
+
+            AttributeWithValue attributeWithValue = new AttributeWithValue(attribute, authAttribute.getValues());
+            attributeWithValues.add(attributeWithValue);
+        }
+        return attributeWithValues;
     }
 
 
@@ -163,18 +171,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
         });
 
         return request;
-    }
-
-    private List<AttributeWithValue> computeAttributeValues(List<AuthAttribute> authAttributes) throws EasyAbacInitException {
-        List<AttributeWithValue> attributeWithValueList = new ArrayList<>();
-
-        for (AuthAttribute authAttribute : authAttributes) {
-            Attribute attribute = findAttribute(abacAuthModel.getAttributes(), authAttribute.getId());
-
-            AttributeWithValue attributeWithValue = new AttributeWithValue(attribute, authAttribute.getValues());
-            attributeWithValueList.add(attributeWithValue);
-        }
-        return attributeWithValueList;
     }
 
     public static Attribute findAttribute(Map<String, Attribute> attributeMap, String attributeId) throws EasyAbacInitException {
