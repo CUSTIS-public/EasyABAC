@@ -24,6 +24,11 @@ public class DefaultTrace implements Trace {
         StringBuilder modelWithTrace = new StringBuilder();
         modelWithTrace.append("\n").append("-------TRACE-------");
         modelWithTrace.append("\n--ATTRIBUTES--\n");
+        if (traceResult == null) {
+            modelWithTrace.append("\n NO TRACE RESULT \n");
+            LOGGER.info(modelWithTrace.toString());
+            return;
+        }
         traceResult.getAttributes().forEach(
                 (s, calculatedAttribute) -> {
                     modelWithTrace.append(modeModelAttributeIdFromXacml(calculatedAttribute.getId()))

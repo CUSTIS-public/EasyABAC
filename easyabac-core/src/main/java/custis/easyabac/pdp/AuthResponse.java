@@ -13,7 +13,7 @@ public class AuthResponse {
     private final TraceResult traceResult;
 
     public AuthResponse(Decision decision, Map<String, String> returnValues) {
-        this(decision, returnValues, null);
+        this(decision, returnValues, TraceResult.EMPTY);
     }
 
     public AuthResponse(Decision decision, Map<String, String> returnValues, TraceResult traceResult) {

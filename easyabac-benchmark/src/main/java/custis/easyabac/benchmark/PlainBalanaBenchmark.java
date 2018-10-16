@@ -3,7 +3,7 @@ package custis.easyabac.benchmark;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.init.InputStreamPolicyFinderModule;
 import custis.easyabac.core.model.abac.attribute.DataType;
-import custis.easyabac.core.trace.PolicyElementsFactory;
+import custis.easyabac.core.trace.interceptors.aop.PolicyElementsFactory;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.wso2.balana.PDP;
