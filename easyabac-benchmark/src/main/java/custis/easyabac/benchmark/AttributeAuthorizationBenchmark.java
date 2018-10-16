@@ -30,7 +30,6 @@ public class AttributeAuthorizationBenchmark {
             this.authorizationService = new EasyAbac.Builder(model).build();
         }
 
-
         @Setup(Level.Trial)
         public void prepareApproveByNonManagerRequest() {
             List<AuthAttribute> authAttributes = new ArrayList<>();

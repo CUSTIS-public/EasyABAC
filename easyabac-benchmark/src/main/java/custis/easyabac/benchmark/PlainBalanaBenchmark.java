@@ -40,15 +40,6 @@ public class PlainBalanaBenchmark {
 
         @Setup(Level.Trial)
         public void prepareApproveByNonManagerRequest() throws EasyAbacInitException {
-            final String action = "order.approve";
-            Set<Attribute> actionAttrsSet = new HashSet<>();
-            Attribute actionAttr = balanaAttribute("urn:attr:order.action",
-                    DataType.STRING,
-                    singletonList(action), false);
-            actionAttrsSet.add(actionAttr);
-            Attributes actionAttrs = new Attributes(
-                    URI.create("urn:oasis:names:tc:xacml:3.0:attribute-category:action"), actionAttrsSet);
-
             Set<Attribute> subjectAttrsSet = new HashSet<>();
             Attribute subjectBranchIdAttr = balanaAttribute("urn:attr:subject.branchId",
                     DataType.STRING,
@@ -62,23 +53,24 @@ public class PlainBalanaBenchmark {
                     URI.create("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"), subjectAttrsSet);
 
             Set<Attributes> allAttrs = new HashSet<>();
-            allAttrs.add(actionAttrs);
+            allAttrs.add(prepareActionAttributes("order.approve"));
             allAttrs.add(subjectAttrs);
 
             this.approveByNonManagerRequest = new RequestCtx(allAttrs, null);
         }
 
-
-        @Setup(Level.Trial)
-        public void prepareRejectSameClientOrderRequest() throws EasyAbacInitException {
+        private Attributes prepareActionAttributes(String action) throws EasyAbacInitException {
             Set<Attribute> actionAttrsSet = new HashSet<>();
             Attribute actionAttr = balanaAttribute("urn:attr:order.action",
                     DataType.STRING,
-                    singletonList("order.reject"), false);
+                    singletonList(action), false);
             actionAttrsSet.add(actionAttr);
-            Attributes actionAttrs = new Attributes(
+            return new Attributes(
                     URI.create("urn:oasis:names:tc:xacml:3.0:attribute-category:action"), actionAttrsSet);
+        }
 
+        @Setup(Level.Trial)
+        public void prepareRejectSameClientOrderRequest() throws EasyAbacInitException {
             Set<Attribute> resourceAttrsSet = new HashSet<>();
             Attribute customerBranchIdAttr = balanaAttribute("urn:attr:customer.branchId",
                     DataType.STRING,
@@ -100,7 +92,7 @@ public class PlainBalanaBenchmark {
                     URI.create("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"), subjectAttrsSet);
 
             Set<Attributes> allAttrs = new HashSet<>();
-            allAttrs.add(actionAttrs);
+            allAttrs.add(prepareActionAttributes("order.reject"));
             allAttrs.add(resourceAttrs);
             allAttrs.add(subjectAttrs);
 
@@ -109,14 +101,6 @@ public class PlainBalanaBenchmark {
 
         @Setup(Level.Trial)
         public void prepareApproveSameBranchOrderRequest() throws EasyAbacInitException {
-            Set<Attribute> actionAttrsSet = new HashSet<>();
-            Attribute actionAttr = balanaAttribute("urn:attr:order.action",
-                    DataType.STRING,
-                    singletonList("order.approve"), false);
-            actionAttrsSet.add(actionAttr);
-            Attributes actionAttrs = new Attributes(
-                    URI.create("urn:oasis:names:tc:xacml:3.0:attribute-category:action"), actionAttrsSet);
-
             Set<Attribute> resourceAttrsSet = new HashSet<>();
             Attribute orderBranchIdAttr = balanaAttribute("urn:attr:order.branchId",
                     DataType.STRING,
@@ -146,7 +130,7 @@ public class PlainBalanaBenchmark {
                     URI.create("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"), subjectAttrsSet);
 
             Set<Attributes> allAttrs = new HashSet<>();
-            allAttrs.add(actionAttrs);
+            allAttrs.add(prepareActionAttributes("order.approve"));
             allAttrs.add(resourceAttrs);
             allAttrs.add(subjectAttrs);
 
