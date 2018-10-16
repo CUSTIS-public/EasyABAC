@@ -39,7 +39,8 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private final Map<String, Map<String, Attribute>> attributesByAction;
     private final Options options;
 
-    private EasyAbac(PdpHandler pdpHandler, AbacAuthModel abacAuthModel, List<Datasource> datasources, List<RequestExtender> requestExtenders, Audit audit, Trace trace, Map<String, Map<String, Attribute>> attributesByAction, Options options) {
+    private EasyAbac(PdpHandler pdpHandler, AbacAuthModel abacAuthModel, List<Datasource> datasources,
+                     List<RequestExtender> requestExtenders, Audit audit, Trace trace, Map<String, Map<String, Attribute>> attributesByAction, Options options) {
         this.pdpHandler = pdpHandler;
         this.abacAuthModel = abacAuthModel;
         this.datasources = datasources;
@@ -127,7 +128,15 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private List<AttributeWithValue> optimizeAttributes(List<AttributeWithValue> attributeWithValuesByRequest) throws EasyAbacAuthException {
         String actionFromRequest = getActionFromRequest(attributeWithValuesByRequest);
         return attributeWithValuesByRequest.stream()
-                .filter(attributeWithValue -> attributesByAction.get(actionFromRequest).get(attributeWithValue.getAttribute().getId()) != null)
+                .filter(attributeWithValue -> {
+                    if (attributeWithValue.getAttribute().getCategory().equals(Category.ACTION)) {
+                        return true;
+                    }
+                    ;
+                    Map<String, Attribute> stringAttributeMap = attributesByAction.get(actionFromRequest);
+
+                    return stringAttributeMap.get(attributeWithValue.getAttribute().getId()) != null;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -158,7 +167,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             throw new EasyAbacAuthException("The request must have only one action");
         }
 
-        return actions.get(0).getAttribute().getId();
+        return actions.get(0).getValues().get(0);
     }
 
 
