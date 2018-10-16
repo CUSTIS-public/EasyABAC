@@ -119,6 +119,12 @@ public class EasyAbac implements AttributiveAuthorizationService {
                 attributeWithValuesByRequest = optimizeAttributes(attributeWithValuesByRequest);
             }
 
+            if (log.isDebugEnabled()) {
+                log.debug("--------------");
+                log.debug("Optimize attribute requestId = " + requestId.getId());
+                attributeWithValuesByRequest.forEach(attributeWithValue ->
+                        log.debug(attributeWithValue.getAttribute().getId() + "  ->  " + attributeWithValue.getValues().toString()));
+            }
             requests.put(requestId, attributeWithValuesByRequest);
 
         }

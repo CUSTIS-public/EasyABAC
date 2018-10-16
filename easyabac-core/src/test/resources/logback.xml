@@ -5,7 +5,7 @@
         </encoder>
     </appender>
     <logger name="o.s.aop.framework.CglibAopProxy" level="ERROR"/>
-    <logger name="custis.easyabac.core.EasyAbac" level="INFO"/>
+    <logger name="custis.easyabac.core.EasyAbac" level="DEBUG"/>
     <root level="DEBUG">
         <appender-ref ref="STDOUT" />
     </root>
