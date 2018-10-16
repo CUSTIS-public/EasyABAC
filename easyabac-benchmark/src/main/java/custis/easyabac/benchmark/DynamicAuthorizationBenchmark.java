@@ -11,7 +11,10 @@ import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
 public class DynamicAuthorizationBenchmark extends AbstractAuthorizationBenchmark {
@@ -36,7 +39,7 @@ public class DynamicAuthorizationBenchmark extends AbstractAuthorizationBenchmar
 
     }
 
-    @Benchmark
+
     public void ensureApproveSameBranchOrderPermitted(AttributeAuthorizationState state, Blackhole blackhole) {
         Order order = getOrder();
         OrderAction action = getOrderAction();

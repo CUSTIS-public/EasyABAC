@@ -12,7 +12,10 @@ import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.ArrayList;
@@ -36,7 +39,7 @@ public class AttributeAuthorizationBenchmark extends AbstractAuthorizationBenchm
 
     }
 
-    @Benchmark
+   // @Benchmark
     public void ensureApproveSameBranchOrderPermitted(AttributeAuthorizationState state, Blackhole blackhole) {
         Order order = getOrder();
         OrderAction action = getOrderAction();

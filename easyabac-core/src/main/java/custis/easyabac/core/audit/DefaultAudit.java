@@ -18,7 +18,7 @@ public class DefaultAudit implements Audit {
     @Override
     public void onRequest(List<AttributeWithValue> attributeWithValues, AuthResponse response) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Audit " + attributeWithValues + ", response " + response);
+            //LOGGER.debug("Audit " + attributeWithValues + ", response " + response);
         }
     }
 
@@ -26,7 +26,7 @@ public class DefaultAudit implements Audit {
     public void onMultipleRequest(MdpAuthRequest requestContext, MdpAuthResponse response) {
         if (LOGGER.isDebugEnabled()) {
             for (AuthResponse value : response.getResults().values()) {
-                LOGGER.debug("Audit " + requestContext + ", response " + response);
+                //LOGGER.debug("Audit " + requestContext + ", response " + response);
             }
         }
     }
