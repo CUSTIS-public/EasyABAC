@@ -1,19 +1,19 @@
-package custis.easyabac.core.trace.interceptors;
+package custis.easyabac.core.trace.interceptors.aop;
 
 import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.wso2.balana.combine.CombiningAlgorithm;
-import org.wso2.balana.combine.PolicyCombiningAlgorithm;
+import org.wso2.balana.combine.RuleCombiningAlgorithm;
 import org.wso2.balana.ctx.AbstractResult;
 
 import java.lang.reflect.Method;
 
-public class PolicyCombiningAlgorithmInterceptor implements MethodInterceptor {
+class RuleCombiningAlgorithmInterceptor implements MethodInterceptor {
 
     private final CombiningAlgorithm combiningAlg;
 
-    public PolicyCombiningAlgorithmInterceptor(CombiningAlgorithm combiningAlg) {
+    public RuleCombiningAlgorithmInterceptor(CombiningAlgorithm combiningAlg) {
         this.combiningAlg = combiningAlg;
     }
 
@@ -26,9 +26,9 @@ public class PolicyCombiningAlgorithmInterceptor implements MethodInterceptor {
 
 
         if (methodName.equals("combine")) {
-            BalanaTraceHandlerProvider.get().onPolicyCombineStart((PolicyCombiningAlgorithm) combiningAlg);
+            BalanaTraceHandlerProvider.get().onRuleCombineStart((RuleCombiningAlgorithm) combiningAlg);
             realResult = invocation.proceed();
-            BalanaTraceHandlerProvider.get().onPolicyCombineEnd((AbstractResult) realResult);
+            BalanaTraceHandlerProvider.get().onRuleCombineEnd((AbstractResult) realResult);
         } else {
             realResult = invocation.proceed();
         }
@@ -36,5 +36,4 @@ public class PolicyCombiningAlgorithmInterceptor implements MethodInterceptor {
         return realResult;
 
     }
-
 }

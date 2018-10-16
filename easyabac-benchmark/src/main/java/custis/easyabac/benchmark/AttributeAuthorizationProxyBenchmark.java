@@ -12,16 +12,13 @@ import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttributeAuthorizationBenchmark extends AbstractAuthorizationBenchmark {
+public class AttributeAuthorizationProxyBenchmark extends AbstractAuthorizationBenchmark {
 
     @State(Scope.Benchmark)
     public static class AttributeAuthorizationState {
@@ -32,14 +29,14 @@ public class AttributeAuthorizationBenchmark extends AbstractAuthorizationBenchm
             AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
                     getClass().getResourceAsStream("/OrdersPolicy.yaml"));
             this.authorizationService = new EasyAbac.Builder(model)
-                    .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+                    .pdpHandlerFactory(BalanaPdpHandlerFactory.PROXY_INSTANCE)
                     .subjectAttributesProvider(getSubjectAttributesProvider(model))
                     .build();
         }
 
     }
 
-   // @Benchmark
+    @Benchmark
     public void ensureApproveSameBranchOrderPermitted(AttributeAuthorizationState state, Blackhole blackhole) {
         Order order = getOrder();
         OrderAction action = getOrderAction();

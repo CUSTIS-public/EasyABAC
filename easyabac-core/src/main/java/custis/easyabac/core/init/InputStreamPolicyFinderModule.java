@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.util.Collections;
 
 import static custis.easyabac.core.init.BalanaModelTransformer.defaultBalanaPolicySetId;
-import static custis.easyabac.core.trace.PolicyElementsFactory.createAbstractPolicy;
+import static custis.easyabac.core.trace.interceptors.cglib.CGLibPolicyElementsFactory.createAbstractPolicy;
 
 public class InputStreamPolicyFinderModule extends PolicyFinderModule {
 

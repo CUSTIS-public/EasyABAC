@@ -1,9 +1,12 @@
 package custis.easyabac.benchmark;
 
+import custis.easyabac.benchmark.model.Order;
+import custis.easyabac.benchmark.model.OrderAction;
+import custis.easyabac.benchmark.model.Subject;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.init.InputStreamPolicyFinderModule;
 import custis.easyabac.core.model.abac.attribute.DataType;
-import custis.easyabac.core.trace.PolicyElementsFactory;
+import custis.easyabac.core.trace.interceptors.cglib.CGLibPolicyElementsFactory;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.wso2.balana.PDP;
@@ -21,7 +24,7 @@ import java.util.Set;
 import static custis.easyabac.core.init.BalanaAttributesFactory.balanaAttribute;
 import static java.util.Collections.singletonList;
 
-public class PlainBalanaBenchmark {
+public class PlainBalanaBenchmark extends AbstractAuthorizationBenchmark {
 
     @State(Scope.Benchmark)
     public static class PlainBalanaState {
@@ -32,26 +35,47 @@ public class PlainBalanaBenchmark {
             Set<PolicyFinderModule> policyModules = new HashSet<>();
             policyModules.add(new InputStreamPolicyFinderModule(
                     PlainBalanaBenchmark.class.getResourceAsStream("/OrdersPolicy.xacml"), false));
-            this.pdp = PolicyElementsFactory.newPDP(policyModules, Collections.emptyList(), false);
+            this.pdp = CGLibPolicyElementsFactory.newPDP(policyModules, Collections.emptyList(), false);
         }
     }
 
     @Benchmark
     public void ensureApproveSameBranchOrderPermitted(PlainBalanaState state, Blackhole blackhole) throws EasyAbacInitException {
-        Set<Attribute> subjectAttrsSet = new HashSet<>();
-        Attribute subjectBranchIdAttr = balanaAttribute("urn:attr:subject.branchId",
+        Order order = getOrder();
+        OrderAction action = getOrderAction();
+        Subject subject = getSubject();
+
+        Set<Attribute> resourceAttrsSet = new HashSet<>();
+        Attribute orderBranchIdAttr = balanaAttribute("urn:attr:order.branchId",
                 DataType.STRING,
-                singletonList("1234"), false);
-        subjectAttrsSet.add(subjectBranchIdAttr);
+                singletonList(order.getBranchId()), false);
+        resourceAttrsSet.add(orderBranchIdAttr);
+        Attribute orderAmountAttr = balanaAttribute("urn:attr:order.amount",
+                DataType.INT,
+                singletonList("" + order.getAmount()), false);
+        resourceAttrsSet.add(orderAmountAttr);
+        Attributes resourceAttrs = new Attributes(
+                URI.create("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"), resourceAttrsSet);
+
+        Set<Attribute> subjectAttrsSet = new HashSet<>();
         Attribute subjectRoleAttr = balanaAttribute("urn:attr:subject.role",
                 DataType.STRING,
-                singletonList("OPERATOR"), false);
+                singletonList(subject.getRole()), false);
         subjectAttrsSet.add(subjectRoleAttr);
+        Attribute subjectBranchIdAttr = balanaAttribute("urn:attr:subject.branchId",
+                DataType.STRING,
+                singletonList("" + subject.getBranchId()), false);
+        subjectAttrsSet.add(subjectBranchIdAttr);
+        Attribute subjectAmpountIdAttr = balanaAttribute("urn:attr:subject.maxOrderAmount",
+                DataType.INT,
+                singletonList("" + subject.getBranchId()), false);
+        subjectAttrsSet.add(subjectAmpountIdAttr);
         Attributes subjectAttrs = new Attributes(
                 URI.create("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"), subjectAttrsSet);
 
         Set<Attributes> allAttrs = new HashSet<>();
-        allAttrs.add(prepareActionAttributes("order.approve"));
+        allAttrs.add(resourceAttrs);
+        allAttrs.add(prepareActionAttributes("order." + action.getId()));
         allAttrs.add(subjectAttrs);
 
         RequestCtx approveSameBranchOrderRequest = new RequestCtx(allAttrs, null);
@@ -70,60 +94,4 @@ public class PlainBalanaBenchmark {
                 URI.create("urn:oasis:names:tc:xacml:3.0:attribute-category:action"), actionAttrsSet);
     }
 
-    @Benchmark
-    public void ensureRejectSameClientOrderPermitted(PlainBalanaState state, Blackhole blackhole) throws EasyAbacInitException {
-        Set<Attribute> resourceAttrsSet = new HashSet<>();
-        Attribute customerBranchIdAttr = balanaAttribute("urn:attr:customer.branchId",
-                DataType.STRING,
-                singletonList("1234"), false);
-        resourceAttrsSet.add(customerBranchIdAttr);
-        Attributes resourceAttrs = new Attributes(
-                URI.create("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"), resourceAttrsSet);
-
-        Set<Attribute> subjectAttrsSet = new HashSet<>();
-        Attribute subjectBranchIdAttr = balanaAttribute("urn:attr:subject.branchId",
-                DataType.STRING,
-                singletonList("1234"), false);
-        subjectAttrsSet.add(subjectBranchIdAttr);
-        Attribute subjectRoleAttr = balanaAttribute("urn:attr:subject.role",
-                DataType.STRING,
-                singletonList("MANAGER"), false);
-        subjectAttrsSet.add(subjectRoleAttr);
-        Attributes subjectAttrs = new Attributes(
-                URI.create("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"), subjectAttrsSet);
-
-        Set<Attributes> allAttrs = new HashSet<>();
-        allAttrs.add(prepareActionAttributes("order.reject"));
-        allAttrs.add(resourceAttrs);
-        allAttrs.add(subjectAttrs);
-
-        RequestCtx rejectSameClientOrderRequest = new RequestCtx(allAttrs, null);
-
-        ResponseCtx responseCtx = state.pdp.evaluate(rejectSameClientOrderRequest);
-        blackhole.consume(responseCtx);
-    }
-
-    @Benchmark
-    public void ensureApproveByNonManagerDenied(PlainBalanaState state, Blackhole blackhole) throws EasyAbacInitException {
-        Set<Attribute> subjectAttrsSet = new HashSet<>();
-        Attribute subjectBranchIdAttr = balanaAttribute("urn:attr:subject.branchId",
-                DataType.STRING,
-                singletonList("1234"), false);
-        subjectAttrsSet.add(subjectBranchIdAttr);
-        Attribute subjectRoleAttr = balanaAttribute("urn:attr:subject.role",
-                DataType.STRING,
-                singletonList("OPERATOR"), false);
-        subjectAttrsSet.add(subjectRoleAttr);
-        Attributes subjectAttrs = new Attributes(
-                URI.create("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"), subjectAttrsSet);
-
-        Set<Attributes> allAttrs = new HashSet<>();
-        allAttrs.add(prepareActionAttributes("order.approve"));
-        allAttrs.add(subjectAttrs);
-
-        RequestCtx approveByNonManagerRequest = new RequestCtx(allAttrs, null);
-
-        ResponseCtx responseCtx = state.pdp.evaluate(approveByNonManagerRequest);
-        blackhole.consume(responseCtx);
-    }
 }
