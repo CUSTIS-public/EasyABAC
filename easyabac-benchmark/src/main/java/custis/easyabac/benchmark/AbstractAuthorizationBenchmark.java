@@ -4,6 +4,14 @@ import custis.easyabac.benchmark.model.Customer;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.benchmark.model.Subject;
+import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
+import custis.easyabac.core.model.abac.AbacAuthModel;
+import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 public class AbstractAuthorizationBenchmark {
 
@@ -19,7 +27,18 @@ public class AbstractAuthorizationBenchmark {
         return new Customer("456", "123");
     }
 
-    Subject getSubject() {
+    static Subject getSubject() {
         return new Subject("1", "MANAGER", "123", 500);
+    }
+
+    static SubjectAttributesProvider getSubjectAttributesProvider(AbacAuthModel model) {
+        return () -> {
+            Subject subject = getSubject();
+            List<AttributeWithValue> values = new ArrayList<>();
+            values.add(new AttributeWithValue(model.getAttributes().get("subject.role"), singletonList(subject.getRole())));
+            values.add(new AttributeWithValue(model.getAttributes().get("subject.branchId"), singletonList(subject.getBranchId())));
+            values.add(new AttributeWithValue(model.getAttributes().get("subject.maxOrderAmount"), singletonList("" + subject.getMaxOrderAmount())));
+            return values;
+        };
     }
 }

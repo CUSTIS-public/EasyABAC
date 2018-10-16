@@ -6,7 +6,7 @@ import custis.easyabac.benchmark.model.Subject;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.init.InputStreamPolicyFinderModule;
 import custis.easyabac.core.model.abac.attribute.DataType;
-import custis.easyabac.core.trace.PolicyElementsFactory;
+import custis.easyabac.core.trace.interceptors.cglib.CGLibPolicyElementsFactory;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.wso2.balana.PDP;
@@ -35,7 +35,7 @@ public class PlainBalanaBenchmark extends AbstractAuthorizationBenchmark {
             Set<PolicyFinderModule> policyModules = new HashSet<>();
             policyModules.add(new InputStreamPolicyFinderModule(
                     PlainBalanaBenchmark.class.getResourceAsStream("/OrdersPolicy.xacml"), false));
-            this.pdp = PolicyElementsFactory.newPDP(policyModules, Collections.emptyList(), false);
+            this.pdp = CGLibPolicyElementsFactory.newPDP(policyModules, Collections.emptyList(), false);
         }
     }
 

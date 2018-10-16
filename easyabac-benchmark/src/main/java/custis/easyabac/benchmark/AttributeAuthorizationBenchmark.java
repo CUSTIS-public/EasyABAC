@@ -5,6 +5,7 @@ import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.benchmark.model.Subject;
 import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.init.AbacAuthModelFactory;
+import custis.easyabac.core.init.BalanaPdpHandlerFactory;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
@@ -29,6 +30,7 @@ public class AttributeAuthorizationBenchmark extends AbstractAuthorizationBenchm
                     getClass().getResourceAsStream("/OrdersPolicy.yaml"));
             this.authorizationService = new EasyAbac.Builder(model)
                     .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+                    .subjectAttributesProvider(getSubjectAttributesProvider(model))
                     .build();
         }
 
@@ -42,9 +44,6 @@ public class AttributeAuthorizationBenchmark extends AbstractAuthorizationBenchm
 
         List<AuthAttribute> authAttributes = new ArrayList<>();
         authAttributes.add(new AuthAttribute("order.action", "order." + action.getId()));
-        authAttributes.add(new AuthAttribute("subject.role", subject.getRole()));
-        authAttributes.add(new AuthAttribute("subject.branchId", subject.getBranchId()));
-        authAttributes.add(new AuthAttribute("subject.maxOrderAmount", "" + subject.getMaxOrderAmount()));
         authAttributes.add(new AuthAttribute("order.branchId", order.getBranchId()));
         authAttributes.add(new AuthAttribute("order.amount", "" + order.getAmount()));
 
