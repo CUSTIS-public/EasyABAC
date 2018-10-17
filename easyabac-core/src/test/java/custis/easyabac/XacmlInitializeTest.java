@@ -1,6 +1,6 @@
 package custis.easyabac;
 
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.model.ModelType;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
@@ -29,7 +29,7 @@ public class XacmlInitializeTest {
 
         InputStream policy = getResourceAsStream("test1_policy.xml");
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(policy, ModelType.XACML).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "ADMIN"));
@@ -58,7 +58,7 @@ public class XacmlInitializeTest {
         InputStream policy = getResourceAsStream("test2_policy.xml");
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.XACML).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(policy, ModelType.XACML).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "USER"));
@@ -87,7 +87,7 @@ public class XacmlInitializeTest {
 
         InputStream policy = getResourceAsStream("test_pip_policy.yaml");
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(policy, ModelType.EASY_YAML).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(policy, ModelType.EASY_YAML).build();
 
 //        List<AuthAttribute> authAttrList = new ArrayList<>();
 //        authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "USER"));

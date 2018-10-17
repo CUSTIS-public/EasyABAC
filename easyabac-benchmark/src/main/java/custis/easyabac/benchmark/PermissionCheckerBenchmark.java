@@ -5,9 +5,13 @@ import custis.easyabac.api.PermitAwarePermissionChecker;
 import custis.easyabac.api.impl.EasyABACPermissionChecker;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.benchmark.model.Subject;
+import custis.easyabac.core.EasyAbacBuilder;
+import custis.easyabac.core.EasyAbacDatasourceException;
+import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
 import custis.easyabac.core.init.AbacAuthModelFactory;
 import custis.easyabac.core.init.BalanaPdpHandlerFactory;
+import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
@@ -27,14 +31,14 @@ public class PermissionCheckerBenchmark extends AbstractAuthorizationBenchmark {
                 getClass().getResourceAsStream("/OrdersPolicy.yaml"));
 
         this.managerOrderPermissionChecker = new EasyABACPermissionChecker<>(
-                new EasyAbac.Builder(model)
+                new EasyAbacBuilder(model)
                         .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                         .datasources(singletonList(getCustomerBranchIdDatasource()))
                         .build());
 
         this.operatorOrderPermissionChecker = new EasyABACPermissionChecker<>(
-                new EasyAbac.Builder(model)
+                new EasyAbacBuilder(model)
                         .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .datasources(singletonList(getCustomerBranchIdDatasource()))
                         .subjectAttributesProvider(getSubjectAttributesProvider(getOperatorSubject(), model))

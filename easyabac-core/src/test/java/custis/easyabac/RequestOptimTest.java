@@ -1,6 +1,6 @@
 package custis.easyabac;
 
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.cache.SampleCache;
 import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.EasyAbacInitException;
@@ -51,7 +51,7 @@ public class RequestOptimTest {
 
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, REPORT_CATEGORY);
 
-        authorizationService = new EasyAbac.Builder(easyModel, ModelType.EASY_YAML)
+        authorizationService = new EasyAbacBuilder(easyModel, ModelType.EASY_YAML)
                 .datasources(Arrays.asList(datasourceUserCat, datasourceReportCat))
                 .cache(new SampleCache())
                 .build();

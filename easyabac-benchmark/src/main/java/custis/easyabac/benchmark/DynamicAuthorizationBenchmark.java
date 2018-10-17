@@ -4,7 +4,7 @@ import custis.easyabac.api.NotExpectedResultException;
 import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.permissionchecker.OrderPermissionChecker;
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.init.AbacAuthModelFactory;
 import custis.easyabac.core.init.BalanaPdpHandlerFactory;
 import custis.easyabac.core.init.EasyAbacInitException;

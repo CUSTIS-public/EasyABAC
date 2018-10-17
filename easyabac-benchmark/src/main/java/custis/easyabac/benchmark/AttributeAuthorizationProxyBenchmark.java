@@ -3,7 +3,7 @@ package custis.easyabac.benchmark;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.benchmark.model.Subject;
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.init.AbacAuthModelFactory;
 import custis.easyabac.core.init.BalanaPdpHandlerFactory;
 import custis.easyabac.core.init.EasyAbacInitException;
@@ -32,13 +32,13 @@ public class AttributeAuthorizationProxyBenchmark extends AbstractAuthorizationB
         AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
                 getClass().getResourceAsStream("/OrdersPolicy.yaml"));
 
-        this.managerAuthService = new EasyAbac.Builder(model)
+        this.managerAuthService = new EasyAbacBuilder(model)
                 .pdpHandlerFactory(BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .datasources(singletonList(getCustomerBranchIdDatasource()))
                 .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                 .build();
 
-        this.operatorAuthService = new EasyAbac.Builder(model)
+        this.operatorAuthService = new EasyAbacBuilder(model)
                 .pdpHandlerFactory(BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .datasources(singletonList(getCustomerBranchIdDatasource()))
                 .subjectAttributesProvider(getSubjectAttributesProvider(getOperatorSubject(), model))
