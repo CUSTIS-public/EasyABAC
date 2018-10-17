@@ -1,4 +1,5 @@
-# easyabac
+# EasyABAC
+[![pipeline status](https://git.custis.ru/dr/easyabac/easyabac/badges/develop/pipeline.svg)](https://git.custis.ru/dr/easyabac/easyabac/commits/develop)
 
 # Run benchmarks
 Benchmarks are prepared with [JMH framework](http://openjdk.java.net/projects/code-tools/jmh/). To run benchmark:
