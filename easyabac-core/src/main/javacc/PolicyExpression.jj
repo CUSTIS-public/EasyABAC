@@ -5,7 +5,7 @@ options
   IGNORE_CASE = false;
   JAVA_UNICODE_ESCAPE = true;
   UNICODE_INPUT = false;
-  DEBUG_TOKEN_MANAGER = true;
+  DEBUG_TOKEN_MANAGER = false;
   FORCE_LA_CHECK = true;
   LOOKAHEAD = 2;
 }

@@ -1,13 +1,13 @@
-package custis.easyabac.core.trace.interceptors;
+package custis.easyabac.core.trace.interceptors.cglib;
 
 import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 import org.wso2.balana.cond.EvaluationResult;
 
 import java.lang.reflect.Method;
 
-public class SimpleConditionInterceptor implements MethodInterceptor {
+class SimpleConditionInterceptor implements MethodInterceptor {
 
     private final int index;
 
@@ -16,8 +16,7 @@ public class SimpleConditionInterceptor implements MethodInterceptor {
     }
 
     @Override
-    public Object invoke(MethodInvocation invocation) throws Throwable {
-        Method method = invocation.getMethod();
+    public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         String methodName = method.getName();
 
         Object realResult = null;
@@ -25,10 +24,10 @@ public class SimpleConditionInterceptor implements MethodInterceptor {
 
         if (methodName.equals("evaluate")) {
             BalanaTraceHandlerProvider.get().onSimpleConditionStart(index);
-            realResult = invocation.proceed();
+            realResult = methodProxy.invokeSuper(o, args);
             BalanaTraceHandlerProvider.get().onSimpleCondition((EvaluationResult) realResult);
         } else {
-            realResult = invocation.proceed();
+            realResult = methodProxy.invokeSuper(o, args);
         }
 
         return realResult;

@@ -23,7 +23,7 @@ public class BalanaAttributesFactory {
     public static final String ATTRIBUTE_REQUEST_ID = "request-id";
 
 
-    static Attribute balanaAttribute(String xacmlId, DataType type, List<String> values, boolean includeInResult) throws EasyAbacInitException {
+    public static Attribute balanaAttribute(String xacmlId, DataType type, List<String> values, boolean includeInResult) throws EasyAbacInitException {
         List<AttributeValue> balanaAttributeValues = new ArrayList<>();
 
         for (String value : values) {
