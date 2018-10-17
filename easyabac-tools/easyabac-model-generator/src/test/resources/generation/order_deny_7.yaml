@@ -1,0 +1,6 @@
+!!custis.easyabac.api.test.TestDescription
+action: order.view
+attributes:
+  subject: {branchId: '!N/A!-Kabhs', role: '!N/A!-Ix9gp'}
+  customer: {branchId: '!N/A!-Kabhs'}
+  order: {branchId: '!N/A!-Kabhs'}
