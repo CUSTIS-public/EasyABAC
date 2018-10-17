@@ -2,11 +2,10 @@ package custis.easyabac.pdp;
 
 import java.util.Map;
 
-public class MdpAuthResponse {
+public class MultiAuthResponse {
+    private final Map<RequestId, AuthResponse> results;
 
-    private Map<RequestId, AuthResponse> results;
-
-    public MdpAuthResponse(Map<RequestId, AuthResponse> results) {
+    public MultiAuthResponse(Map<RequestId, AuthResponse> results) {
         this.results = results;
     }
 

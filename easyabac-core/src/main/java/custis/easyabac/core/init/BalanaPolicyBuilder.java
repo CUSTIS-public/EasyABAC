@@ -2,6 +2,7 @@ package custis.easyabac.core.init;
 
 import custis.easyabac.core.init.functions.BalanaFunctions;
 import custis.easyabac.core.init.functions.BalanaFunctionsFactory;
+import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.*;
 import custis.easyabac.core.model.abac.Policy;
 import custis.easyabac.core.model.abac.attribute.Attribute;
@@ -22,6 +23,8 @@ import org.wso2.balana.finder.impl.CurrentEnvModule;
 import org.wso2.balana.xacml3.*;
 import org.wso2.balana.xacml3.Target;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +75,7 @@ class BalanaPolicyBuilder {
     PolicySet buildFrom(AbacAuthModel abacAuthModel) {
         return new PolicySet(defaultBalanaPolicySetId(),
                 DENY_UNLESS_PERMIT_POLICY_ALG,
-                null,
+                new Target(),
                 buildPolicies(abacAuthModel));
     }
 
@@ -290,5 +293,15 @@ class BalanaPolicyBuilder {
         final custis.easyabac.core.model.abac.Function conditionFunction = targetCondition.getFunction();
         return new TargetMatch(balanaFunctions.pick(conditionFunction),
                 createAttributeDesignator(firstOperand, false), attributeValue);
+    }
+
+    public static void main(String[] args) throws EasyAbacInitException, IOException {
+        BalanaPolicyBuilder builder = new BalanaPolicyBuilder();
+        PolicySet policySet = builder.buildFrom(AbacAuthModelFactory.getInstance(ModelType.XACML,
+                BalanaPolicyBuilder.class.getResourceAsStream("/test.yaml")));
+        final FileWriter fileWriter = new FileWriter("test.xacml");
+        fileWriter.write(policySet.encode());
+        fileWriter.flush();
+        fileWriter.close();
     }
 }

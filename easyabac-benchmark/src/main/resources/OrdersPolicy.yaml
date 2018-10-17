@@ -1,0 +1,58 @@
+resources:
+  subject:
+    attributes:
+    - id: id
+    - id: role
+      title: Роль сотрудника "Менеджер" / Операционист
+      allowableValues:  #Разрешенные значения, для валидации политики
+      - OPERATOR
+      - MANAGER
+    - id: branchId
+      title: ИД филиала
+    - id: maxOrderAmount
+      title: Максимальный заказ
+      type: int
+  customer:
+    title: Клиент
+    attributes:
+    - id: id
+      title: ИД клиента
+    - id: branchId
+      title: ИД филиала
+  order:
+    title: Заказ
+    actions:
+    - view
+    - create
+    - approve
+    - reject
+    attributes:
+    - id: id
+      title: ИД заказа
+    - id: amount
+      title: Сумма заказа
+      type: int
+    - id: branchId
+      title: ИД филиала
+    - id: customerId
+      title: ИД клиента
+
+
+permissions:
+- title: Менеджер
+  accessToActions: [order.view, order.approve, order.reject]
+  rules:
+    - title: Филиал совпадает с филиалом клиента
+      conditions:
+      - order.branchId == subject.branchId
+      - subject.role == 'MANAGER'
+      - subject.maxOrderAmount > order.amount
+
+- title: Операционист
+  accessToActions: [order.view, order.create]
+  rules:
+  - title: Филиал совпадает с филиалом клиента
+    operation: AND
+    conditions:
+    - customer.branchId == subject.branchId
+    - subject.role == 'OPERATOR'

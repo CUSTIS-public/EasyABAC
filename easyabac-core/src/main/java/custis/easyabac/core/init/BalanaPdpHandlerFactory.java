@@ -2,7 +2,6 @@ package custis.easyabac.core.init;
 
 import custis.easyabac.core.cache.Cache;
 import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.trace.PolicyElementsFactory;
 import org.wso2.balana.PDP;
 import org.wso2.balana.finder.AttributeFinderModule;
 import org.wso2.balana.finder.PolicyFinderModule;
@@ -13,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static custis.easyabac.core.trace.interceptors.cglib.CGLibPolicyElementsFactory.newPDP;
 
 public class BalanaPdpHandlerFactory implements PdpHandlerFactory {
 
@@ -51,7 +52,7 @@ public class BalanaPdpHandlerFactory implements PdpHandlerFactory {
 
         finderModules.add(new CurrentEnvModule());
 
-        PDP pdp = PolicyElementsFactory.newPDP(policyModules, finderModules, useProxy);
+        PDP pdp = newPDP(policyModules, finderModules, useProxy);
 
         return new BalanaPdpHandler(pdp, xacmlPolicyMode);
     }

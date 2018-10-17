@@ -1,6 +1,5 @@
-package custis.easyabac.core.trace;
+package custis.easyabac.core.trace.interceptors.aop;
 
-import custis.easyabac.core.trace.interceptors.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.ProxyFactory;

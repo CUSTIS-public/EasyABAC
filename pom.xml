@@ -19,6 +19,7 @@
         <module>easyabac-spring-boot-starter</module>
         <module>easyabac-tools/easyabac-model-generator</module>
         <module>easyabac-tools/easyabac-maven-plugin</module>
+        <module>easyabac-benchmark</module>
     </modules>
 
     <properties>
