@@ -81,7 +81,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
-        List<AttributeWithValue> additionalAttributes = Collections.emptyList();
+       List<AttributeWithValue> additionalAttributes = new ArrayList<>();
 
         for (RequestExtender extender : requestExtenders) {
             extender.extend(additionalAttributes);

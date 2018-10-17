@@ -5,10 +5,6 @@ import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.pdp.AuthResponse;
 import custis.easyabac.pdp.MultiAuthRequest;
 import custis.easyabac.pdp.MultiAuthResponse;
-import org.audit4j.core.AuditManager;
-import org.audit4j.core.IAuditManager;
-import org.audit4j.core.dto.AuditEvent;
-import org.audit4j.core.dto.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +18,6 @@ public class DefaultAudit implements Audit {
 
     public static DefaultAudit INSTANCE = new DefaultAudit();
 
-    public static final IAuditManager auditManager = AuditManager.getInstance();
-
     @Override
     public void onRequest(List<AttributeWithValue> attributeWithValues, AuthResponse response) {
         List<AttributeWithValue> subject = attributeWithValues.stream()
@@ -34,7 +28,8 @@ public class DefaultAudit implements Audit {
                 .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.ACTION)
                 .findFirst();
 
-        auditManager.audit(createAuditEvent(subject, action.get(), response));
+        // LOGGER.info(attributeWithValues);
+        // LOGGER.info(response);
     }
 
     @Override
@@ -52,26 +47,10 @@ public class DefaultAudit implements Audit {
                 .collect(Collectors.toList());
 
         response.getResults().entrySet().forEach(entry -> {
-            for (AttributeWithValue action : actions) {
-                auditManager.audit(createAuditEvent(subject, action, entry.getValue()));
-            }
+            // LOGGER.info(attributeWithValues);
+            // LOGGER.info(response);
 
         });
     }
 
-    private static AuditEvent createAuditEvent(List<AttributeWithValue> subject, AttributeWithValue action, AuthResponse result) {
-        return new AuditEvent(serializeSubject(subject), action.getValues().get(0), decisionField(result), resourceField());
-    }
-
-    private static Field resourceField() {
-        return new Field("resource", "resource"); // TODO implement
-    }
-
-    private static Field decisionField(AuthResponse result) {
-        return new Field("decision", result.getDecision().name());
-    }
-
-    private static String serializeSubject(List<AttributeWithValue> subject) {
-        return subject.toString();
-    }
 }
