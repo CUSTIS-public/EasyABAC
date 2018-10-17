@@ -3,28 +3,31 @@ package custis.easyabac.api.model;
 import custis.easyabac.api.AuthorizationAction;
 import custis.easyabac.api.AuthorizationActionId;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 @AuthorizationAction(entity = "order")
 public enum OrderAction {
-    CREATE("CREATE", "Создать заказ"),
-    VIEW("VIEW", "Посмотреть заказ"),
-    APPROVE("APPROVE", "Подтвердить заказ"),
-    REJECT("REJECT", "Отклонить заказ");
+
+    VIEW("view"), CREATE("create"), APPROVE("approve"), REJECT("reject");
 
     @AuthorizationActionId
-    private final String id;
+    private String id;
 
-    private final String description;
-
-    OrderAction(String id, String description) {
+    private OrderAction(String id) {
         this.id = id;
-        this.description = description;
     }
 
+    // Simple getters and setters
     public String getId() {
-        return id;
+        return this.id;
     }
 
-    public String getDescription() {
-        return description;
+    public static OrderAction byId(String id) {
+        Optional<OrderAction> optional = Arrays.asList(values()).stream().filter(action -> action.id.equals(id)).findFirst();
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+        throw new IllegalArgumentException(id);
     }
 }
