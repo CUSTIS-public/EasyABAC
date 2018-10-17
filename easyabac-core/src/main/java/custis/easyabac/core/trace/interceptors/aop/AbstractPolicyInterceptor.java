@@ -1,20 +1,20 @@
-package custis.easyabac.core.trace.interceptors;
+package custis.easyabac.core.trace.interceptors.aop;
 
 import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.wso2.balana.AbstractPolicy;
 import org.wso2.balana.MatchResult;
-import org.wso2.balana.Rule;
 import org.wso2.balana.ctx.AbstractResult;
 
 import java.lang.reflect.Method;
 
-public class RuleInterceptor implements MethodInterceptor {
+class AbstractPolicyInterceptor implements MethodInterceptor {
 
-    private final Rule rule;
+    private final AbstractPolicy policy;
 
-    public RuleInterceptor(Rule rule) {
-        this.rule = rule;
+    public AbstractPolicyInterceptor(AbstractPolicy policy) {
+        this.policy = policy;
     }
 
     @Override
@@ -24,21 +24,19 @@ public class RuleInterceptor implements MethodInterceptor {
 
         Object realResult = null;
 
-
         if (methodName.equals("evaluate")) {
-            BalanaTraceHandlerProvider.get().onRuleEvaluateStart(rule);
+            BalanaTraceHandlerProvider.get().onPolicyEvaluateStart(policy);
             realResult = invocation.proceed();
-            BalanaTraceHandlerProvider.get().onRuleEvaluateEnd((AbstractResult) realResult);
+            BalanaTraceHandlerProvider.get().onPolicyEvaluateEnd((AbstractResult) realResult);
         } else if (methodName.equals("match")) {
-            BalanaTraceHandlerProvider.get().onRuleMatchStart(rule);
+            BalanaTraceHandlerProvider.get().onPolicyMatchStart(policy);
             realResult = invocation.proceed();
-            BalanaTraceHandlerProvider.get().onRuleMatchEnd((MatchResult) realResult);
+            BalanaTraceHandlerProvider.get().onPolicyMatchEnd((MatchResult) realResult);
         } else {
             realResult = invocation.proceed();
         }
 
         return realResult;
-
     }
 
 }

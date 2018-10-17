@@ -12,7 +12,8 @@ import custis.easyabac.api.core.call.getters.TwoArgumentsRequestGenerator;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static custis.easyabac.api.core.call.ActionPatternType.*;
@@ -55,12 +56,25 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
                 );
 
                 String[] splittedActions = actionsString.toLowerCase().split(LEXEM_OR);
-                if (splittedActions.length != 1) {
-                    return Optional.of(new TwoArgumentsRequestGenerator(checkerInfo, Arrays.asList(splittedActions)));
-                } else {
+                List<Object> typedActions = new ArrayList<>();
+                if (splittedActions.length == 1) {
                     splittedActions = actionsString.toLowerCase().split(LEXEM_AND);
-                    return Optional.of(new TwoArgumentsRequestGenerator(checkerInfo, Arrays.asList(splittedActions)));
                 }
+                for (String splittedAction : splittedActions) {
+                    try {
+                        Method method = checkerInfo.getActionType().getMethod("byId", String.class);
+                        Object o = method.invoke(null, splittedAction);
+                        typedActions.add(o);
+                    } catch (NoSuchMethodException e) {
+                        throw new UnsupportedDynamicMethodSignature(method, "Not found static method byId(String) in " + checkerInfo.getActionType().getSimpleName());
+                    } catch (IllegalArgumentException e) {
+                        throw new UnsupportedDynamicMethodSignature(method, "No enum value for " + splittedAction + " in " + checkerInfo.getActionType().getSimpleName());
+                    } catch (Exception e) {
+                        throw new UnsupportedDynamicMethodSignature(method, "Cannot execute method buId(String) in " + checkerInfo.getActionType().getSimpleName());
+                    }
+
+                }
+                return Optional.of(new TwoArgumentsRequestGenerator(checkerInfo, typedActions));
             }
         }
         return Optional.empty();

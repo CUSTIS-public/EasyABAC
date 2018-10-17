@@ -3,22 +3,27 @@ package custis.easyabac.api.checking;
 import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
+import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.init.EasyAbacInitException;
+import custis.easyabac.core.model.ModelType;
+import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.DummyAttributiveAuthorizationService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static custis.easyabac.core.model.abac.attribute.Attribute.SUBJECT_ID;
+
 public class EnsureMethodsTest {
 
-    private static AttributiveAuthorizationService attributiveAuthorizationService = new DummyAttributiveAuthorizationService(AuthResponse.Decision.DENY);
+    private static AttributiveAuthorizationService attributiveAuthorizationService;
     private static EasyABACPermissionCheckerFactory factory;
     private static EnsureMethods checker;
 
@@ -113,7 +118,10 @@ public class EnsureMethodsTest {
     }
 
     @BeforeClass
-    public static void initialize() {
+    public static void initialize() throws EasyAbacInitException {
+        EasyAbac.Builder builder = new EasyAbac.Builder(EnsureMethods.class.getResourceAsStream("/deny.yaml"), ModelType.EASY_YAML);
+        builder.subjectAttributesProvider(() -> Collections.singletonList(new AttributeWithValue(SUBJECT_ID, Collections.singletonList("subject_id"))));
+        attributiveAuthorizationService = builder.build();
         factory = new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);
         checker = factory.getPermissionChecker(EnsureMethods.class);
     }

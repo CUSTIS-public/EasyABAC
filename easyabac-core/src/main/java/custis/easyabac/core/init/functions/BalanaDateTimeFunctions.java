@@ -1,5 +1,6 @@
 package custis.easyabac.core.init.functions;
 
+import custis.easyabac.core.model.abac.attribute.DataType;
 import org.wso2.balana.cond.*;
 
 public class BalanaDateTimeFunctions implements BalanaFunctions {
@@ -35,12 +36,12 @@ public class BalanaDateTimeFunctions implements BalanaFunctions {
 
     @Override
     public Function oneOf() {
-        return null;
+        return new ConditionSetFunction("urn:oasis:names:tc:xacml:1.0:function:date-at-least-one-member-of");
     }
 
     @Override
     public Function subset() {
-        return null;
+        return new ConditionSetFunction("urn:oasis:names:tc:xacml:1.0:function:date-subset");
     }
 
     @Override
@@ -54,8 +55,7 @@ public class BalanaDateTimeFunctions implements BalanaFunctions {
     }
 
     @Override
-    public boolean isSupported(custis.easyabac.core.model.abac.Function f) {
-        return f != custis.easyabac.core.model.abac.Function.ONE_OF ||
-                f != custis.easyabac.core.model.abac.Function.SUBSET;
+    public DataType supportedType() {
+        return DataType.DATE;
     }
 }
