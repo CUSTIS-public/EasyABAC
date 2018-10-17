@@ -1,4 +1,4 @@
-package custis.easyabac.api.model;
+package custis.easyabac.benchmark.model;
 
 import custis.easyabac.api.AuthorizationAction;
 import custis.easyabac.api.AuthorizationActionId;

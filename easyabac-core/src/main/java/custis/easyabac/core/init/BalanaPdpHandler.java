@@ -61,16 +61,8 @@ public class BalanaPdpHandler implements PdpHandler {
         }
         RequestCtx requestCtx = new RequestCtx(new HashSet<>(attributesMap.values()), null);
 
-        if (log.isDebugEnabled()) {
-            requestCtx.encode(System.out);
-        }
-
         BalanaTraceHandler balanaTraceHandler = instantiate();
         ResponseCtx responseCtx = pdp.evaluate(requestCtx);
-
-        if (log.isDebugEnabled()) {
-            log.debug(responseCtx.encode());
-        }
 
         Map<RequestId, TraceResult> results = BalanaTraceHandlerProvider.get().getResults();
         return createResponse(responseCtx.getResults().iterator().next(), results.get(requestId));

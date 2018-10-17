@@ -7,7 +7,7 @@ import org.wso2.balana.finder.PolicyFinder;
 import org.wso2.balana.finder.PolicyFinderModule;
 import org.wso2.balana.finder.PolicyFinderResult;
 
-import static custis.easyabac.core.trace.PolicyElementsFactory.createAbstractPolicy;
+import static custis.easyabac.core.trace.interceptors.cglib.CGLibPolicyElementsFactory.createAbstractPolicy;
 
 /**
  * TODO: Write documentation for EasyPolicyFinderModule

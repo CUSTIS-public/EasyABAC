@@ -1,4 +1,4 @@
-package custis.easyabac.core.trace.interceptors;
+package custis.easyabac.core.trace.interceptors.aop;
 
 import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -9,7 +9,7 @@ import org.wso2.balana.ctx.xacml3.RequestCtx;
 
 import java.lang.reflect.Method;
 
-public class PDPInterceptor implements MethodInterceptor {
+class PDPInterceptor implements MethodInterceptor {
 
     private final PDPConfig pdpConfig;
 

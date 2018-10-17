@@ -1,4 +1,4 @@
-package custis.easyabac.core.trace.interceptors;
+package custis.easyabac.core.trace.interceptors.aop;
 
 import custis.easyabac.core.trace.balana.BalanaTraceHandlerProvider;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -9,7 +9,7 @@ import org.wso2.balana.finder.PolicyFinderResult;
 
 import java.lang.reflect.Method;
 
-public class PolicyFinderInterceptor implements MethodInterceptor {
+class PolicyFinderInterceptor implements MethodInterceptor {
 
     private final PolicyFinder policyFinder;
 

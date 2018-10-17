@@ -64,8 +64,10 @@ public class EasyAbac implements AttributiveAuthorizationService {
             AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
 
             TraceResult traceResult = result.getTraceResult();
-            if (!pdpHandler.xacmlPolicyMode()) {
-                traceResult.populateByModel(abacAuthModel);
+            if (traceResult != null) {
+                if (!pdpHandler.xacmlPolicyMode()) {
+                    traceResult.populateByModel(abacAuthModel);
+                }
             }
             trace.handleTrace(abacAuthModel, traceResult);
             audit.onRequest(attributeWithValueList, result);
@@ -79,7 +81,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
-        List<AttributeWithValue> additionalAttributes = Collections.emptyList();
+       List<AttributeWithValue> additionalAttributes = new ArrayList<>();
 
         for (RequestExtender extender : requestExtenders) {
             extender.extend(additionalAttributes);
@@ -123,10 +125,12 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
         result.getResults().forEach((requestId, authResponse) -> {
             TraceResult traceResult = authResponse.getTraceResult();
-            if (!pdpHandler.xacmlPolicyMode()) {
-                traceResult.populateByModel(abacAuthModel);
+            if (traceResult != null) {
+                if (!pdpHandler.xacmlPolicyMode()) {
+                    traceResult.populateByModel(abacAuthModel);
+                }
+                trace.handleTrace(abacAuthModel, traceResult);
             }
-            trace.handleTrace(abacAuthModel, traceResult);
         });
 
         audit.onMultipleRequest(multiAuthRequest, result);

@@ -24,6 +24,13 @@ public class DefaultTrace implements Trace {
         StringBuilder modelWithTrace = new StringBuilder();
         modelWithTrace.append("\n").append("-------TRACE-------");
         modelWithTrace.append("\n--ATTRIBUTES--\n");
+        if (traceResult == null) {
+            modelWithTrace.append("\n NO TRACE RESULT \n");
+            if (LOGGER.isDebugEnabled()) {
+                //LOGGER.debug(modelWithTrace.toString());
+            }
+            return;
+        }
         traceResult.getAttributes().forEach(
                 (s, calculatedAttribute) -> {
                     modelWithTrace.append(modeModelAttributeIdFromXacml(calculatedAttribute.getId()))
@@ -52,7 +59,7 @@ public class DefaultTrace implements Trace {
             printPolicy((CalculatedPolicy) mainPolicy, 1, modelWithTrace, traceResult.getAttributes());
         }
         //printTraceResult(traceResult);
-        LOGGER.info(modelWithTrace.toString());
+        //LOGGER.info(modelWithTrace.toString());
     }
 
     private void printPolicyWithoutTrace(Policy policy, int level, StringBuilder modelWithTrace) {
