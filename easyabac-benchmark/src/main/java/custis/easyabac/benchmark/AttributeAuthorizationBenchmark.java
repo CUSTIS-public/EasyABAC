@@ -18,37 +18,62 @@ import org.openjdk.jmh.infra.Blackhole;
 import java.util.ArrayList;
 import java.util.List;
 
+@State(Scope.Benchmark)
 public class AttributeAuthorizationBenchmark extends AbstractAuthorizationBenchmark {
 
-    @State(Scope.Benchmark)
-    public static class AttributeAuthorizationState {
-        private AttributiveAuthorizationService authorizationService;
+    private AttributiveAuthorizationService authorizationService;
 
-        @Setup(Level.Trial)
-        public void initService() throws EasyAbacInitException {
-            AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
-                    getClass().getResourceAsStream("/OrdersPolicy.yaml"));
-            this.authorizationService = new EasyAbacBuilder(model)
-                    .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
-                    .subjectAttributesProvider(getSubjectAttributesProvider(model))
-                    .build();
-        }
-
+    @Setup(Level.Trial)
+    public void initService() throws EasyAbacInitException {
+        AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
+                getClass().getResourceAsStream("/OrdersPolicy.yaml"));
+        this.authorizationService = new EasyAbacBuilder(model)
+                .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+                .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
+                .build();
     }
 
     @Benchmark
-    public void ensureApproveSameBranchOrderPermitted(AttributeAuthorizationState state, Blackhole blackhole) {
+    public void ensureApproveSameBranchOrderPermitted(Blackhole blackhole) {
         Order order = getOrder();
-        OrderAction action = getOrderAction();
-        Subject subject = getSubject();
+        OrderAction action = getOrderApproveAction();
 
         List<AuthAttribute> authAttributes = new ArrayList<>();
         authAttributes.add(new AuthAttribute("order.action", "order." + action.getId()));
         authAttributes.add(new AuthAttribute("order.branchId", order.getBranchId()));
         authAttributes.add(new AuthAttribute("order.amount", "" + order.getAmount()));
 
-        AuthResponse response = state.authorizationService.authorize(authAttributes);
+        AuthResponse response = authorizationService.authorize(authAttributes);
         blackhole.consume(response);
     }
 
+    @Benchmark
+    public void ensureRejectSameClientOrderPermitted(Blackhole blackhole) {
+        Subject managerSubject = getManagerSubject();
+        OrderAction action = getOrderRejectAction();
+
+        List<AuthAttribute> authAttributes = new ArrayList<>();
+        authAttributes.add(new AuthAttribute("order.action", "order." + action.getId()));
+        authAttributes.add(new AuthAttribute("subject.role", managerSubject.getRole()));
+        authAttributes.add(new AuthAttribute("customer.branchId", getCustomer().getBranchId()));
+        authAttributes.add(new AuthAttribute("subject.branchId", managerSubject.getBranchId()));
+
+        AuthResponse response = authorizationService.authorize(authAttributes);
+        blackhole.consume(response);
+    }
+
+    @Benchmark
+    public void ensureApproveByNonManagerDenied(Blackhole blackhole) {
+        Subject operatorSubject = getOperatorSubject();
+        OrderAction action = getOrderApproveAction();
+
+        List<AuthAttribute> authAttributes = new ArrayList<>();
+        authAttributes.add(new AuthAttribute("order.action", "order." + action.getId()));
+        authAttributes.add(new AuthAttribute("subject.role", operatorSubject.getRole()));
+        authAttributes.add(new AuthAttribute("customer.branchId", getCustomer().getBranchId()));
+        authAttributes.add(new AuthAttribute("subject.branchId", operatorSubject.getBranchId()));
+
+        AuthResponse response = authorizationService.authorize(authAttributes);
+        blackhole.consume(response);
+    }
 }
