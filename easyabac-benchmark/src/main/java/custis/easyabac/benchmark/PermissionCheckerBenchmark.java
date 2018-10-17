@@ -9,19 +9,14 @@ import custis.easyabac.benchmark.model.Subject;
 import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.EasyAbacDatasourceException;
 import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
-import custis.easyabac.core.init.AbacAuthModelFactory;
-import custis.easyabac.core.init.Datasource;
-import custis.easyabac.core.init.EasyAbacInitException;
+import custis.easyabac.core.init.*;
 import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.core.model.abac.attribute.DataType;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +32,7 @@ public class PermissionCheckerBenchmark {
     private PermitAwarePermissionChecker<Order, OrderAction> operatorOrderPermissionChecker;
     private Order order;
 
-    @Setup
+    @Setup(Level.Trial)
     public void setup() throws EasyAbacInitException {
         AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
                 getClass().getResourceAsStream("/OrdersPolicy.yaml"));
@@ -47,12 +42,14 @@ public class PermissionCheckerBenchmark {
 
         this.managerOrderPermissionChecker = new EasyABACPermissionChecker<>(
                 new EasyAbac.Builder(model)
+                        .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .subjectAttributesProvider(new SubjectInstanceAttributeProvider(managerSubject))
                         .datasources(singletonList(new CustomerBranchIdDatasource()))
                         .build());
 
         this.operatorOrderPermissionChecker = new EasyABACPermissionChecker<>(
                 new EasyAbac.Builder(model)
+                        .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .subjectAttributesProvider(new SubjectInstanceAttributeProvider(operatorSubject))
                         .build());
 
