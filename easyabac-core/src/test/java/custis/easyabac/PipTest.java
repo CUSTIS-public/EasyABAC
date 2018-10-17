@@ -1,6 +1,6 @@
 package custis.easyabac;
 
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.EasyAbacDatasourceException;
 import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.Param;
@@ -33,7 +33,7 @@ public class PipTest {
     public void TwoAttrEqualsTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xml");
         InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).useXacmlPolicy(policy).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, ModelType.XACML).useXacmlPolicy(policy).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "edit"));
@@ -46,7 +46,7 @@ public class PipTest {
     @Test
     public void TwoAttrEqualsTestYaml() throws Exception {
         InputStream easyModel = getResourceAsStream("test_pip_policy.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.EASY_YAML).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, ModelType.EASY_YAML).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
@@ -59,7 +59,7 @@ public class PipTest {
     @Test
     public void TwoAttrEqualsTestYamlMultiPolicy() throws Exception {
         InputStream easyModel = getResourceAsStream("test_pip_policy_multipolicy.yaml");
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.EASY_YAML).build();
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, ModelType.EASY_YAML).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
@@ -80,7 +80,7 @@ public class PipTest {
 
         Datasource datasource = new UserCategoryDatasource(params, SUBJECT_ALLOWED_CATEGORIES);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML).useXacmlPolicy(policy)
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, ModelType.XACML).useXacmlPolicy(policy)
                 .datasources(Collections.singletonList(datasource)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
@@ -117,7 +117,7 @@ public class PipTest {
 
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, ModelType.XACML)
                 .useXacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
@@ -149,7 +149,7 @@ public class PipTest {
 
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(easyModel, ModelType.XACML)
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, ModelType.XACML)
                 .useXacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();

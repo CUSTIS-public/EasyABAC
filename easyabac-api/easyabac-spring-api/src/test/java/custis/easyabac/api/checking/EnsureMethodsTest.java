@@ -3,7 +3,7 @@ package custis.easyabac.api.checking;
 import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
@@ -119,7 +119,7 @@ public class EnsureMethodsTest {
 
     @BeforeClass
     public static void initialize() throws EasyAbacInitException {
-        EasyAbac.Builder builder = new EasyAbac.Builder(EnsureMethods.class.getResourceAsStream("/deny.yaml"), ModelType.EASY_YAML);
+        EasyAbacBuilder builder = new EasyAbacBuilder(EnsureMethods.class.getResourceAsStream("/deny.yaml"), ModelType.EASY_YAML);
         builder.subjectAttributesProvider(() -> Collections.singletonList(new AttributeWithValue(SUBJECT_ID, Collections.singletonList("subject_id"))));
         attributiveAuthorizationService = builder.build();
         factory = new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);

@@ -4,7 +4,7 @@ import custis.easyabac.api.checking.EnsureMethods;
 import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
@@ -50,7 +50,7 @@ public class GettingMethodsTest {
 
     @BeforeClass
     public static void initialize() throws EasyAbacInitException {
-        EasyAbac.Builder builder = new EasyAbac.Builder(EnsureMethods.class.getResourceAsStream("/deny.yaml"), ModelType.EASY_YAML);
+        EasyAbacBuilder builder = new EasyAbacBuilder(EnsureMethods.class.getResourceAsStream("/deny.yaml"), ModelType.EASY_YAML);
         attributiveAuthorizationService = builder.build();
         factory = new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);
         checker = factory.getPermissionChecker(GettingMethods.class);

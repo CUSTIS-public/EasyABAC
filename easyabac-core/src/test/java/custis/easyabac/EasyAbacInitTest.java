@@ -1,6 +1,6 @@
 package custis.easyabac;
 
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.init.Param;
@@ -48,7 +48,7 @@ public class EasyAbacInitTest {
 
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
-        authorizationService = new EasyAbac.Builder(easyModel, ModelType.EASY_YAML)
+        authorizationService = new EasyAbacBuilder(easyModel, ModelType.EASY_YAML)
                 .datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).build();
     }
 

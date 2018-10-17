@@ -6,7 +6,7 @@ import custis.easyabac.api.impl.EasyABACPermissionChecker;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.benchmark.model.Subject;
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.EasyAbacDatasourceException;
 import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
 import custis.easyabac.core.init.AbacAuthModelFactory;
@@ -44,14 +44,14 @@ public class PermissionCheckerBenchmark {
         Subject operatorSubject = new Subject("subject-id-2", "OPERATOR", "branch-1234", 5000);
 
         this.managerOrderPermissionChecker = new EasyABACPermissionChecker<>(
-                new EasyAbac.Builder(model)
+                new EasyAbacBuilder(model)
                         .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .subjectAttributesProvider(new SubjectInstanceAttributeProvider(managerSubject))
                         .datasources(singletonList(new CustomerBranchIdDatasource()))
                         .build());
 
         this.operatorOrderPermissionChecker = new EasyABACPermissionChecker<>(
-                new EasyAbac.Builder(model)
+                new EasyAbacBuilder(model)
                         .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .subjectAttributesProvider(new SubjectInstanceAttributeProvider(operatorSubject))
                         .build());

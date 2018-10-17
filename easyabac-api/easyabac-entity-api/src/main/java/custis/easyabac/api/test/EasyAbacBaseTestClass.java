@@ -4,7 +4,7 @@ import custis.easyabac.api.AuthorizationAttribute;
 import custis.easyabac.api.AuthorizationEntity;
 import custis.easyabac.api.PermitAwarePermissionChecker;
 import custis.easyabac.api.impl.EasyABACPermissionChecker;
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.init.AbacAuthModelFactory;
 import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.EasyAbacInitException;
@@ -54,7 +54,7 @@ public abstract class EasyAbacBaseTestClass {
     public TestDescription testDescription;
 
     protected PermitAwarePermissionChecker getPermissionChecker(Class entityClass) throws FileNotFoundException, EasyAbacInitException {
-        EasyAbac.Builder builder = new EasyAbac.Builder(model);
+        EasyAbacBuilder builder = new EasyAbacBuilder(model);
 
         // subject extender
         if (testDescription.containsAttributesByCode(SUBJECT_SYNONYM)) {

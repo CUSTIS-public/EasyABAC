@@ -4,7 +4,7 @@ import custis.easyabac.api.NotPermittedException;
 import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.permissionchecker.OrderPermissionChecker;
-import custis.easyabac.core.EasyAbac;
+import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.init.AbacAuthModelFactory;
 import custis.easyabac.core.init.BalanaPdpHandlerFactory;
 import custis.easyabac.core.init.EasyAbacInitException;
@@ -25,7 +25,7 @@ public class DynamicAuthorizationBenchmark extends AbstractAuthorizationBenchmar
     public void init() throws EasyAbacInitException {
         AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
                 getClass().getResourceAsStream("/OrdersPolicy.yaml"));
-        AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(model)
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(model)
                 .pdpHandlerFactory(BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .subjectAttributesProvider(getSubjectAttributesProvider(model))
                 .build();
