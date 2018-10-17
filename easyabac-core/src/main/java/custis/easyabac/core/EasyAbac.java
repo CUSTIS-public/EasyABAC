@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EasyAbac implements AttributiveAuthorizationService {
 
@@ -132,7 +133,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             }
         });
 
-        performAudit(requestContext, result);
+        performAudit(multiAuthRequest, result);
 
         return result.getResults();
     }
@@ -255,18 +256,17 @@ public class EasyAbac implements AttributiveAuthorizationService {
         audit.onAction(serializeSubject(subject), resourceMap, action.get().getValues().get(0), result.getDecision());
     }
 
-    private void performAudit(MdpAuthRequest request, MdpAuthResponse response) {
-        List<AttributeWithValue> subject = request.getAttributeGroups()
+    private void performAudit(MultiAuthRequest requestContext, MultiAuthResponse response) {
+        List<AttributeWithValue> subject = requestContext.getRequests().values()
                 .stream()
-                .filter(attributeGroup -> attributeGroup.getCategory() == Category.SUBJECT)
-                .flatMap(attributeGroup -> attributeGroup.getAttributes().stream())
+                .flatMap(attributeWithValueList -> attributeWithValueList.stream())
+                .filter(attribute -> attribute.getAttribute().getCategory() == Category.SUBJECT)
                 .collect(Collectors.toList());
 
-        List<String> actions = request.getAttributeGroups()
+        List<AttributeWithValue> actions = requestContext.getRequests().values()
                 .stream()
-                .filter(attributeGroup -> attributeGroup.getCategory() == Category.ACTION)
-                .flatMap(attributeGroup -> attributeGroup.getAttributes().stream())
-                .flatMap(attributeWithValue -> attributeWithValue.getValues().stream())
+                .flatMap(attributeWithValueList -> attributeWithValueList.stream())
+                .filter(attribute -> attribute.getAttribute().getCategory() == Category.ACTION)
                 .collect(Collectors.toList());
         // FIXME сделать
 
