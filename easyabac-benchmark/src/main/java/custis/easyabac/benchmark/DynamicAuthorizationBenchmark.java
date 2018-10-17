@@ -29,7 +29,7 @@ public class DynamicAuthorizationBenchmark extends AbstractAuthorizationBenchmar
         AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
                 getClass().getResourceAsStream("/OrdersPolicy.yaml"));
 
-        AttributiveAuthorizationService managerAuthService = new EasyAbac.Builder(model)
+        AttributiveAuthorizationService managerAuthService = new EasyAbacBuilder(model)
                 .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                 .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                 .datasources(Collections.singletonList(getCustomerBranchIdDatasource()))
@@ -37,7 +37,7 @@ public class DynamicAuthorizationBenchmark extends AbstractAuthorizationBenchmar
         EasyABACPermissionCheckerFactory mgrFactory = new EasyABACPermissionCheckerFactory(managerAuthService);
         this.managerChecker = mgrFactory.getPermissionChecker(OrderPermissionChecker.class);
 
-        AttributiveAuthorizationService operatorAuthService = new EasyAbac.Builder(model)
+        AttributiveAuthorizationService operatorAuthService = new EasyAbacBuilder(model)
                 .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                 .subjectAttributesProvider(getSubjectAttributesProvider(getOperatorSubject(), model))
                 .datasources(Collections.singletonList(getCustomerBranchIdDatasource()))
