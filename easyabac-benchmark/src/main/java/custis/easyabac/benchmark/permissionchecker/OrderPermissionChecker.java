@@ -8,4 +8,5 @@ import custis.easyabac.benchmark.model.OrderAction;
 public interface OrderPermissionChecker extends PermissionChecker<Order, OrderAction> {
 
     void ensurePermittedApprove(Order order) throws NotExpectedResultException;
+    void ensurePermittedReject(Order order) throws NotExpectedResultException;
 }
