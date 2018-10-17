@@ -3,8 +3,8 @@ package custis.easyabac.core.audit;
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
 import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.MdpAuthRequest;
-import custis.easyabac.pdp.MdpAuthResponse;
+import custis.easyabac.pdp.MultiAuthRequest;
+import custis.easyabac.pdp.MultiAuthResponse;
 import org.audit4j.core.AuditManager;
 import org.audit4j.core.IAuditManager;
 import org.audit4j.core.dto.AuditEvent;
@@ -38,17 +38,17 @@ public class DefaultAudit implements Audit {
     }
 
     @Override
-    public void onMultipleRequest(MdpAuthRequest requestContext, MdpAuthResponse response) {
-        List<AttributeWithValue> subject = requestContext.getAttributeGroups()
+    public void onMultipleRequest(MultiAuthRequest requestContext, MultiAuthResponse response) {
+        List<AttributeWithValue> subject = requestContext.getRequests().values()
                 .stream()
-                .filter(attributeGroup -> attributeGroup.getCategory() == Category.SUBJECT)
-                .flatMap(attributeGroup -> attributeGroup.getAttributes().stream())
+                .flatMap(attributeWithValueList -> attributeWithValueList.stream())
+                .filter(attribute -> attribute.getAttribute().getCategory() == Category.SUBJECT)
                 .collect(Collectors.toList());
 
-        List<AttributeWithValue> actions = requestContext.getAttributeGroups()
+        List<AttributeWithValue> actions = requestContext.getRequests().values()
                 .stream()
-                .filter(attributeGroup -> attributeGroup.getCategory() == Category.ACTION)
-                .flatMap(attributeGroup -> attributeGroup.getAttributes().stream())
+                .flatMap(attributeWithValueList -> attributeWithValueList.stream())
+                .filter(attribute -> attribute.getAttribute().getCategory() == Category.ACTION)
                 .collect(Collectors.toList());
 
         response.getResults().entrySet().forEach(entry -> {

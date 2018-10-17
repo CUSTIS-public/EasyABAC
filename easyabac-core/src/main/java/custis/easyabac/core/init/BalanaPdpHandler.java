@@ -50,9 +50,7 @@ public class BalanaPdpHandler implements PdpHandler {
     public AuthResponse evaluate(List<AttributeWithValue> attributeWithValues) {
 
         RequestId requestId = RequestId.newRandom();
-        AttributeWithValue requestIdAttribute = new AttributeWithValue(new custis.easyabac.core.model.abac.attribute.Attribute(ATTRIBUTE_REQUEST_ID, Category.ENV, DataType.STRING),
-                Collections.singletonList(requestId.getId()));
-        attributeWithValues.add(requestIdAttribute);
+        addRequestIdAttribute(requestId, attributeWithValues);
 
         Map<Category, Attributes> attributesMap;
 
@@ -87,10 +85,7 @@ public class BalanaPdpHandler implements PdpHandler {
 
             List<AttributeWithValue> attributeWithValues = multiAuthRequest.getRequests().get(requestId);
 
-            AttributeWithValue requestIdAttribute = new AttributeWithValue(new custis.easyabac.core.model.abac.attribute.Attribute(ATTRIBUTE_REQUEST_ID, Category.ENV, DataType.STRING),
-                    Collections.singletonList(requestId.getId()));
-
-            attributeWithValues.add(requestIdAttribute);
+            addRequestIdAttribute(requestId, attributeWithValues);
 
             Map<Category, Attributes> balanaAttributesByCategory = getBalanaAttributesByCategory(attributeWithValues);
 
@@ -138,6 +133,13 @@ public class BalanaPdpHandler implements PdpHandler {
         }
 
         return new MultiAuthResponse(results);
+    }
+
+    private void addRequestIdAttribute(RequestId requestId, List<AttributeWithValue> attributeWithValues) {
+        AttributeWithValue requestIdAttribute = new AttributeWithValue(new custis.easyabac.core.model.abac.attribute.Attribute(ATTRIBUTE_REQUEST_ID, Category.ENV, DataType.STRING),
+                Collections.singletonList(requestId.getId()));
+
+        attributeWithValues.add(requestIdAttribute);
     }
 
     private RequestReference transformReference(Map<Category, Attributes> balanaAttributesByCategory) {

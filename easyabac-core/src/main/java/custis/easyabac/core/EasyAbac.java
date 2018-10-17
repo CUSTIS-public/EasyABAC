@@ -55,6 +55,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
     public AuthResponse authorize(List<AuthAttribute> authAttributes) {
         Map<String, Attribute> allAttributes = new HashMap<>();
         try {
+            // TODO: 17.10.18 сделать что то с allAttributes
             List<AttributeWithValue> attributeWithValueList = enrichAttributes(authAttributes, allAttributes);
             for (RequestExtender extender : requestExtenders) {
                 extender.extend(attributeWithValueList);
@@ -78,11 +79,14 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
+        List<AttributeWithValue> additionalAttributes = Collections.emptyList();
 
-        MultiAuthRequest multiAuthRequest = prepareMultiRequest(attributes);
-//        for (RequestExtender extender : requestExtenders) {
-//            extender.extend(requestContext);
-//        }
+        for (RequestExtender extender : requestExtenders) {
+            extender.extend(additionalAttributes);
+        }
+
+        MultiAuthRequest multiAuthRequest = prepareMultiRequest(attributes, additionalAttributes);
+
         Map<RequestId, List<RequestId>> requestIdOptimizedMap = null;
         if (options.isOptimizeRequest()) {
 
@@ -125,8 +129,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
             trace.handleTrace(abacAuthModel, traceResult);
         });
 
-//TODO починить
-//        audit.onMultipleRequest(multiAuthRequest, result);
+        audit.onMultipleRequest(multiAuthRequest, result);
 
         return result.getResults();
     }
@@ -139,15 +142,25 @@ public class EasyAbac implements AttributiveAuthorizationService {
     }
 
 
-    private MultiAuthRequest prepareMultiRequest(Map<RequestId, List<AuthAttribute>> authAttributes) {
+    private MultiAuthRequest prepareMultiRequest(Map<RequestId, List<AuthAttribute>> authAttributes, List<AttributeWithValue> additionalAttributes) {
 
-        Map<String, Attribute> allAttributes = new HashMap<>();
+        Map<String, Attribute> allAttributesById = new HashMap<>();
+
+        Map<String, Attribute> additionalAttributesMap = additionalAttributes.stream().map(attributeWithValue -> attributeWithValue.getAttribute())
+                .collect(Collectors.toMap(Attribute::getId, a -> a, (oldValue, newValue) -> oldValue));
+        allAttributesById.putAll(additionalAttributesMap);
+
         Map<RequestId, List<AttributeWithValue>> requests = new HashMap<>();
 
         for (RequestId requestId : authAttributes.keySet()) {
-            List<AuthAttribute> authAttributesByRequest = authAttributes.get(requestId);
 
-            List<AttributeWithValue> attributeWithValuesByRequest = enrichAttributes(authAttributesByRequest, allAttributes);
+            List<AuthAttribute> authAttributesByRequest = authAttributes.get(requestId);
+            List<AttributeWithValue> attributeWithValuesByRequest = enrichAttributes(authAttributesByRequest, allAttributesById);
+
+            attributeWithValuesByRequest.addAll(additionalAttributes);
+
+            // Сортировка нужна для правильного сравнения для выявления дубликатов
+            authAttributesByRequest.sort(Comparator.comparing(AuthAttribute::getId));
 
             if (options.isOptimizeRequest()) {
                 attributeWithValuesByRequest = optimizeAttributes(attributeWithValuesByRequest);
@@ -164,7 +177,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
 
 
-        return new MultiAuthRequest(allAttributes, requests);
+        return new MultiAuthRequest(allAttributesById, requests);
     }
 
     private List<AttributeWithValue> optimizeAttributes(List<AttributeWithValue> attributeWithValuesByRequest) throws EasyAbacAuthException {
@@ -182,8 +195,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
     }
 
     private List<AttributeWithValue> enrichAttributes(List<AuthAttribute> authAttributesByRequest, Map<String, Attribute> allAttributes) {
-        // Сортировка нужна для правильного сравнения для выявления дубликатов
-        authAttributesByRequest.sort(Comparator.comparing(AuthAttribute::getId));
 
         List<AttributeWithValue> attributeWithValues = new ArrayList<>();
         for (AuthAttribute authAttribute : authAttributesByRequest) {
@@ -193,7 +204,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
                 try {
                     attribute = findAttribute(abacAuthModel.getAttributes(), authAttribute.getId());
                 } catch (EasyAbacInitException e) {
-                    log.warn(e.getMessage(), e);
+                    log.warn(e.getMessage());
                     continue;
                 }
                 allAttributes.put(attribute.getId(), attribute);

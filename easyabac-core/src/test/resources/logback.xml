@@ -4,8 +4,6 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="o.s.aop.framework.CglibAopProxy" level="ERROR"/>
-    <logger name="custis.easyabac.core.EasyAbac" level="DEBUG"/>
     <root level="DEBUG">
         <appender-ref ref="STDOUT" />
     </root>
