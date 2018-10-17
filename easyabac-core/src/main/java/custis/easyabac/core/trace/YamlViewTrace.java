@@ -59,7 +59,7 @@ public class YamlViewTrace implements Trace {
             printPolicy((CalculatedPolicy) mainPolicy, 1, modelWithTrace, traceResult.getAttributes());
         }
         //printTraceResult(traceResult);
-        //LOGGER.info(modelWithTrace.toString());
+        LOGGER.info(modelWithTrace.toString());
     }
 
     private void printPolicyWithoutTrace(Policy policy, int level, StringBuilder modelWithTrace) {
