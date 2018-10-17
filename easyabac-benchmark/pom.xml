@@ -52,7 +52,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>easyabac-api</artifactId>
+            <artifactId>easyabac-entity-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>easyabac-spring-api</artifactId>
         </dependency>
 
         <dependency>
