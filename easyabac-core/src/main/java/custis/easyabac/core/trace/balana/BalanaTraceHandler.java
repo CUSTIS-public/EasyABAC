@@ -1,5 +1,6 @@
 package custis.easyabac.core.trace.balana;
 
+import custis.easyabac.core.EasyAbacAuthException;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.abac.attribute.Attribute;
 import custis.easyabac.core.model.abac.attribute.Category;
@@ -47,14 +48,9 @@ public class BalanaTraceHandler {
             finalizeTraceResult();
         }
 
-        EvaluationResult evalCtx = evaluationCtx.getAttribute(URI.create(DataType.STRING.getXacmlName()), ATTRIBUTE_REQUEST_ID, "", URI.create(Category.ENV.getXacmlName()));
-        RequestId requestId = null;
-        if (!evalCtx.indeterminate()) {
-            List values = evalCtx.getAttributeValue().getChildren();
-            if (!values.isEmpty()) {
-                requestId = RequestId.of(values.get(0).toString());
-            }
-        }
+        String requestIdValue = extractRequestId(evaluationCtx);
+
+        RequestId requestId = RequestId.of(requestIdValue);
 
         TraceResult traceResult = new TraceResult(requestId);
         traceResults.put(requestId, traceResult);
@@ -63,48 +59,60 @@ public class BalanaTraceHandler {
 
     }
 
-    private void finalizeTraceResult() {
-        try {
-            TraceResult traceResult = (TraceResult) callStack.pop();
-            EvaluationCtx evalCtx = (EvaluationCtx) callStack.pop();
+    private String extractRequestId(EvaluationCtx context) {
 
+        EvaluationResult result = context.getAttribute(URI.create(DataType.STRING.getXacmlName()),
+                URI.create(ATTRIBUTE_REQUEST_ID), "", URI.create(Category.ENV.getXacmlName()));
 
-            for (Attributes attributes : ((XACML3EvaluationCtx) evalCtx).getAttributesSet()) {
-                for (org.wso2.balana.ctx.Attribute attribute : attributes.getAttributes()) {
-                    List<String> convertedValues = attribute.getValues()
-                            .stream()
-                            .map(
-                                    attributeValue -> attributeValue.encode()
-                            )
-                            .collect(Collectors.toList());
-                    traceResult.putAttribute(CalculatedAttribute.of(attribute.getId().toString(), convertedValues));
-                }
-            }
+        String errorMessage = "Attribute request-id is not found in the context";
 
-            attributeMap.forEach((attribute, bagAttribute) -> {
-                Iterator iter = bagAttribute.iterator();
-                List<String> convertedValues = new ArrayList<>();
-                while (iter.hasNext()) {
-                    AttributeValue val = (AttributeValue) iter.next();
-                    convertedValues.add(val.encode());
-                }
-                traceResult.putAttribute(CalculatedAttribute.of(attribute.getId(), convertedValues));
-            });
-        } catch (EmptyStackException e) {
-
+        if (result.indeterminate()) {
+            throw new EasyAbacAuthException(errorMessage);
         }
+
+        if (result != null && result.getAttributeValue() != null && result.getAttributeValue().isBag()) {
+            BagAttribute returnBag = (BagAttribute) (result.getAttributeValue());
+            if (returnBag.isEmpty()) {
+                throw new EasyAbacAuthException(errorMessage);
+            }
+            return ((AttributeValue) returnBag.iterator().next()).encode();
+        } else {
+            throw new EasyAbacAuthException(errorMessage);
+        }
+    }
+
+
+    private void finalizeTraceResult() {
+        TraceResult traceResult = (TraceResult) callStack.pop();
+        EvaluationCtx evalCtx = (EvaluationCtx) callStack.pop();
+
+
+        for (Attributes attributes : ((XACML3EvaluationCtx) evalCtx).getAttributesSet()) {
+            for (org.wso2.balana.ctx.Attribute attribute : attributes.getAttributes()) {
+                List<String> convertedValues = attribute.getValues()
+                        .stream()
+                        .map(
+                                attributeValue -> attributeValue.encode()
+                        )
+                        .collect(Collectors.toList());
+                traceResult.putAttribute(CalculatedAttribute.of(attribute.getId().toString(), convertedValues));
+            }
+        }
+
+        attributeMap.forEach((attribute, bagAttribute) -> {
+            Iterator iter = bagAttribute.iterator();
+            List<String> convertedValues = new ArrayList<>();
+            while (iter.hasNext()) {
+                AttributeValue val = (AttributeValue) iter.next();
+                convertedValues.add(val.encode());
+            }
+            traceResult.putAttribute(CalculatedAttribute.of(attribute.getId(), convertedValues));
+        });
     }
 
     public void onFindPolicyEnd(PolicyFinderResult policyFinderResult) {
         // nothing to do
     }
-
-
-
-
-
-
-
 
 
     public void onPolicyMatchStart(AbstractPolicy policy) {
@@ -207,19 +215,6 @@ public class BalanaTraceHandler {
         AbstractCalculatedPolicy abstractCalculatedPolicy = (AbstractCalculatedPolicy) callStack.pop();
         abstractCalculatedPolicy.setResult(CalculatedResult.of(realResult.getDecision()));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public void onPolicyCombineStart(PolicyCombiningAlgorithm combiningAlgorithm) {

@@ -1,22 +1,40 @@
 <Response xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17">
     <Result>
+        <Decision>Deny</Decision>
+        <Status>
+            <StatusCode Value="urn:oasis:names:tc:xacml:1.0:status:ok"/>
+        </Status>
+        <Attributes Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment">
+            <Attribute AttributeId="request-id" IncludeInResult="true" Issuer="">
+                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
+                    a11449fe-42a5-4bf6-b62e-1265c71f3fd8
+                </AttributeValue>
+            </Attribute>
+        </Attributes>
+    </Result>
+    <Result>
         <Decision>Permit</Decision>
         <Status>
             <StatusCode Value="urn:oasis:names:tc:xacml:1.0:status:ok"/>
         </Status>
         <Obligations>
-            <Obligation ObligationId="urn:attr:report.category">
-                <AttributeAssignment AttributeId="urn:attr:report.category"
-                                     DataType="http://www.w3.org/2001/XMLSchema#string"
-                                     Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">iod
-                </AttributeAssignment>
-            </Obligation>
-            <Obligation ObligationId="urn:attr:subject.allowed-categories">
-                <AttributeAssignment AttributeId="urn:attr:subject.allowed-categories"
+            <Obligation ObligationId="subject.allowed-categories">
+                <AttributeAssignment AttributeId="subject.allowed-categories"
                                      DataType="http://www.w3.org/2001/XMLSchema#string"
                                      Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">iod
                 </AttributeAssignment>
+                <AttributeAssignment AttributeId="subject.allowed-categories"
+                                     DataType="http://www.w3.org/2001/XMLSchema#string"
+                                     Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">dsp
+                </AttributeAssignment>
             </Obligation>
         </Obligations>
+        <Attributes Category="urn:oasis:names:tc:xacml:3.0:attribute-category:environment">
+            <Attribute AttributeId="request-id" IncludeInResult="true" Issuer="">
+                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
+                    cf9e51e1-4371-40c6-b345-823ff897a870
+                </AttributeValue>
+            </Attribute>
+        </Attributes>
     </Result>
 </Response>

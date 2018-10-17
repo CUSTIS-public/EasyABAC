@@ -4,10 +4,8 @@ import custis.easyabac.core.init.Param;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SampleCache implements Cache {
 
@@ -17,6 +15,7 @@ public class SampleCache implements Cache {
 
     @Override
     public List<String> get(Set<Param> params, String returnAttributeId) {
+
         String key = makeKey(params, returnAttributeId);
 
         List<String> value = cachedData.get(key);
@@ -38,9 +37,11 @@ public class SampleCache implements Cache {
 
 
     private String makeKey(Set<Param> params, String returnAttributeId) {
+        List<Param> sortedParams = params.stream().sorted(Comparator.comparing(Param::getName)).collect(Collectors.toList());
+
         StringBuilder keyBuilder = new StringBuilder();
-        for (Param param : params) {
-            keyBuilder.append(param.getAttributeParamId()).append(":").append(param.getValue()).append(":");
+        for (Param param : sortedParams) {
+            keyBuilder.append(param.getName()).append(":").append(param.getValue()).append(":");
         }
 
         keyBuilder.append(returnAttributeId);
