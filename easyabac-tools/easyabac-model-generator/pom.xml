@@ -12,7 +12,6 @@
     <groupId>custis.easyabac</groupId>
     <artifactId>easyabac-model-generator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>maven-plugin</packaging>
     <name>Custis.EasyABACModelGenerator</name>
     <description>Model generator</description>
 
@@ -28,9 +27,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>custis.easyabac</groupId>
-            <artifactId>easyabac-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>easyabac-entity-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.javaparser</groupId>
@@ -59,30 +57,6 @@
         <pluginManagement>
             <plugins>
                 <!-- be sure classes get shaded -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.5.1</version>
-                    <configuration>
-                        <!-- see http://jira.codehaus.org/browse/MNG-5346 -->
-                        <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>mojo-descriptor</id>
-                            <goals>
-                                <goal>descriptor</goal>
-                            </goals>
-                        </execution>
-                        <!-- if you want to generatePolicies help goal -->
-                        <execution>
-                            <id>help-goal</id>
-                            <goals>
-                                <goal>helpmojo</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>

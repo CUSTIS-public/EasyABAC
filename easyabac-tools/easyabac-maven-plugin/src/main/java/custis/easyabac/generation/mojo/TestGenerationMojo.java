@@ -1,6 +1,6 @@
 package custis.easyabac.generation.mojo;
 
-import custis.easyabac.generation.util.CompleteGenerator;
+import custis.easyabac.generation.CompleteGenerator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
