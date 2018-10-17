@@ -63,14 +63,20 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
 
-            TraceResult traceResult = result.getTraceResult();
-            if (traceResult != null) {
-                if (!pdpHandler.xacmlPolicyMode()) {
-                    traceResult.populateByModel(abacAuthModel);
+
+            if (options.isEnableTrace()) {
+                TraceResult traceResult = result.getTraceResult();
+                if (traceResult != null) {
+                    if (!pdpHandler.xacmlPolicyMode()) {
+                        traceResult.populateByModel(abacAuthModel);
+                    }
                 }
+                trace.handleTrace(abacAuthModel, traceResult);
             }
-            trace.handleTrace(abacAuthModel, traceResult);
-            performAudit(attributeWithValueList, result);
+
+            if (options.isEnableAudit()) {
+                performAudit(attributeWithValueList, result);
+            }
 
             return result;
         } catch (Exception e) {
@@ -123,17 +129,22 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
 
 
-        result.getResults().forEach((requestId, authResponse) -> {
-            TraceResult traceResult = authResponse.getTraceResult();
-            if (traceResult != null) {
-                if (!pdpHandler.xacmlPolicyMode()) {
-                    traceResult.populateByModel(abacAuthModel);
+        if (options.isEnableTrace()) {
+            result.getResults().forEach((requestId, authResponse) -> {
+                TraceResult traceResult = authResponse.getTraceResult();
+                if (traceResult != null) {
+                    if (!pdpHandler.xacmlPolicyMode()) {
+                        traceResult.populateByModel(abacAuthModel);
+                    }
+                    trace.handleTrace(abacAuthModel, traceResult);
                 }
-                trace.handleTrace(abacAuthModel, traceResult);
-            }
-        });
+            });
+        }
 
-        performAudit(multiAuthRequest, result);
+
+        if (options.isEnableAudit()) {
+            performAudit(multiAuthRequest, result);
+        }
 
         return result.getResults();
     }

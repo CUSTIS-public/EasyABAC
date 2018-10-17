@@ -26,7 +26,7 @@ public class DynamicAuthorizationBenchmark extends AbstractAuthorizationBenchmar
         AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
                 getClass().getResourceAsStream("/OrdersPolicy.yaml"));
         AttributiveAuthorizationService authorizationService = new EasyAbac.Builder(model)
-                .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+                .pdpHandlerFactory(BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .subjectAttributesProvider(getSubjectAttributesProvider(model))
                 .build();
         EasyABACPermissionCheckerFactory factory = new EasyABACPermissionCheckerFactory(authorizationService);
