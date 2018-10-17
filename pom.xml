@@ -13,11 +13,12 @@
 
     <modules>
         <module>easyabac-core</module>
-        <!--<module>easyabac-example</module>-->
         <module>example-project</module>
-        <module>easyabac-api</module>
+        <module>easyabac-api/easyabac-entity-api</module>
+        <module>easyabac-api/easyabac-spring-api</module>
         <module>easyabac-spring-boot-starter</module>
-        <module>easyabac-plugins/easyabac-maven-plugin</module>
+        <module>easyabac-tools/easyabac-model-generator</module>
+        <module>easyabac-tools/easyabac-maven-plugin</module>
         <module>easyabac-benchmark</module>
     </modules>
 
@@ -36,12 +37,22 @@
         <dependencies>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>easyabac-api</artifactId>
+                <artifactId>easyabac-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>easyabac-core</artifactId>
+                <artifactId>easyabac-entity-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>easyabac-spring-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>easyabac-model-generator</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

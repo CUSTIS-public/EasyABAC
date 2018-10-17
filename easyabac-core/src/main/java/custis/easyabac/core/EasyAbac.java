@@ -63,14 +63,20 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             AuthResponse result = pdpHandler.evaluate(attributeWithValueList);
 
-            TraceResult traceResult = result.getTraceResult();
-            if (traceResult != null) {
-                if (!pdpHandler.xacmlPolicyMode()) {
-                    traceResult.populateByModel(abacAuthModel);
+
+            if (options.isEnableTrace()) {
+                TraceResult traceResult = result.getTraceResult();
+                if (traceResult != null) {
+                    if (!pdpHandler.xacmlPolicyMode()) {
+                        traceResult.populateByModel(abacAuthModel);
+                    }
                 }
+                trace.handleTrace(abacAuthModel, traceResult);
             }
-            trace.handleTrace(abacAuthModel, traceResult);
-            audit.onRequest(attributeWithValueList, result);
+
+            if (options.isEnableAudit()) {
+                performAudit(attributeWithValueList, result);
+            }
 
             return result;
         } catch (Exception e) {
@@ -123,17 +129,22 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
 
 
-        result.getResults().forEach((requestId, authResponse) -> {
-            TraceResult traceResult = authResponse.getTraceResult();
-            if (traceResult != null) {
-                if (!pdpHandler.xacmlPolicyMode()) {
-                    traceResult.populateByModel(abacAuthModel);
+        if (options.isEnableTrace()) {
+            result.getResults().forEach((requestId, authResponse) -> {
+                TraceResult traceResult = authResponse.getTraceResult();
+                if (traceResult != null) {
+                    if (!pdpHandler.xacmlPolicyMode()) {
+                        traceResult.populateByModel(abacAuthModel);
+                    }
+                    trace.handleTrace(abacAuthModel, traceResult);
                 }
-                trace.handleTrace(abacAuthModel, traceResult);
-            }
-        });
+            });
+        }
 
-        audit.onMultipleRequest(multiAuthRequest, result);
+
+        if (options.isEnableAudit()) {
+            performAudit(multiAuthRequest, result);
+        }
 
         return result.getResults();
     }
@@ -238,6 +249,45 @@ public class EasyAbac implements AttributiveAuthorizationService {
             throw new EasyAbacInitException("Attribute " + attributeId + " is not found in the model");
         }
         return attributeParam;
+    }
+
+    private void performAudit(List<AttributeWithValue> attributeWithValues, AuthResponse result) {
+        List<AttributeWithValue> subject = attributeWithValues.stream()
+                .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.SUBJECT)
+                .collect(Collectors.toList());
+
+        Optional<AttributeWithValue> action = attributeWithValues.stream()
+                .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.ACTION)
+                .findFirst();
+
+        Map<String, String> resourceMap = new HashMap<>();
+        attributeWithValues.stream()
+                .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.RESOURCE)
+                .forEach(attributeWithValue -> resourceMap.put(attributeWithValue.getAttribute().getId(), attributeWithValue.getValues().toString()));
+
+
+        audit.onAction(serializeSubject(subject), resourceMap, action.get().getValues().get(0), result.getDecision());
+    }
+
+    private void performAudit(MultiAuthRequest requestContext, MultiAuthResponse response) {
+        List<AttributeWithValue> subject = requestContext.getRequests().values()
+                .stream()
+                .flatMap(attributeWithValueList -> attributeWithValueList.stream())
+                .filter(attribute -> attribute.getAttribute().getCategory() == Category.SUBJECT)
+                .collect(Collectors.toList());
+
+        List<AttributeWithValue> actions = requestContext.getRequests().values()
+                .stream()
+                .flatMap(attributeWithValueList -> attributeWithValueList.stream())
+                .filter(attribute -> attribute.getAttribute().getCategory() == Category.ACTION)
+                .collect(Collectors.toList());
+        // FIXME сделать
+
+        audit.onMultipleActions(serializeSubject(subject), Collections.emptyMap(), Collections.emptyMap());
+    }
+
+    private static String serializeSubject(List<AttributeWithValue> subject) {
+        return subject.toString();
     }
 
     public static class Builder {

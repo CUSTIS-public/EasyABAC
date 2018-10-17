@@ -1,10 +1,7 @@
 package custis.easyabac.core.audit;
 
 import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
-import custis.easyabac.core.model.abac.attribute.Category;
 import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.MultiAuthRequest;
-import custis.easyabac.pdp.MultiAuthResponse;
 import org.audit4j.core.AuditManager;
 import org.audit4j.core.IAuditManager;
 import org.audit4j.core.dto.AuditEvent;
@@ -12,9 +9,9 @@ import org.audit4j.core.dto.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 public class Audit4jAudit implements Audit {
 
@@ -23,40 +20,32 @@ public class Audit4jAudit implements Audit {
     public static Audit4jAudit INSTANCE = new Audit4jAudit();
 
     public static final IAuditManager auditManager = AuditManager.getInstance();
-
     @Override
-    public void onRequest(List<AttributeWithValue> attributeWithValues, AuthResponse response) {
-        List<AttributeWithValue> subject = attributeWithValues.stream()
-                .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.SUBJECT)
-                .collect(Collectors.toList());
-
-        Optional<AttributeWithValue> action = attributeWithValues.stream()
-                .filter(attributeWithValue -> attributeWithValue.getAttribute().getCategory() == Category.ACTION)
-                .findFirst();
-
-        auditManager.audit(createAuditEvent(subject, action.get(), response));
+    public void onAction(String actor, Map<String, String> resource, String action, AuthResponse.Decision decision) {
+        auditManager.audit(createAuditEvent(actor, resource, action, decision));
     }
 
     @Override
-    public void onMultipleRequest(MultiAuthRequest requestContext, MultiAuthResponse response) {
-        List<AttributeWithValue> subject = requestContext.getRequests().values()
-                .stream()
-                .flatMap(attributeWithValueList -> attributeWithValueList.stream())
-                .filter(attribute -> attribute.getAttribute().getCategory() == Category.SUBJECT)
-                .collect(Collectors.toList());
+    public void onMultipleActions(String actor, Map<String, String> resource, Map<String, AuthResponse.Decision> actionResponse) {
+        actionResponse.entrySet().forEach(entry -> auditManager.audit(createAuditEvent(actor, resource, entry.getKey(), entry.getValue())));
+    }
 
-        List<AttributeWithValue> actions = requestContext.getRequests().values()
-                .stream()
-                .flatMap(attributeWithValueList -> attributeWithValueList.stream())
-                .filter(attribute -> attribute.getAttribute().getCategory() == Category.ACTION)
-                .collect(Collectors.toList());
+    private static AuditEvent createAuditEvent(String actor, Map<String, String> resource, String action, AuthResponse.Decision decision) {
+        List<Field> additionalFields = resourceFields(resource);
+        additionalFields.add(decisionField(decision));
+        return new AuditEvent(actor, action, additionalFields.toArray(new Field[additionalFields.size()]));
+    }
 
-        response.getResults().entrySet().forEach(entry -> {
-            for (AttributeWithValue action : actions) {
-                auditManager.audit(createAuditEvent(subject, action, entry.getValue()));
-            }
+    private static List<Field> resourceFields(Map<String, String> resource) {
+        List<Field> fields = new ArrayList<>();
+        for (Map.Entry<String, String> entry : resource.entrySet()) {
+            fields.add(new Field(entry.getKey(), entry.getValue()));
+        }
+        return fields;
+    }
 
-        });
+    private static Field decisionField(AuthResponse.Decision decision) {
+        return new Field("decision", decision.name());
     }
 
     private static AuditEvent createAuditEvent(List<AttributeWithValue> subject, AttributeWithValue action, AuthResponse result) {

@@ -8,7 +8,7 @@ build-and-test:
     artifacts:
       reports:
         junit:
-          - easyabac-api/target/surefire-reports/TEST-*.xml
+          - easyabac-api/easyabac-spring-api/target/surefire-reports/TEST-*.xml
           - easyabac-core/target/surefire-reports/TEST-*.xml
 stages:
     - build
