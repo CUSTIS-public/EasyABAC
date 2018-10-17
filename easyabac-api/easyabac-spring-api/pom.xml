@@ -6,19 +6,19 @@
         <groupId>custis.easyabac</groupId>
         <artifactId>easyabac</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>custis.easyabac</groupId>
-    <artifactId>easyabac-spring-boot-starter</artifactId>
+    <artifactId>easyabac-spring-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Custis.EasyAbacSpringBootStarter</name>
-    <description>API для вызова EasyABAC</description>
+    <name>Custis.EasyAbacAPI</name>
+    <description>API для вызова EasyABAC через Spring</description>
 
     <properties>
         <docker.entrypoint.spring.profiles.active>default</docker.entrypoint.spring.profiles.active>
         <spring.version>5.0.9.RELEASE</spring.version>
-        <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
     </properties>
 
     <dependencies>
@@ -26,10 +26,14 @@
         <!-- easyabac -->
 
         <dependency>
-            <groupId>custis.easyabac</groupId>
-            <artifactId>easyabac-spring-api</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>easyabac-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>easyabac-entity-api</artifactId>
+        </dependency>
 
         <!-- spring -->
         <dependency>
@@ -48,8 +52,9 @@
             <version>${spring.version}</version>
         </dependency>
 
-
         <!-- other -->
+
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -67,7 +72,11 @@
             <artifactId>javax.annotation-api</artifactId>
             <version>1.3.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+        </dependency>
 
     </dependencies>
 
