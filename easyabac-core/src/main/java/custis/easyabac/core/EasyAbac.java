@@ -159,8 +159,10 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
             attributeWithValuesByRequest.addAll(additionalAttributes);
 
-            // Сортировка нужна для правильного сравнения для выявления дубликатов
-            authAttributesByRequest.sort(Comparator.comparing(AuthAttribute::getId));
+            attributeWithValuesByRequest = attributeWithValuesByRequest.stream().distinct().collect(Collectors.toList());
+
+            // Сортировка нужна для правильного сравнения для выявления одинаковых запросов
+            attributeWithValuesByRequest.sort((o1, o2) -> o1.getAttribute().getId().compareTo(o2.getAttribute().getId()));
 
             if (options.isOptimizeRequest()) {
                 attributeWithValuesByRequest = optimizeAttributes(attributeWithValuesByRequest);
