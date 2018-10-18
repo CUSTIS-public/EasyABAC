@@ -1,8 +1,8 @@
 package custis.easyabac.api.core.call.converters;
 
 import custis.easyabac.api.utils.ResourceActionPair;
-import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.RequestId;
+import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.RequestId;
 
 import java.util.Map;
 

@@ -2,7 +2,7 @@ package custis.easyabac.api.impl;
 
 import custis.easyabac.api.PermissionChecker;
 import custis.easyabac.api.core.*;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.interceptor.ExposeInvocationInterceptor;

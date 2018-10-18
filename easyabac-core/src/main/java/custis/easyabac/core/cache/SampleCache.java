@@ -1,6 +1,6 @@
 package custis.easyabac.core.cache;
 
-import custis.easyabac.core.init.Param;
+import custis.easyabac.core.datasource.Param;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

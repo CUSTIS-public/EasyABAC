@@ -3,8 +3,8 @@ package custis.easyabac.api.core.call.getters;
 import custis.easyabac.api.core.PermissionCheckerInformation;
 import custis.easyabac.api.core.PermissionCheckerMetadata;
 import custis.easyabac.api.utils.ResourceActionPair;
-import custis.easyabac.pdp.AuthAttribute;
-import custis.easyabac.pdp.RequestId;
+import custis.easyabac.core.pdp.AuthAttribute;
+import custis.easyabac.core.pdp.RequestId;
 
 import java.util.HashMap;
 import java.util.List;

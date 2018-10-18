@@ -1,6 +1,6 @@
 package custis.easyabac.core.trace.model;
 
-import custis.easyabac.core.model.abac.Condition;
+import custis.easyabac.model.Condition;
 
 /**
  * Calculated Simple Rule like attribute = value

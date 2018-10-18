@@ -1,6 +1,6 @@
 package custis.easyabac.core.audit;
 
-import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthResponse;
 
 import java.util.Map;
 

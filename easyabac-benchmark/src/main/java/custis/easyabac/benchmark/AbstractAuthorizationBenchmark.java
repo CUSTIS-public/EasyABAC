@@ -5,10 +5,10 @@ import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.benchmark.model.Subject;
 import custis.easyabac.core.EasyAbacDatasourceException;
+import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
-import custis.easyabac.core.init.Datasource;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.attribute.AttributeWithValue;
 
 import java.util.ArrayList;
 import java.util.List;

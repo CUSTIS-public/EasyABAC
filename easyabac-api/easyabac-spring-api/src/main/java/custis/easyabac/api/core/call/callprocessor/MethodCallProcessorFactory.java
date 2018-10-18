@@ -2,7 +2,7 @@ package custis.easyabac.api.core.call.callprocessor;
 
 import custis.easyabac.api.core.PermissionCheckerInformation;
 import custis.easyabac.api.core.call.MethodType;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 
 import java.lang.reflect.Method;
 

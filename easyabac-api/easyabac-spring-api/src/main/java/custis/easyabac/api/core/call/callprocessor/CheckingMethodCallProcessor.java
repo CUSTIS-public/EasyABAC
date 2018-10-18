@@ -9,7 +9,7 @@ import custis.easyabac.api.core.call.converters.CheckingResultConverter;
 import custis.easyabac.api.core.call.converters.ResultConverter;
 import custis.easyabac.api.core.call.getters.RequestGenerator;
 import custis.easyabac.api.core.call.getters.TwoArgumentsRequestGenerator;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

@@ -2,21 +2,18 @@ package custis.easyabac.benchmark;
 
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
-import custis.easyabac.benchmark.model.Subject;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.init.AbacAuthModelFactory;
-import custis.easyabac.core.init.BalanaPdpHandlerFactory;
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.model.ModelType;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthAttribute;
-import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthAttribute;
+import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.easy.EasyAbacModelCreator;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
@@ -29,17 +26,15 @@ public class AttributeAuthorizationProxyBenchmark extends AbstractAuthorizationB
 
     @Setup(Level.Trial)
     public void initService() throws EasyAbacInitException {
-        AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
-                getClass().getResourceAsStream("/OrdersPolicy.yaml"));
+        EasyAbacModelCreator creator = new EasyAbacModelCreator();
+        AbacAuthModel model = creator.createModel(getClass().getResourceAsStream("/OrdersPolicy.yaml"));
 
-        this.managerAuthService = new EasyAbacBuilder(model)
-                .pdpHandlerFactory(BalanaPdpHandlerFactory.PROXY_INSTANCE)
+        this.managerAuthService = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .datasources(singletonList(getCustomerBranchIdDatasource()))
                 .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                 .build();
 
-        this.operatorAuthService = new EasyAbacBuilder(model)
-                .pdpHandlerFactory(BalanaPdpHandlerFactory.PROXY_INSTANCE)
+        this.operatorAuthService = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .datasources(singletonList(getCustomerBranchIdDatasource()))
                 .subjectAttributesProvider(getSubjectAttributesProvider(getOperatorSubject(), model))
                 .build();

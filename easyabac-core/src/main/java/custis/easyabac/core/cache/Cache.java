@@ -1,6 +1,6 @@
 package custis.easyabac.core.cache;
 
-import custis.easyabac.core.init.Param;
+import custis.easyabac.core.datasource.Param;
 
 import java.util.List;
 import java.util.Set;

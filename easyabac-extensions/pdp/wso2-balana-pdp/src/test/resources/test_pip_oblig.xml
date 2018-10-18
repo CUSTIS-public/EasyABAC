@@ -1,0 +1,66 @@
+<PolicySet PolicySetId="efd998a0-cfd3-8b6d-75a9-8e7ef6e3c8b0"
+           PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:permit-unless-deny" Version="1"
+           xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+           xsi:schemaLocation="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17 http://docs.oasis-open.org/xacml/3.0/xacml-core-v3-schema-wd-17.xsd"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Description>Новая группа политик</Description>
+    <Target>
+    </Target>
+    <Policy PolicyId="7674f6c0-2432-363e-eb7a-4363ea1a10df" Version="0.1"
+            RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit">
+        <Description>p1</Description>
+        <Target>
+            <AnyOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">edit</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:attr:report.action"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string"
+                                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:action"
+                                             MustBePresent="false"/>
+                    </Match>
+                </AllOf>
+            </AnyOf>
+        </Target>
+        <Rule RuleId="ec0b67e4-bd97-07e9-d970-7b90b6173f0c" Effect="Permit">
+            <Description>Правило 1</Description>
+            <Condition>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+                            <AttributeDesignator AttributeId="urn:attr:report.category"
+                                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                                 Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                                 MustBePresent="false"/>
+                        </Apply>
+                        <AttributeDesignator AttributeId="urn:attr:subject.allowed-categories"
+                                             DataType="http://www.w3.org/2001/XMLSchema#string"
+                                             Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                             MustBePresent="false"/>
+                    </Apply>
+                </Apply>
+            </Condition>
+        </Rule>
+        <ObligationExpressions>
+            <ObligationExpression ObligationId="urn:attr:subject.allowed-categories" FulfillOn="Permit">
+                <AttributeAssignmentExpression AttributeId="urn:attr:subject.allowed-categories"
+                                               Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
+                    <AttributeDesignator AttributeId="urn:attr:subject.allowed-categories"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"
+                                         Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                         MustBePresent="false"/>
+                </AttributeAssignmentExpression>
+            </ObligationExpression>
+            <ObligationExpression ObligationId="urn:attr:report.category" FulfillOn="Permit">
+                <AttributeAssignmentExpression AttributeId="urn:attr:report.category"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeDesignator AttributeId="urn:attr:report.category"
+                                         DataType="http://www.w3.org/2001/XMLSchema#string"
+                                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                         MustBePresent="false"/>
+                </AttributeAssignmentExpression>
+            </ObligationExpression>
+        </ObligationExpressions>
+    </Policy>
+</PolicySet>
+

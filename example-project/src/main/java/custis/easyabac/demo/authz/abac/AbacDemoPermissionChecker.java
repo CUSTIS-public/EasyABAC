@@ -1,10 +1,10 @@
 package custis.easyabac.demo.authz.abac;
 
 import custis.easyabac.api.NotPermittedException;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.demo.authz.DemoPermissionChecker;
 import custis.easyabac.demo.model.Order;
 import custis.easyabac.demo.permissionchecker.OrderPermissionChecker;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

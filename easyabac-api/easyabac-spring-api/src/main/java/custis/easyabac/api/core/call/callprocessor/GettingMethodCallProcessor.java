@@ -7,7 +7,7 @@ import custis.easyabac.api.core.call.MethodType;
 import custis.easyabac.api.core.call.converters.GettingResultConverter;
 import custis.easyabac.api.core.call.converters.ResultConverter;
 import custis.easyabac.api.core.call.getters.RequestGenerator;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;

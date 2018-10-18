@@ -5,8 +5,8 @@ import custis.easyabac.api.core.call.ActionPatternType;
 import custis.easyabac.api.core.call.DecisionType;
 import custis.easyabac.api.core.call.MethodType;
 import custis.easyabac.api.utils.ResourceActionPair;
-import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.RequestId;
+import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.RequestId;
 
 import java.util.Map;
 

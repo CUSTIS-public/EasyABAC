@@ -1,14 +1,17 @@
 package custis.easyabac.api.impl;
 
-import custis.easyabac.api.AuthorizationAction;
-import custis.easyabac.api.AuthorizationActionId;
-import custis.easyabac.api.AuthorizationAttribute;
-import custis.easyabac.api.AuthorizationEntity;
-import custis.easyabac.pdp.AuthAttribute;
+import custis.easyabac.api.attr.annotation.AuthorizationAction;
+import custis.easyabac.api.attr.annotation.AuthorizationActionId;
+import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
+import custis.easyabac.api.attr.annotation.AuthorizationEntity;
+import custis.easyabac.api.attr.imp.AttributiveAction;
+import custis.easyabac.api.attr.imp.AttributiveEntity;
+import custis.easyabac.core.pdp.AuthAttribute;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -21,6 +24,26 @@ public class AttributeValueExtractor {
     }
 
     public static <T> List<AuthAttribute> extractAttributesFromResource(T object) {
+        if (object instanceof AttributiveEntity) {
+            return ((AttributiveEntity) object).getAuthAttributes();
+        } else {
+            return performReflectiveExtraction(object);
+        }
+    }
+
+    private static String convertValue(Object value) {
+        return value.toString();
+    }
+
+    public static <T> List<AuthAttribute> extractAttributesFromAction(T object) {
+        if (object instanceof AttributiveAction) {
+            return Collections.singletonList(((AttributiveAction) object).getAuthAttribute());
+        } else {
+            return performReflectiveActionExtraction(object);
+        }
+    }
+
+    private static <T> List<AuthAttribute> performReflectiveExtraction(T object) {
         String entityName = object.getClass().getSimpleName();
         if (object.getClass().isAnnotationPresent(AuthorizationEntity.class)) {
             AuthorizationEntity ann = object.getClass().getAnnotation(AuthorizationEntity.class);
@@ -71,16 +94,14 @@ public class AttributeValueExtractor {
                 } catch (IllegalAccessException e) {
                     log.error(e.getMessage());
                 }
+            } else {
+                // TODO case
             }
         }
         return attributes;
     }
 
-    private static String convertValue(Object value) {
-        return value.toString();
-    }
-
-    public static <T> List<AuthAttribute> extractAttributesFromAction(T object) {
+    private static <T> List<AuthAttribute> performReflectiveActionExtraction(T object) {
         String entityName = object.getClass().getSimpleName();
         if (object.getClass().isAnnotationPresent(AuthorizationAction.class)) {
             AuthorizationAction ann = object.getClass().getAnnotation(AuthorizationAction.class);

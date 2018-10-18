@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>easyabac-model-generator</artifactId>
+            <artifactId>easyabac-test-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.javaparser</groupId>
