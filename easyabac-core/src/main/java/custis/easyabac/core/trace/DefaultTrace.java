@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class DefaultTrace implements Trace {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(DefaultTrace.class);
+    public static final Logger log = LoggerFactory.getLogger(DefaultTrace.class);
     public static final Trace INSTANCE = new DefaultTrace();
 
     @Override

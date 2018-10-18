@@ -113,7 +113,7 @@ public class EasyAbacBuilder {
 
         Map<String, Map<String, Attribute>> attributesByAction = groupAttributesByAction(datasources, abacAuthModel);
 
-        return new EasyAbac(pdpHandler, abacAuthModel, datasources, extenders, audit, trace, attributesByAction, options);
+        return new EasyAbac(pdpHandler, abacAuthModel, extenders, audit, trace, attributesByAction, options);
     }
 
     private void enrichDatasources(List<Datasource> datasources, AbacAuthModel abacAuthModel) throws EasyAbacInitException {

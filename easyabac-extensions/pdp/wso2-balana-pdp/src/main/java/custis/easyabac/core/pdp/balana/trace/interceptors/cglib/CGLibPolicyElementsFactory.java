@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class CGLibPolicyElementsFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CGLibPolicyElementsFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(CGLibPolicyElementsFactory.class);
 
     public static PDP newPDP(Set<PolicyFinderModule> policyFinderModules, List<AttributeFinderModule> attributeFinderModules, boolean useProxy) {
         if (useProxy) {
@@ -213,7 +213,7 @@ public class CGLibPolicyElementsFactory {
                     policyFinder, policy.getMetaData()
             };
         } else {
-            LOGGER.error("Неизвестная реализация AbstractPolicy");
+            log.error("Неизвестная реализация AbstractPolicy");
             return policy;
         }
 

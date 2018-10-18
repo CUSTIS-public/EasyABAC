@@ -15,7 +15,7 @@ import static custis.easyabac.generation.algorithm.FunctionUtils.UNKNOWN_PREFIX;
 
 public class RuleGenerationUtils {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(RuleGenerationUtils.class);
+    public static final Logger log = LoggerFactory.getLogger(RuleGenerationUtils.class);
 
     public static List<Map<String, String>> generateRule(Rule rule, boolean expectedResult,
                                                                       Map<String, String> attributes) throws EasyAbacInitException {
@@ -203,7 +203,7 @@ public class RuleGenerationUtils {
                     //attributes.put(id, value);
                 } else {
                     if (!existingValue.equals(value)) {
-                        LOGGER.warn("Test generation error, cannot calculate not conflicting attribute " + id);
+                        log.warn("Test generation error, cannot calculate not conflicting attribute " + id);
                         attributes.clear();
                     }
                 }

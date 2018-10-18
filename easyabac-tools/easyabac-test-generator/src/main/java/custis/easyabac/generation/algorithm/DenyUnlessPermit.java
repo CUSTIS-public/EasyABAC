@@ -14,7 +14,7 @@ import static custis.easyabac.generation.algorithm.RuleGenerationUtils.generateR
 
 public class DenyUnlessPermit implements TestGenerationAlgorithm {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DenyUnlessPermit.class);
+    private static final Logger log = LoggerFactory.getLogger(DenyUnlessPermit.class);
 
     @Override
     public List<Map<String, String>> generatePolicies(List<Policy> policies, Effect expectedEffect) throws EasyAbacInitException {
@@ -56,14 +56,14 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
             List<Map<String, String>> permitValues = generateValues(permitPolicy, Effect.PERMIT, new HashMap<>());
             for (Map<String, String> permitValue : permitValues) {
                 permitValue.put(ACTION, accessToAction);
-                LOGGER.info("Permitted value " + permitValue);
-                LOGGER.info("Permitted policy[{}] - action [{}]", permitPolicy.getId(), accessToAction);
+                log.info("Permitted value " + permitValue);
+                log.info("Permitted policy[{}] - action [{}]", permitPolicy.getId(), accessToAction);
                 // if action exists in previous policies then should be denied
                 // finding these policies
 
                 for (Policy policy : denyOrNA) {
                     if (policy.getTarget().getAccessToActions().contains(accessToAction)) {
-                        LOGGER.info("Policy[{}] with equal action in target{}", policy.getId(), policy.getTarget().getAccessToActions());
+                        log.info("Policy[{}] with equal action in target{}", policy.getId(), policy.getTarget().getAccessToActions());
                         generateValues(policy, Effect.DENY, new HashMap<>()); // FIXME сделать комбинацию
                     }
                 }
@@ -82,14 +82,14 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
             List<Map<String, String>> deniedValues = generateValues(denyPolicy, Effect.DENY, new HashMap<>());
             for (Map<String, String> denyValue : deniedValues) {
                 denyValue.put(ACTION, accessToAction);
-                LOGGER.info("Denied value " + denyValue);
-                LOGGER.info("Denied policy[{}] - action [{}]", denyPolicy.getId(), accessToAction);
+                log.info("Denied value " + denyValue);
+                log.info("Denied policy[{}] - action [{}]", denyPolicy.getId(), accessToAction);
                 // if action exists in previous policies then should be denied
                 // finding these policies
 
                 for (Policy policy : permitOrNA) {
                     if (policy.getTarget().getAccessToActions().contains(accessToAction)) {
-                        LOGGER.info("Policy[{}] with equal action in target{}", policy.getId(), policy.getTarget().getAccessToActions());
+                        log.info("Policy[{}] with equal action in target{}", policy.getId(), policy.getTarget().getAccessToActions());
                         generateValues(policy, Effect.PERMIT, new HashMap<>()); // FIXME сделать комбинацию
                     }
                 }
