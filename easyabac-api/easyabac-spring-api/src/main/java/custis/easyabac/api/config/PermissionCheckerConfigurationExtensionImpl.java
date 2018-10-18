@@ -15,8 +15,8 @@
  */
 package custis.easyabac.api.config;
 
-import custis.easyabac.api.AuthorizationEntity;
 import custis.easyabac.api.PermissionChecker;
+import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 import custis.easyabac.api.core.DefaultPermissionCheckerMetadata;
 import custis.easyabac.api.core.PermissionCheckerMetadata;
 import custis.easyabac.api.impl.EasyABACPermissionCheckerFactoryBean;

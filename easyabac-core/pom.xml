@@ -14,30 +14,19 @@
     <version>1.0.0-SNAPSHOT</version>
     <properties>
         <argLine>-Dfile.encoding=UTF-8 -Duser.timezone=UTC</argLine>
-        <xmlunit.version>2.6.2</xmlunit.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>easyabac-model</artifactId>
+        </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>${commons-logging.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.balana</groupId>
-            <artifactId>org.wso2.balana</artifactId>
-            <version>1.1.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.23</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <version>5.0.9.RELEASE</version>
-        </dependency>
+
         <!--logs-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -55,28 +44,6 @@
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.audit4j/audit4j-core -->
-        <dependency>
-            <groupId>org.audit4j</groupId>
-            <artifactId>audit4j-core</artifactId>
-            <version>2.5.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.xmlunit</groupId>
-            <artifactId>xmlunit-core</artifactId>
-            <version>${xmlunit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.xmlunit</groupId>
-            <artifactId>xmlunit-matchers</artifactId>
-            <version>${xmlunit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>3.2.8</version>
-        </dependency>
 
     </dependencies>
 
@@ -91,24 +58,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <packageName>custis.easyabac.core.model.abac</packageName>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-parser</id>
-                        <goals>
-                            <goal>javacc</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

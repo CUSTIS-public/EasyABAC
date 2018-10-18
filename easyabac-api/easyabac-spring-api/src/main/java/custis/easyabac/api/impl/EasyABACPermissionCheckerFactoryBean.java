@@ -1,7 +1,7 @@
 package custis.easyabac.api.impl;
 
 import custis.easyabac.api.utils.Lazy;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.*;

@@ -1,0 +1,23 @@
+resources:
+  subject:
+    attributes:
+    - id: id
+    - id: allowed-categories
+      title: категории доступные субъекту
+      multiple: true
+  report:
+    title: Отчет
+    actions:
+    - edit
+    - view
+    - remove
+    attributes:
+    - id: id
+      type: int
+      title: код отчета
+    - id: category
+      title: категория доступа отчета
+      allowableValues:  #Разрешенные значения, для валидации политики
+      - iod
+      - dsp
+

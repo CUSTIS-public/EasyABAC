@@ -1,7 +1,7 @@
 package custis.easyabac.core.trace.model;
 
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.pdp.RequestId;
+import custis.easyabac.core.pdp.RequestId;
+import custis.easyabac.model.AbacAuthModel;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package custis.easyabac.core.trace;
 
-import custis.easyabac.core.model.abac.AbacAuthModel;
 import custis.easyabac.core.trace.model.TraceResult;
+import custis.easyabac.model.AbacAuthModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

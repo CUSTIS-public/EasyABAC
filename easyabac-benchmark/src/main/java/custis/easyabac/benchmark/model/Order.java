@@ -1,7 +1,7 @@
 package custis.easyabac.benchmark.model;
 
-import custis.easyabac.api.AuthorizationAttribute;
-import custis.easyabac.api.AuthorizationEntity;
+import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
+import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 
 @AuthorizationEntity(name = "order")
 public class Order {

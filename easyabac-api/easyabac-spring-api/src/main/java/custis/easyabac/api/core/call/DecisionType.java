@@ -1,7 +1,7 @@
 package custis.easyabac.api.core.call;
 
 import custis.easyabac.api.core.UnsupportedDynamicMethodSignature;
-import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthResponse;
 
 import java.lang.reflect.Method;
 

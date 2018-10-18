@@ -6,11 +6,10 @@ import custis.easyabac.api.impl.EasyABACPermissionChecker;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.init.AbacAuthModelFactory;
-import custis.easyabac.core.init.BalanaPdpHandlerFactory;
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.model.ModelType;
-import custis.easyabac.core.model.abac.AbacAuthModel;
+import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.easy.EasyAbacModelCreator;
 import org.openjdk.jmh.annotations.*;
 
 import static java.util.Collections.singletonList;
@@ -23,19 +22,17 @@ public class PermissionCheckerBenchmark extends AbstractAuthorizationBenchmark {
 
     @Setup(Level.Trial)
     public void setup() throws EasyAbacInitException {
-        AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
-                getClass().getResourceAsStream("/OrdersPolicy.yaml"));
+        EasyAbacModelCreator creator = new EasyAbacModelCreator();
+        AbacAuthModel model = creator.createModel(getClass().getResourceAsStream("/OrdersPolicy.yaml"));
 
         this.managerOrderPermissionChecker = new EasyABACPermissionChecker<>(
-                new EasyAbacBuilder(model)
-                        .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+                new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                         .datasources(singletonList(getCustomerBranchIdDatasource()))
                         .build());
 
         this.operatorOrderPermissionChecker = new EasyABACPermissionChecker<>(
-                new EasyAbacBuilder(model)
-                        .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+                new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .datasources(singletonList(getCustomerBranchIdDatasource()))
                         .subjectAttributesProvider(getSubjectAttributesProvider(getOperatorSubject(), model))
                         .build());

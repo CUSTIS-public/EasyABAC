@@ -1,18 +1,17 @@
 package custis.easyabac.core;
 
 import custis.easyabac.core.audit.Audit;
+import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.extend.RequestExtender;
-import custis.easyabac.core.init.Datasource;
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.init.PdpHandler;
-import custis.easyabac.core.model.IdGenerator;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.attribute.Attribute;
-import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
-import custis.easyabac.core.model.abac.attribute.Category;
+import custis.easyabac.core.pdp.*;
 import custis.easyabac.core.trace.Trace;
 import custis.easyabac.core.trace.model.TraceResult;
-import custis.easyabac.pdp.*;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.IdGenerator;
+import custis.easyabac.model.attribute.Attribute;
+import custis.easyabac.model.attribute.AttributeWithValue;
+import custis.easyabac.model.attribute.Category;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -89,14 +88,14 @@ public class EasyAbac implements AttributiveAuthorizationService {
         MultiAuthRequest multiAuthRequest = null;
         MultiAuthResponse result = null;
         Map<RequestId, List<RequestId>> requestIdOptimizedMap = null;
+
+
         if (options.isOptimizeRequest()) {
             MultiAuthRequestOptimize multiAuthRequestOptimize = optimazePrepareMultiRequest(attributes, additionalAttributes);
             requestIdOptimizedMap = new HashMap<>();
 
             Map<RequestId, List<String>> requests = multiAuthRequestOptimize.getRequests();
-
             Map<RequestId, List<String>> uniqueRequests = requests.values().stream().distinct().collect(Collectors.toMap(o -> RequestId.newRandom(), o -> o));
-
 
             for (RequestId uniqueRequestId : uniqueRequests.keySet()) {
                 List<RequestId> requestIdsByOptimRequest = requests.keySet().stream()
@@ -120,6 +119,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
                 log.error("authorizeMultiple ", e);
             }
         }
+
 
         if (options.isOptimizeRequest()) {
             Map<RequestId, AuthResponse> detailedResult = new HashMap<>();
@@ -173,9 +173,9 @@ public class EasyAbac implements AttributiveAuthorizationService {
             requests.put(requestId, attributeWithValuesByRequest);
         }
 
+            // Сортировка нужна для правильного сравнения для выявления одинаковых запросов
         return new MultiAuthRequest(allAttributesById, requests);
     }
-
 
     private MultiAuthRequestOptimize optimazePrepareMultiRequest(Map<RequestId, List<AuthAttribute>> authAttributes, List<AttributeWithValue> additionalAttributes) {
 
@@ -226,7 +226,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
                 .flatMap(o -> o.stream())
                 .distinct()
                 .collect(Collectors.toMap(o -> o, o -> uniqueAttributesWithValueById.get(o)));
-
         return new MultiAuthRequestOptimize(clearedAttributesWithValueById, clearedRequests);
     }
 
@@ -259,6 +258,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
         return actions.get(0);
     }
+
 
     private String getActionFromRequest(List<AttributeWithValue> authAttributesByRequest) throws EasyAbacAuthException {
         List<AttributeWithValue> actions = authAttributesByRequest.stream().filter(authAttribute -> authAttribute.getAttribute().getCategory().equals(Category.ACTION)).collect(Collectors.toList());

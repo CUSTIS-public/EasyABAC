@@ -3,17 +3,22 @@ package custis.easyabac.core;
 import custis.easyabac.core.audit.Audit;
 import custis.easyabac.core.audit.DefaultAudit;
 import custis.easyabac.core.cache.Cache;
+import custis.easyabac.core.cache.DefaultCache;
+import custis.easyabac.core.datasource.Datasource;
+import custis.easyabac.core.datasource.Param;
 import custis.easyabac.core.extend.RequestExtender;
 import custis.easyabac.core.extend.subject.DummySubjectAttributesProvider;
 import custis.easyabac.core.extend.subject.SubjectAttributesExtender;
 import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
-import custis.easyabac.core.init.*;
-import custis.easyabac.core.model.ModelType;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.attribute.Attribute;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.PdpHandler;
+import custis.easyabac.core.pdp.PdpHandlerFactory;
 import custis.easyabac.core.trace.DefaultTrace;
 import custis.easyabac.core.trace.Trace;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.ModelCreator;
+import custis.easyabac.model.attribute.Attribute;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,34 +33,27 @@ public class EasyAbacBuilder {
     private final static Log log = LogFactory.getLog(EasyAbacBuilder.class);
 
     private final AbacAuthModel abacAuthModel;
+    private final PdpHandlerFactory pdpHandlerFactory;
 
-    private PdpHandlerFactory pdpHandlerFactory = BalanaPdpHandlerFactory.PROXY_INSTANCE;
     private List<Datasource> datasources = Collections.emptyList();
-    private Cache cache;
+    private Cache cache = DefaultCache.INSTANCE;
     private Trace trace = DefaultTrace.INSTANCE;
     private Audit audit = DefaultAudit.INSTANCE;
     private SubjectAttributesProvider subjectAttributesProvider = DummySubjectAttributesProvider.INSTANCE;
     private InputStream xacmlPolicy;
     private Options options = Options.getDefaultOptions();
 
-    public EasyAbacBuilder(AbacAuthModel abacAuthModel) {
+    public EasyAbacBuilder(AbacAuthModel abacAuthModel, PdpHandlerFactory pdpHandlerFactory) {
         this.abacAuthModel = abacAuthModel;
-    }
-
-    public EasyAbacBuilder(String easyModel, ModelType modelType) throws EasyAbacInitException {
-        this(new ByteArrayInputStream(easyModel.getBytes()), modelType);
-    }
-
-    public EasyAbacBuilder(InputStream easyModel, ModelType modelType) throws EasyAbacInitException {
-        this.abacAuthModel = AbacAuthModelFactory.getInstance(modelType, easyModel);
-    }
-
-    public EasyAbacBuilder pdpHandlerFactory(PdpHandlerFactory pdpHandlerFactory) {
-        if (xacmlPolicy != null && !pdpHandlerFactory.supportsXacmlPolicies()) {
-            throw new IllegalArgumentException(pdpHandlerFactory.getClass().getName() + " should supports XACML!");
-        }
         this.pdpHandlerFactory = pdpHandlerFactory;
-        return this;
+    }
+
+    public EasyAbacBuilder(String easyModel, ModelCreator modelCreator, PdpHandlerFactory pdpHandlerFactory) throws EasyAbacInitException {
+        this(new ByteArrayInputStream(easyModel.getBytes()), modelCreator, pdpHandlerFactory);
+    }
+
+    public EasyAbacBuilder(InputStream stream, ModelCreator modelCreator, PdpHandlerFactory pdpHandlerFactory) throws EasyAbacInitException {
+        this(modelCreator.createModel(stream), pdpHandlerFactory);
     }
 
     public EasyAbacBuilder datasources(List<Datasource> datasources) {
@@ -113,12 +111,6 @@ public class EasyAbacBuilder {
         extenders.add(new SubjectAttributesExtender(subjectAttributesProvider));
 
 
-        if (log.isDebugEnabled()) {
-            for (Attribute attribute : abacAuthModel.getAttributes().values()) {
-                log.debug(attribute.getId() + "  ->  " + attribute.getXacmlName() + "  ->  " + attribute.getType().getXacmlName() + "  ->  " + attribute.getCategory().getXacmlName());
-            }
-        }
-
         Map<String, Map<String, Attribute>> attributesByAction = groupAttributesByAction(datasources, abacAuthModel);
 
         return new EasyAbac(pdpHandler, abacAuthModel, datasources, extenders, audit, trace, attributesByAction, options);
@@ -163,6 +155,7 @@ public class EasyAbacBuilder {
                             .flatMap(tc -> Stream.of(tc.getFirstOperand()))).collect(Collectors.toList());
 
             attributesByAction.addAll(actionAttributeByAction);
+
 
             // TODO: 16.10.18 добавить цикл для зависимых датасорсов
             List<Attribute> attributeFromParams = attributesByAction.stream()

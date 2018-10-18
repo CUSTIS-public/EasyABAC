@@ -3,7 +3,7 @@ package custis.easyabac.api.impl;
 import custis.easyabac.api.core.PermissionCheckerInformation;
 import custis.easyabac.api.core.call.callprocessor.MethodCallProcessor;
 import custis.easyabac.api.core.call.callprocessor.MethodCallProcessorFactory;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 

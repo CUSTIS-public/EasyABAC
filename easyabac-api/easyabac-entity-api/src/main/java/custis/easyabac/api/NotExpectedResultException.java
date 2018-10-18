@@ -1,7 +1,7 @@
 package custis.easyabac.api;
 
 
-import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthResponse;
 
 public class NotExpectedResultException extends RuntimeException {
 
