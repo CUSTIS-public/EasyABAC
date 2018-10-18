@@ -1,7 +1,7 @@
 package custis.easyabac.core.pdp.balana.trace.interceptors.cglib;
 
+import custis.easyabac.core.pdp.balana.trace.BalanaTraceHandler;
 import custis.easyabac.core.pdp.balana.trace.BalanaTraceHandlerProvider;
-import custis.easyabac.core.trace.balana.BalanaTraceHandler;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.wso2.balana.MatchResult;

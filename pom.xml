@@ -20,11 +20,12 @@
         <module>easyabac-extensions/pdp/wso2-balana-pdp</module>
         <module>easyabac-extensions/audit/easyabac-audit4j</module>
         <module>easyabac-extensions/trace/logging-trace</module>
-        <module>easyabac-tools/easyabac-model-generator</module>
+        <module>easyabac-tools/easyabac-test-generator</module>
         <module>easyabac-tools/easyabac-maven-plugin</module>
         <module>easyabac-tools/xacml-policy-transformer</module>
         <module>easyabac-tools/easy-model-loader</module>
         <module>easyabac-tools/easyabac-spring-boot-starter</module>
+        <module>easyabac-tools/policy-testing-infra</module>
         <module>easyabac-benchmark</module>
     </modules>
 
@@ -63,12 +64,22 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>easyabac-model-generator</artifactId>
+                <artifactId>easyabac-test-generator</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>wso2-balana-pdp</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>easy-model-loader</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>policy-testing-infra</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

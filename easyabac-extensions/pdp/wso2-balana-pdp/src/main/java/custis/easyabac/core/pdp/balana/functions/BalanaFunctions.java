@@ -1,6 +1,6 @@
 package custis.easyabac.core.pdp.balana.functions;
 
-import custis.easyabac.core.init.BalanaPolicyBuildException;
+import custis.easyabac.core.pdp.balana.BalanaPolicyBuildException;
 import custis.easyabac.model.attribute.DataType;
 import org.wso2.balana.cond.Function;
 

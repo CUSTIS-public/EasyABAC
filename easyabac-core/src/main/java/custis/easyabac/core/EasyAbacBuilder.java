@@ -17,6 +17,7 @@ import custis.easyabac.core.trace.DefaultTrace;
 import custis.easyabac.core.trace.Trace;
 import custis.easyabac.model.AbacAuthModel;
 import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.ModelCreator;
 import custis.easyabac.model.attribute.Attribute;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

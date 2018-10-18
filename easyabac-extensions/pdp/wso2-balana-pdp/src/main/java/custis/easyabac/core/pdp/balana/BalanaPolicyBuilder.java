@@ -1,6 +1,5 @@
 package custis.easyabac.core.pdp.balana;
 
-import custis.easyabac.core.init.AbacAuthModelFactory;
 import custis.easyabac.core.pdp.balana.functions.BalanaFunctions;
 import custis.easyabac.core.pdp.balana.functions.BalanaFunctionsFactory;
 import custis.easyabac.model.*;
@@ -23,8 +22,6 @@ import org.wso2.balana.finder.impl.CurrentEnvModule;
 import org.wso2.balana.xacml3.*;
 import org.wso2.balana.xacml3.Target;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -296,13 +293,4 @@ class BalanaPolicyBuilder {
                 createAttributeDesignator(firstOperand, false), attributeValue);
     }
 
-    public static void main(String[] args) throws EasyAbacInitException, IOException {
-        BalanaPolicyBuilder builder = new BalanaPolicyBuilder();
-        PolicySet policySet = builder.buildFrom(AbacAuthModelFactory.getInstance(ModelType.XACML,
-                BalanaPolicyBuilder.class.getResourceAsStream("/test.yaml")));
-        final FileWriter fileWriter = new FileWriter("test.xacml");
-        fileWriter.write(policySet.encode());
-        fileWriter.flush();
-        fileWriter.close();
-    }
 }
