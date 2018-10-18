@@ -1,7 +1,5 @@
 package custis.easyabac.demo.model;
 
-import lombok.Getter;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -10,16 +8,14 @@ import java.util.Objects;
  * Сущность "Заказ" в системе
  */
 @Entity
-@Getter
-@Table(name = "order")
+@Table(name = "t_order")
 public class Order {
 
     @Id
-    @AttributeOverride(name = "value", column = @Column(name = "id"))
-    private OrderId id;
+    private String id;
 
-    @AttributeOverride(name = "value", column = @Column(name = "customer_id"))
-    private CustomerId customerId;
+    @Column(name = "customer_id")
+    private String customerId;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", insertable = false, updatable = false)
@@ -28,8 +24,8 @@ public class Order {
     @Column(name = "amount")
     private BigDecimal amount;
 
-    @AttributeOverride(name = "value", column = @Column(name = "branch_id"))
-    private BranchId branchId;
+    @Column
+    private String branchId;
 
     @Enumerated(EnumType.STRING)
     private OrderState state;
@@ -38,12 +34,52 @@ public class Order {
 
     }
 
-    public Order(Customer customer, BranchId branchId, BigDecimal amount) {
-        this.id = OrderId.newId();
-        this.customerId = customer.getId();
-        this.branchId = branchId;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
-        this.state = OrderState.NEW;
+    }
+
+    public String getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(String branchId) {
+        this.branchId = branchId;
+    }
+
+    public OrderState getState() {
+        return state;
+    }
+
+    public void setState(OrderState state) {
+        this.state = state;
     }
 
     @Override

@@ -2,10 +2,18 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="1" author="alapitskiy">
+        <createTable tableName="t_branch">
+            <column name="id" type="VARCHAR(100)">
+                <constraints primaryKey="true" primaryKeyName="pk_branch_id"/>
+            </column>
+            <column name="name" type="VARCHAR(1000)" />
+        </createTable>
+    </changeSet>
 
-    <changeSet resourceId="1" author="alapitskiy">
-        <createTable tableName="customer">
-            <column name="resourceId" type="VARCHAR(100)">
+    <changeSet id="2" author="alapitskiy">
+        <createTable tableName="t_customer">
+            <column name="id" type="VARCHAR(100)">
                 <constraints primaryKey="true" primaryKeyName="pk_customer_id"/>
             </column>
             <column name="first_name" type="VARCHAR(1000)" />
@@ -13,25 +21,40 @@
             <column name="branch_id" type="VARCHAR(100)" />
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="customer" baseColumnNames="branch_id" constraintName="fk_customer_branch_id" referencedTableName="branch"
-                                 referencedColumnNames="resourceId" />
+        <addForeignKeyConstraint baseTableName="t_customer" baseColumnNames="branch_id" constraintName="fk_customer_branch_id" referencedTableName="t_branch"
+                                 referencedColumnNames="id" />
     </changeSet>
 
-    <changeSet resourceId="3" author="alapitskiy">
-        <createTable tableName="order">
-            <column name="resourceId" type="VARCHAR(100)">
+    <changeSet id="3" author="alapitskiy">
+        <createTable tableName="t_order">
+            <column name="id" type="VARCHAR(100)">
                 <constraints primaryKey="true" primaryKeyName="pk_order_id"/>
             </column>
             <column name="branch_id" type="VARCHAR(100)" />
             <column name="customer_id" type="VARCHAR(100)" />
             <column name="state" type="VARCHAR(100)" />
-            <column name="value" type="NUMBER" />
+            <column name="amount" type="NUMBER" />
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="order" baseColumnNames="branch_id" constraintName="fk_order_branch_id" referencedTableName="branch"
-                                 referencedColumnNames="resourceId" />
-        <addForeignKeyConstraint baseTableName="order" baseColumnNames="customer_id" constraintName="fk_order_customer_id" referencedTableName="customer"
-                                 referencedColumnNames="resourceId" />
+        <addForeignKeyConstraint baseTableName="t_order" baseColumnNames="branch_id" constraintName="fk_order_branch_id" referencedTableName="t_branch"
+                                 referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="t_order" baseColumnNames="customer_id" constraintName="fk_order_customer_id" referencedTableName="t_customer"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="4" author="alapitskiy">
+        <createTable tableName="t_user">
+            <column name="id" type="VARCHAR(100)">
+                <constraints primaryKey="true" primaryKeyName="pk_employee_id"/>
+            </column>
+            <column name="branch_id" type="VARCHAR(100)" />
+            <column name="first_name" type="VARCHAR(100)" />
+            <column name="last_name" type="VARCHAR(100)" />
+            <column name="role" type="VARCHAR(100)" />
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="t_user" baseColumnNames="branch_id" constraintName="fk_employee_branch_id" referencedTableName="t_branch"
+                                 referencedColumnNames="id" />
     </changeSet>
 
 

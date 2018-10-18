@@ -2,9 +2,41 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-   <!-- <changeSet resourceId="1" author="alapitskiy">
-        <sql>
+   <changeSet id="1" author="alapitskiy">
+      <sql>
+         INSERT INTO t_branch(id, name) VALUES ('MSK', 'MOSCOW');
+         INSERT INTO t_branch(id, name) VALUES ('SPB', 'Saint-Petersburg');
+         INSERT INTO t_branch(id, name) VALUES ('NN', 'Nijniy Novgorod');
+      </sql>
+   </changeSet>
 
+   <changeSet id="2" author="alapitskiy">
+        <sql>
+           INSERT INTO t_user(id, branch_id, first_name, last_name, role) VALUES ('MSK_user_1', 'MSK', 'Ivan', 'Ivanov', 'MANAGER');
+           INSERT INTO t_user(id, branch_id, first_name, last_name, role) VALUES ('MSK_user_2', 'MSK', 'Petr', 'Petrov', 'OPERATOR');
+           INSERT INTO t_user(id, branch_id, first_name, last_name, role) VALUES ('SPB_user_1', 'SPB', 'Victor', 'Sidorov', 'MANAGER');
+           INSERT INTO t_user(id, branch_id, first_name, last_name, role) VALUES ('SPB_user_2', 'SPB', 'Kirill', 'Kirillov', 'OPERATOR');
         </sql>
-    </changeSet>-->
+    </changeSet>
+
+   <changeSet id="3" author="alapitskiy">
+      <sql>
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('MSK_customer_1', 'MSK', 'Ivan', 'Ivanov');
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('MSK_customer_2', 'MSK', 'Petr', 'Petrov');
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('MSK_customer_3', 'MSK', 'Maxim', 'Maximov');
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('MSK_customer_4', 'NN', 'Vladimir', 'Vladimirov');
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('MSK_customer_5', 'NN', 'Oleg', 'Laptev');
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_1', 'SPB', 'Victor', 'Sidorov');
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_2', 'SPB', 'Kirill', 'Kirillov');
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_3', 'SPB', 'Anton', 'Antonov');
+          INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_4', 'SPB', 'Victor', 'Sidorov');
+          INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_5', 'SPB', 'Kirill', 'Kirillov');
+      </sql>
+   </changeSet>
+
+    <changeSet id="4" author="alapitskiy">
+        <sql>
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_1', 'MSK_customer_1', 'MSK', 500, 'NEW');
+        </sql>
+    </changeSet>
 </databaseChangeLog>
