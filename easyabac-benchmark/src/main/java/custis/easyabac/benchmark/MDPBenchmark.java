@@ -4,16 +4,15 @@ import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.benchmark.model.Subject;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.init.AbacAuthModelFactory;
-import custis.easyabac.core.init.BalanaPdpHandlerFactory;
-import custis.easyabac.core.init.Datasource;
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.model.ModelType;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthAttribute;
-import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.RequestId;
+import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
+import custis.easyabac.core.datasource.Datasource;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.easy.EasyAbacModelCreator;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthAttribute;
+import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.RequestId;
 
 import java.util.*;
 
@@ -22,15 +21,15 @@ import static java.util.stream.Collectors.groupingBy;
 
 public class MDPBenchmark extends AbstractAuthorizationBenchmark {
 
-    private static final int BATCH_SIZE = 5;
+    private static final int BATCH_SIZE = 3;
 
     private void run() throws EasyAbacInitException {
-        AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
-                MDPBenchmark.class.getResourceAsStream("/OrdersPolicy.yaml"));
+        EasyAbacModelCreator creator = new EasyAbacModelCreator();
+
+        AbacAuthModel model = creator.createModel(MDPBenchmark.class.getResourceAsStream("/OrdersPolicy.yaml"));
 
         Datasource customerBranchIdDatasource = getCustomerBranchIdDatasource();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(model)
-                .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                 .datasources(Collections.singletonList(customerBranchIdDatasource))
                 .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                 .build();
