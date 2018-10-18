@@ -5,7 +5,7 @@ import custis.easyabac.api.attr.annotation.AuthorizationActionId;
 import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
 import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 import custis.easyabac.api.attr.imp.AttributeAuthorizationEntity;
-import custis.easyabac.api.attr.imp.AttributiveAction;
+import custis.easyabac.api.attr.imp.AttributiveAuthorizationAction;
 import custis.easyabac.core.pdp.AuthAttribute;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,8 +36,8 @@ public class AttributeValueExtractor {
     }
 
     public static <T> List<AuthAttribute> extractAttributesFromAction(T object) {
-        if (object instanceof AttributiveAction) {
-            return Collections.singletonList(((AttributiveAction) object).getAuthAttribute());
+        if (object instanceof AttributiveAuthorizationAction) {
+            return Collections.singletonList(((AttributiveAuthorizationAction) object).getAuthAttribute());
         } else {
             return performReflectiveActionExtraction(object);
         }
