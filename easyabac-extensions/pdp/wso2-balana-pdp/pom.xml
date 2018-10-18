@@ -30,10 +30,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>easyabac-model</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>easyabac-core</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.wso2.balana</groupId>

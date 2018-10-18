@@ -128,6 +128,7 @@ public class LoggingViewTrace implements Trace {
             } else {
                 modelWithTrace.append(model.getFirstOperand().getId()).append(" [n/a]").append(", ");
             }
+            modelWithTrace.append("\n");
 
             if (model.getSecondOperandAttribute() != null) {
                 CalculatedAttribute calcSecond = attributes.get(makeXacmlName(model.getSecondOperandAttribute().getId()));

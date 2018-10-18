@@ -11,7 +11,7 @@ import java.io.IOException;
 public class ExternalAuthenticationFilter implements Filter {
     private final Logger logger = LoggerFactory.getLogger(ExternalAuthenticationFilter.class);
 
-    public static final String EMPLOYEE_ID_HEADER = "EMPLOYEE_ID";
+    public static final String USER_ID_PARAMETER = "USER_ID";
 
     public void init(FilterConfig filterConfig) throws ServletException {
     }
@@ -21,7 +21,7 @@ public class ExternalAuthenticationFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
 
-        String userId = req.getParameter(EMPLOYEE_ID_HEADER);
+        String userId = req.getParameter(USER_ID_PARAMETER);
         if (userId != null) {
             AuthenticationContext.setup(userId);
         } else {

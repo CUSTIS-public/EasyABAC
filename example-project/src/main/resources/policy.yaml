@@ -3,24 +3,11 @@ resources:
     attributes:
     - id: id
     - id: role
-      title: User role "MANAGER" / "OPERATOR"
-      allowableValues:
-        - OPERATOR
-        - MANAGER
     - id: branchId
-      title: ИД филиала
     - id: maxOrderAmount
-      title: Максимальный заказ
       type: int
-  customer:
-    title: Клиент
-    attributes:
-    - id: id
-      title: ИД клиента
-    - id: branchId
-      title: ИД филиала
   order:
-    title: Заказ
+    title: Order
     actions:
     - view
     - create
@@ -28,29 +15,23 @@ resources:
     - reject
     attributes:
     - id: id
-      title: ИД заказа
     - id: amount
-      title: Сумма заказа
       type: int
     - id: branchId
-      title: ИД филиала
-    - id: customerId
-      title: ИД клиента
-
 
 permissions:
-- title: Операционист
+- title: Any User
   accessToActions: [order.view]
   rules:
-  - title: Доступ операциониста
+  - title: ANy user of branch
     operation: AND
     conditions:
     - order.branchId == subject.branchId
 
-- title: Операционист
+- title: Operator
   accessToActions: [order.create]
   rules:
-  - title: Доступ операциониста
+  - title: Operator access
     operation: AND
     conditions:
     - order.branchId == subject.branchId
@@ -59,8 +40,9 @@ permissions:
 - title: Менеджер
   accessToActions: [order.approve, order.reject]
   rules:
-  - title: Доступ менеджера
+  - title: Manager access
     operation: AND
     conditions:
+    - order.branchId == subject.branchId
     - subject.role == 'MANAGER'
     - subject.maxOrderAmount > order.amount

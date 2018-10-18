@@ -17,6 +17,14 @@ import java.util.List;
 @Slf4j
 public class AttributeValueExtractor {
 
+    public static <T> List<AuthAttribute> extractAttributesFromSubject(T object) {
+        if (object instanceof AttributeAuthorizationEntity) {
+            return ((AttributeAuthorizationEntity) object).getAuthAttributes();
+        } else {
+            return performReflectiveExtraction(object, "subject");
+        }
+    }
+
     public static <T, A> List<AuthAttribute> extract(T object, A action) {
         List<AuthAttribute> attributes = extractAttributesFromResource(object);
         attributes.addAll(extractAttributesFromAction(action));
@@ -45,12 +53,18 @@ public class AttributeValueExtractor {
 
     private static <T> List<AuthAttribute> performReflectiveExtraction(T object) {
         String entityName = object.getClass().getSimpleName();
+        entityName = entityName.substring(0, 1).toLowerCase() + entityName.substring(1);
         if (object.getClass().isAnnotationPresent(AuthorizationEntity.class)) {
             AuthorizationEntity ann = object.getClass().getAnnotation(AuthorizationEntity.class);
             if (!ann.name().isEmpty()) {
                 entityName = ann.name();
             }
         }
+        return performReflectiveExtraction(object, entityName);
+    }
+
+        private static <T> List<AuthAttribute> performReflectiveExtraction(T object, String entityName) {
+
 
         Field[] fields = object.getClass().getDeclaredFields();
         if (fields == null) {
@@ -161,6 +175,7 @@ public class AttributeValueExtractor {
 
     private static <T> List<AuthAttribute> performReflectiveActionExtraction(T object) {
         String entityName = object.getClass().getSimpleName();
+        entityName = entityName.substring(0, 1).toLowerCase() + entityName.substring(1);
         if (object.getClass().isAnnotationPresent(AuthorizationAction.class)) {
             AuthorizationAction ann = object.getClass().getAnnotation(AuthorizationAction.class);
             if (!ann.entity().isEmpty()) {
@@ -169,6 +184,7 @@ public class AttributeValueExtractor {
         }
 
         List<AuthAttribute> attributes = new ArrayList<>();
+        boolean foundAnnotated = false;
         for (Field field : object.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(AuthorizationActionId.class)) {
                 AuthorizationActionId fieldAnnotation = field.getAnnotation(AuthorizationActionId.class);
@@ -178,9 +194,16 @@ public class AttributeValueExtractor {
                     Object value = field.get(object);
 
                     attributes.add(new AuthAttribute(entityName + ".action", entityName + "." + value.toString()));
+                    foundAnnotated = true;
                 } catch (IllegalAccessException e) {
                     log.error(e.getMessage());
                 }
+            }
+        }
+
+        if (!foundAnnotated) {
+            if (object instanceof Enum) {
+                attributes.add(new AuthAttribute(entityName + ".action", ((Enum) object).name().toLowerCase()));
             }
         }
         return attributes;
