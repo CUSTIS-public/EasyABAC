@@ -22,6 +22,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    private int maxOrderAmount;
+
     public String getId() {
         return id;
     }
@@ -60,6 +62,14 @@ public class User {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public int getMaxOrderAmount() {
+        return maxOrderAmount;
+    }
+
+    public void setMaxOrderAmount(int maxOrderAmount) {
+        this.maxOrderAmount = maxOrderAmount;
     }
 
     @Override

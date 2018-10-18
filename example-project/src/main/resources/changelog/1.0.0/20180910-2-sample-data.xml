@@ -12,10 +12,10 @@
 
    <changeSet id="2" author="alapitskiy">
         <sql>
-           INSERT INTO t_user(id, branch_id, first_name, last_name, role) VALUES ('MSK_user_1', 'MSK', 'Ivan', 'Ivanov', 'MANAGER');
-           INSERT INTO t_user(id, branch_id, first_name, last_name, role) VALUES ('MSK_user_2', 'MSK', 'Petr', 'Petrov', 'OPERATOR');
-           INSERT INTO t_user(id, branch_id, first_name, last_name, role) VALUES ('SPB_user_1', 'SPB', 'Victor', 'Sidorov', 'MANAGER');
-           INSERT INTO t_user(id, branch_id, first_name, last_name, role) VALUES ('SPB_user_2', 'SPB', 'Kirill', 'Kirillov', 'OPERATOR');
+           INSERT INTO t_user(id, branch_id, first_name, last_name, role, max_order_amount) VALUES ('MSK_user_1', 'MSK', 'Ivan', 'Ivanov', 'MANAGER', 1000);
+           INSERT INTO t_user(id, branch_id, first_name, last_name, role, max_order_amount) VALUES ('MSK_user_2', 'MSK', 'Petr', 'Petrov', 'OPERATOR', 0);
+           INSERT INTO t_user(id, branch_id, first_name, last_name, role, max_order_amount) VALUES ('SPB_user_1', 'SPB', 'Victor', 'Sidorov', 'MANAGER', 2000);
+           INSERT INTO t_user(id, branch_id, first_name, last_name, role, max_order_amount) VALUES ('SPB_user_2', 'SPB', 'Kirill', 'Kirillov', 'OPERATOR', 0);
         </sql>
     </changeSet>
 

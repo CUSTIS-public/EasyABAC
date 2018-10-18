@@ -10,16 +10,15 @@
     </parent>
 
     <groupId>custis.easyabac</groupId>
-    <artifactId>easyabac-spring-boot-starter</artifactId>
+    <artifactId>easyabac-starter</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Custis.EasyAbacSpringBootStarter</name>
-    <description>API для вызова EasyABAC</description>
+    <name>Custis.EasyAbacStarterProject</name>
+    <description>Starter project for EasyABAC</description>
 
     <properties>
         <docker.entrypoint.spring.profiles.active>default</docker.entrypoint.spring.profiles.active>
         <spring.version>5.0.9.RELEASE</spring.version>
-        <spring.boot.version>2.0.5.RELEASE</spring.boot.version>
     </properties>
 
     <dependencies>
@@ -28,7 +27,8 @@
 
         <dependency>
             <groupId>custis.easyabac</groupId>
-            <artifactId>easyabac-spring-api</artifactId>
+            <artifactId>policy-testing-infra</artifactId>
+            <scope>test</scope>
         </dependency>
 
 
@@ -51,11 +51,6 @@
 
 
         <!-- other -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.18</version>
-        </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>

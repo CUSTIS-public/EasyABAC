@@ -3,8 +3,8 @@ resources:
     attributes:
     - id: id
     - id: role
-      title: Роль сотрудника "Менеджер" / Операционист
-      allowableValues:  #Разрешенные значения, для валидации политики
+      title: User role "MANAGER" / "OPERATOR"
+      allowableValues:
         - OPERATOR
         - MANAGER
     - id: branchId
