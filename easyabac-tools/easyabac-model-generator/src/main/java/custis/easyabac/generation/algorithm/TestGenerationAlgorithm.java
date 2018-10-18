@@ -1,9 +1,9 @@
 package custis.easyabac.generation.algorithm;
 
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.model.abac.Effect;
-import custis.easyabac.core.model.abac.Policy;
-import custis.easyabac.core.model.abac.Rule;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.Effect;
+import custis.easyabac.model.Policy;
+import custis.easyabac.model.Rule;
 
 import java.util.List;
 import java.util.Map;

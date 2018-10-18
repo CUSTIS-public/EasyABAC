@@ -1,7 +1,7 @@
 package custis.easyabac.benchmark.model;
 
-import custis.easyabac.api.AuthorizationAction;
-import custis.easyabac.api.AuthorizationActionId;
+import custis.easyabac.api.attr.annotation.AuthorizationAction;
+import custis.easyabac.api.attr.annotation.AuthorizationActionId;
 
 import java.util.Arrays;
 import java.util.Optional;

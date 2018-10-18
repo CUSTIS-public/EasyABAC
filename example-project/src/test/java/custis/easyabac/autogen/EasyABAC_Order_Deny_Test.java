@@ -9,7 +9,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.List;
 
-import static custis.easyabac.pdp.AuthResponse.Decision.DENY;
+import static custis.easyabac.core.pdp.AuthResponse.Decision.DENY;
 
 public class EasyABAC_Order_Deny_Test extends EasyAbacBaseTestClass {
 

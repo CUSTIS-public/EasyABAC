@@ -1,10 +1,10 @@
 package custis.easyabac.generation.algorithm;
 
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.model.abac.Condition;
-import custis.easyabac.core.model.abac.Function;
-import custis.easyabac.core.model.abac.Rule;
-import custis.easyabac.core.model.abac.attribute.Attribute;
+import custis.easyabac.model.Condition;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.Function;
+import custis.easyabac.model.Rule;
+import custis.easyabac.model.attribute.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -4,8 +4,8 @@ import custis.easyabac.api.core.PermissionCheckerInformation;
 import custis.easyabac.api.core.call.DecisionType;
 import custis.easyabac.api.core.call.GettingReturnType;
 import custis.easyabac.api.utils.ResourceActionPair;
-import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.RequestId;
+import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.RequestId;
 
 import java.util.ArrayList;
 import java.util.HashMap;

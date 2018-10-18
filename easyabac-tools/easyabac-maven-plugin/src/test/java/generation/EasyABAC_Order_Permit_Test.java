@@ -8,7 +8,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.List;
 
-import static custis.easyabac.pdp.AuthResponse.Decision.PERMIT;
+import static custis.easyabac.core.pdp.AuthResponse.Decision.PERMIT;
 
 public class EasyABAC_Order_Permit_Test extends EasyAbacBaseTestClass {
 

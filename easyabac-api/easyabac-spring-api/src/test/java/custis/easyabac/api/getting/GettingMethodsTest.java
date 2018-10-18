@@ -5,9 +5,9 @@ import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.model.EasyAbacInitException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

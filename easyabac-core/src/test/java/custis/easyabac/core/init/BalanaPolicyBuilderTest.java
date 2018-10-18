@@ -1,10 +1,9 @@
 package custis.easyabac.core.init;
 
-import custis.easyabac.core.model.abac.*;
-import custis.easyabac.core.model.abac.attribute.Attribute;
-import custis.easyabac.core.model.abac.attribute.Category;
-import custis.easyabac.core.model.abac.attribute.DataType;
-import org.hamcrest.core.IsNot;
+import custis.easyabac.model.*;
+import custis.easyabac.model.attribute.Attribute;
+import custis.easyabac.model.attribute.Category;
+import custis.easyabac.model.attribute.DataType;
 import org.junit.Before;
 import org.junit.Test;
 import org.wso2.balana.AbstractPolicy;
@@ -27,7 +26,6 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
 import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 

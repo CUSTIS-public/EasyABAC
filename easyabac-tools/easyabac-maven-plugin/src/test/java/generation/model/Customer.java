@@ -1,7 +1,7 @@
 package generation.model;
 
-import custis.easyabac.api.AuthorizationAttribute;
-import custis.easyabac.api.AuthorizationEntity;
+import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
+import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 
 @AuthorizationEntity(name = "customer")
 public class Customer {

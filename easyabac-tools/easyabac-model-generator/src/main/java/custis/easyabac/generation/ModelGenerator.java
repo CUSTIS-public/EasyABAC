@@ -11,7 +11,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.utils.SourceRoot;
-import custis.easyabac.core.model.abac.attribute.DataType;
+import custis.easyabac.model.attribute.DataType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

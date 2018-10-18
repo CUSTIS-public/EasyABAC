@@ -17,18 +17,14 @@ import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.api.NotPermittedException;
 import custis.easyabac.api.test.EasyAbacBaseTestClass;
 import custis.easyabac.api.test.TestDescription;
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.Effect;
-import custis.easyabac.core.model.abac.Policy;
-import custis.easyabac.core.model.abac.Rule;
-import custis.easyabac.core.model.abac.attribute.Attribute;
-import custis.easyabac.core.model.abac.attribute.DataType;
-import custis.easyabac.core.model.abac.attribute.Resource;
+import custis.easyabac.core.pdp.AuthResponse;
 import custis.easyabac.generation.algorithm.CombinationAlgorithmFactory;
 import custis.easyabac.generation.algorithm.FunctionUtils;
 import custis.easyabac.generation.algorithm.TestGenerationAlgorithm;
-import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.model.*;
+import custis.easyabac.model.attribute.Attribute;
+import custis.easyabac.model.attribute.DataType;
+import custis.easyabac.model.attribute.Resource;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
@@ -42,11 +38,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static custis.easyabac.core.pdp.AuthResponse.Decision.DENY;
+import static custis.easyabac.core.pdp.AuthResponse.Decision.PERMIT;
 import static custis.easyabac.generation.ModelGenerator.ACTION_SUFFIX;
 import static custis.easyabac.generation.ModelGenerator.resolvePathForSourceFile;
 import static custis.easyabac.generation.algorithm.FunctionUtils.ANY_FUNCTION;
-import static custis.easyabac.pdp.AuthResponse.Decision.DENY;
-import static custis.easyabac.pdp.AuthResponse.Decision.PERMIT;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 
 public class TestGenerator {
@@ -314,7 +310,7 @@ public class TestGenerator {
         {
             add(new ImportDeclaration(NotPermittedException.class.getName(), false, false));
             add(new ImportDeclaration(EasyAbacBaseTestClass.class.getName(), false, false));
-            add(new ImportDeclaration("custis.easyabac.pdp.AuthResponse.Decision", true, true));
+            add(new ImportDeclaration("custis.easyabac.core.pdp.AuthResponse.Decision", true, true));
 
             // test
             add(new ImportDeclaration(Ignore.class.getName(), false, false));

@@ -2,10 +2,10 @@ package custis.easyabac.generation;
 
 import com.github.javaparser.utils.SourceRoot;
 import custis.easyabac.core.init.AbacAuthModelFactory;
-import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.attribute.Resource;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.attribute.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;

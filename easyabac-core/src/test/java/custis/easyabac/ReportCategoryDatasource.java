@@ -1,8 +1,8 @@
 package custis.easyabac;
 
 import custis.easyabac.core.EasyAbacDatasourceException;
-import custis.easyabac.core.init.Datasource;
-import custis.easyabac.core.init.Param;
+import custis.easyabac.core.datasource.Datasource;
+import custis.easyabac.core.datasource.Param;
 
 import java.util.Arrays;
 import java.util.Collections;

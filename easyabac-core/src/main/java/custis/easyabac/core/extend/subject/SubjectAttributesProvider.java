@@ -1,6 +1,6 @@
 package custis.easyabac.core.extend.subject;
 
-import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
+import custis.easyabac.model.attribute.AttributeWithValue;
 
 import java.util.List;
 

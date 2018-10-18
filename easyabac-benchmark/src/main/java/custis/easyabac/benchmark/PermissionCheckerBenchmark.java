@@ -8,9 +8,9 @@ import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.init.AbacAuthModelFactory;
 import custis.easyabac.core.init.BalanaPdpHandlerFactory;
-import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
-import custis.easyabac.core.model.abac.AbacAuthModel;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.EasyAbacInitException;
 import org.openjdk.jmh.annotations.*;
 
 import static java.util.Collections.singletonList;
@@ -27,14 +27,14 @@ public class PermissionCheckerBenchmark extends AbstractAuthorizationBenchmark {
                 getClass().getResourceAsStream("/OrdersPolicy.yaml"));
 
         this.managerOrderPermissionChecker = new EasyABACPermissionChecker<>(
-                new EasyAbacBuilder(model)
+                new EasyAbacBuilder(model, pdpHandlerFactory)
                         .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                         .datasources(singletonList(getCustomerBranchIdDatasource()))
                         .build());
 
         this.operatorOrderPermissionChecker = new EasyABACPermissionChecker<>(
-                new EasyAbacBuilder(model)
+                new EasyAbacBuilder(model, pdpHandlerFactory)
                         .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                         .datasources(singletonList(getCustomerBranchIdDatasource()))
                         .subjectAttributesProvider(getSubjectAttributesProvider(getOperatorSubject(), model))

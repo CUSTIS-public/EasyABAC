@@ -2,13 +2,12 @@ package custis.easyabac;
 
 import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.cache.SampleCache;
-import custis.easyabac.core.init.Datasource;
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.init.Param;
-import custis.easyabac.core.model.ModelType;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthAttribute;
-import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.core.datasource.Datasource;
+import custis.easyabac.core.datasource.Param;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthAttribute;
+import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.model.EasyAbacInitException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ public class CacheTest {
 
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, ModelType.XACML)
+        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel)
                 .useXacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).cache(new SampleCache()).build();
 
         Random random = new Random();

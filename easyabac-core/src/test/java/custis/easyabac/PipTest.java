@@ -2,12 +2,12 @@ package custis.easyabac;
 
 import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.EasyAbacDatasourceException;
-import custis.easyabac.core.init.Datasource;
-import custis.easyabac.core.init.Param;
+import custis.easyabac.core.datasource.Datasource;
+import custis.easyabac.core.datasource.Param;
 import custis.easyabac.core.model.ModelType;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthAttribute;
-import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthAttribute;
+import custis.easyabac.core.pdp.AuthResponse;
 import org.junit.Assert;
 import org.junit.Test;
 

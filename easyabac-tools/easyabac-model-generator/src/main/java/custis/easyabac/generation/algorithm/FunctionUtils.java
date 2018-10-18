@@ -1,7 +1,7 @@
 package custis.easyabac.generation.algorithm;
 
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.model.abac.Function;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.Function;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.List;

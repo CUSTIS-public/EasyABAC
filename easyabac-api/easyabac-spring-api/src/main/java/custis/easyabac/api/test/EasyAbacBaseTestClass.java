@@ -1,19 +1,20 @@
 package custis.easyabac.api.test;
 
-import custis.easyabac.api.AuthorizationAttribute;
-import custis.easyabac.api.AuthorizationEntity;
 import custis.easyabac.api.PermitAwarePermissionChecker;
+import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
+import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 import custis.easyabac.api.impl.EasyABACPermissionChecker;
 import custis.easyabac.core.EasyAbacBuilder;
+import custis.easyabac.core.datasource.Datasource;
+import custis.easyabac.core.datasource.SimpleDatasource;
 import custis.easyabac.core.init.AbacAuthModelFactory;
-import custis.easyabac.core.init.Datasource;
-import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.attribute.Attribute;
-import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.attribute.Attribute;
+import custis.easyabac.model.attribute.AttributeWithValue;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.yaml.snakeyaml.Yaml;
@@ -54,7 +55,7 @@ public abstract class EasyAbacBaseTestClass {
     public TestDescription testDescription;
 
     protected PermitAwarePermissionChecker getPermissionChecker(Class entityClass) throws FileNotFoundException, EasyAbacInitException {
-        EasyAbacBuilder builder = new EasyAbacBuilder(model);
+        EasyAbacBuilder builder = new EasyAbacBuilder(model, pdpHandlerFactory);
 
         // subject extender
         if (testDescription.containsAttributesByCode(SUBJECT_SYNONYM)) {

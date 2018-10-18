@@ -1,17 +1,16 @@
 package custis.easyabac.core;
 
 import custis.easyabac.core.audit.Audit;
+import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.extend.RequestExtender;
-import custis.easyabac.core.init.Datasource;
-import custis.easyabac.core.init.EasyAbacInitException;
-import custis.easyabac.core.init.PdpHandler;
-import custis.easyabac.core.model.abac.AbacAuthModel;
-import custis.easyabac.core.model.abac.attribute.Attribute;
-import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
-import custis.easyabac.core.model.abac.attribute.Category;
+import custis.easyabac.core.pdp.*;
 import custis.easyabac.core.trace.Trace;
 import custis.easyabac.core.trace.model.TraceResult;
-import custis.easyabac.pdp.*;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.attribute.Attribute;
+import custis.easyabac.model.attribute.AttributeWithValue;
+import custis.easyabac.model.attribute.Category;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

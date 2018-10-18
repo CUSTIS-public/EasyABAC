@@ -1,6 +1,6 @@
 package custis.easyabac.core.trace.model;
 
-import custis.easyabac.core.model.abac.Policy;
+import custis.easyabac.model.Policy;
 
 import java.net.URI;
 import java.util.ArrayList;

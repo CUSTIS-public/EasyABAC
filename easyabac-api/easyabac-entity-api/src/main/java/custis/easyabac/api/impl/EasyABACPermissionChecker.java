@@ -3,10 +3,10 @@ package custis.easyabac.api.impl;
 import custis.easyabac.api.NotPermittedException;
 import custis.easyabac.api.PermitAwarePermissionChecker;
 import custis.easyabac.api.utils.ResourceActionPair;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
-import custis.easyabac.pdp.AuthAttribute;
-import custis.easyabac.pdp.AuthResponse;
-import custis.easyabac.pdp.RequestId;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthAttribute;
+import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.RequestId;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;

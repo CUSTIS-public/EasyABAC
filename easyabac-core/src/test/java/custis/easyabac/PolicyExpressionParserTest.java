@@ -1,9 +1,11 @@
 package custis.easyabac;
 
-import custis.easyabac.core.model.abac.*;
-import custis.easyabac.core.model.abac.attribute.Attribute;
-import custis.easyabac.core.model.abac.attribute.Category;
-import custis.easyabac.core.model.abac.attribute.DataType;
+import custis.easyabac.model.Condition;
+import custis.easyabac.model.Function;
+import custis.easyabac.model.TargetCondition;
+import custis.easyabac.model.attribute.Attribute;
+import custis.easyabac.model.attribute.Category;
+import custis.easyabac.model.attribute.DataType;
 import org.junit.Test;
 
 import java.io.StringReader;

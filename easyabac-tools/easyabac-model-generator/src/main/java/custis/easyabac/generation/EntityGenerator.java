@@ -11,10 +11,10 @@ import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.utils.SourceRoot;
-import custis.easyabac.api.AuthorizationAttribute;
-import custis.easyabac.api.AuthorizationEntity;
-import custis.easyabac.core.model.abac.attribute.Attribute;
-import custis.easyabac.core.model.abac.attribute.Resource;
+import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
+import custis.easyabac.api.attr.annotation.AuthorizationEntity;
+import custis.easyabac.model.attribute.Attribute;
+import custis.easyabac.model.attribute.Resource;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;

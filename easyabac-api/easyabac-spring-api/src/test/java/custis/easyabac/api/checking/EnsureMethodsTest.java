@@ -4,10 +4,10 @@ import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.model.ModelType;
-import custis.easyabac.core.model.abac.attribute.AttributeWithValue;
-import custis.easyabac.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.attribute.AttributeWithValue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static custis.easyabac.core.model.abac.attribute.Attribute.SUBJECT_ID;
+import static custis.easyabac.model.attribute.Attribute.SUBJECT_ID;
 
 public class EnsureMethodsTest {
 
