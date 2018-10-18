@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Entity attributes interface
  */
-public interface AttributiveEntity {
+public interface AttributeAuthorizationEntity {
 
     List<AuthAttribute> getAuthAttributes();
 }

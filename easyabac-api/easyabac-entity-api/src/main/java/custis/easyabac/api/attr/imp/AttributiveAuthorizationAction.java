@@ -5,7 +5,7 @@ import custis.easyabac.core.pdp.AuthAttribute;
 /**
  * Action attribute interface
  */
-public interface AttributiveAction {
+public interface AttributiveAuthorizationAction {
 
     AuthAttribute getAuthAttribute();
 }
