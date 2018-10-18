@@ -27,21 +27,5 @@ public class AuthAttribute {
         return values;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        AuthAttribute that = (AuthAttribute) o;
-
-        if (!id.equals(that.id)) return false;
-        return values.equals(that.values);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + values.hashCode();
-        return result;
-    }
 }

@@ -104,7 +104,7 @@ public class EasyAbacBuilder {
         PdpHandler pdpHandler = null;
         if (xacmlPolicy != null) {
             // this is xacml source
-            pdpHandler = pdpHandlerFactory.newXacmlInstance(abacAuthModel, xacmlPolicy, datasources, cache);
+            pdpHandler = pdpHandlerFactory.newXacmlInstance(xacmlPolicy, datasources, cache);
         } else {
             pdpHandler = pdpHandlerFactory.newInstance(abacAuthModel, datasources, cache);
         }
@@ -156,13 +156,6 @@ public class EasyAbacBuilder {
                             .flatMap(rule -> rule.getConditions().stream()
                                     .flatMap(condition -> Stream.of(condition.getFirstOperand(), condition.getSecondOperandAttribute()).filter(Objects::nonNull))))
                     .distinct().collect(Collectors.toList());
-
-            List<Attribute> actionAttributeByAction = abacAuthModel.getPolicies().stream()
-                    .filter(policy -> policy.getTarget().getAccessToActions().contains(action))
-                    .flatMap(p -> p.getTarget().getConditions().stream()
-                            .flatMap(tc -> Stream.of(tc.getFirstOperand()))).collect(Collectors.toList());
-
-            attributesByAction.addAll(actionAttributeByAction);
 
             // TODO: 16.10.18 добавить цикл для зависимых датасорсов
             List<Attribute> attributeFromParams = attributesByAction.stream()

@@ -1,13 +1,11 @@
 package custis.easyabac;
 
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.Options;
 import custis.easyabac.core.cache.SampleCache;
 import custis.easyabac.core.init.Datasource;
 import custis.easyabac.core.init.EasyAbacInitException;
 import custis.easyabac.core.init.Param;
 import custis.easyabac.core.model.ModelType;
-import custis.easyabac.core.trace.YamlViewTrace;
 import custis.easyabac.pdp.AttributiveAuthorizationService;
 import custis.easyabac.pdp.AuthAttribute;
 import custis.easyabac.pdp.AuthResponse;
@@ -53,12 +51,8 @@ public class RequestOptimTest {
 
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, REPORT_CATEGORY);
 
-        Options options = new Options.OptionsBuilder().enableTrace(true).optimizeRequest(false).build();
-
         authorizationService = new EasyAbacBuilder(easyModel, ModelType.EASY_YAML)
                 .datasources(Arrays.asList(datasourceUserCat, datasourceReportCat))
-                .options(options)
-                .trace(new YamlViewTrace())
                 .cache(new SampleCache())
                 .build();
     }

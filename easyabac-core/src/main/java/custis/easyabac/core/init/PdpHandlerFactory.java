@@ -12,5 +12,5 @@ public interface PdpHandlerFactory {
 
     PdpHandler newInstance(AbacAuthModel abacAuthModel, List<Datasource> datasources, Cache cache);
 
-    PdpHandler newXacmlInstance(AbacAuthModel abacAuthModel, InputStream policyXacml, List<Datasource> datasources, Cache cache);
+    PdpHandler newXacmlInstance(InputStream policyXacml, List<Datasource> datasources, Cache cache);
 }
