@@ -36,7 +36,7 @@ public class PolicyElementsFactory {
 
             return (PDP) result.getProxy();
         } else {
-            PDPConfig pdpConfig = Balana.getInstance().getPdpConfig();
+            PDPConfig pdpConfig = new PDPConfig(new AttributeFinder(), new PolicyFinder(), null);
             pdpConfig.getAttributeFinder().setModules(attributeFinderModules);
             pdpConfig.getPolicyFinder().setModules(policyFinderModules);
             return new PDP(pdpConfig);

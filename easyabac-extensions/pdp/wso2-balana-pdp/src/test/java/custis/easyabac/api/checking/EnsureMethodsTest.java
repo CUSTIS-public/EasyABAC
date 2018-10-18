@@ -122,7 +122,7 @@ public class EnsureMethodsTest {
     public static void initialize() throws EasyAbacInitException {
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
         AbacAuthModel model = creator.createModel(EnsureMethods.class.getResourceAsStream("/deny.yaml"));
-        EasyAbacBuilder builder = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE); // FIXME Direct not working
+        EasyAbacBuilder builder = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE);
         builder.subjectAttributesProvider(() -> Collections.singletonList(new AttributeWithValue(SUBJECT_ID, Collections.singletonList("subject_id"))));
         attributiveAuthorizationService = builder.build();
         factory = new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);

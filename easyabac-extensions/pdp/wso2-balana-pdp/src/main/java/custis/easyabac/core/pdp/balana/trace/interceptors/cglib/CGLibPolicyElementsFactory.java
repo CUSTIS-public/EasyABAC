@@ -34,7 +34,7 @@ public class CGLibPolicyElementsFactory {
             PDP pdp = (PDP) enhancer.create(new Class[]{PDPConfig.class}, new Object[]{pdpConfig});
             return pdp;
         } else {
-            PDPConfig pdpConfig = Balana.getInstance().getPdpConfig();
+            PDPConfig pdpConfig = new PDPConfig(new AttributeFinder(), new PolicyFinder(), null);
             pdpConfig.getAttributeFinder().setModules(attributeFinderModules);
             pdpConfig.getPolicyFinder().setModules(policyFinderModules);
             return new PDP(pdpConfig);
