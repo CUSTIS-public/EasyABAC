@@ -3,7 +3,7 @@ package custis.easyabac.benchmark;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.benchmark.model.Subject;
-import custis.easyabac.core.init.InputStreamPolicyFinderModule;
+import custis.easyabac.core.pdp.balana.policy.InputStreamPolicyFinderModule;
 import custis.easyabac.core.pdp.balana.trace.interceptors.cglib.CGLibPolicyElementsFactory;
 import custis.easyabac.model.EasyAbacInitException;
 import custis.easyabac.model.attribute.DataType;
@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static custis.easyabac.core.init.BalanaAttributesFactory.balanaAttribute;
+import static custis.easyabac.core.pdp.balana.BalanaAttributesFactory.balanaAttribute;
 import static java.util.Collections.singletonList;
 
 @State(Scope.Benchmark)

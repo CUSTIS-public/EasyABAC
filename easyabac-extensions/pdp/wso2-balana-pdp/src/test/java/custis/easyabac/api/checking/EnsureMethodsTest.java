@@ -13,7 +13,6 @@ import custis.easyabac.model.easy.EasyAbacModelCreator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +30,7 @@ public class EnsureMethodsTest {
 
     @Test
     public void testSingleResourceAndAction() {
-        Order order = new Order("1", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
         checker.ensureDenied(order, OrderAction.APPROVE);
 
         checker.ensureDenied(OrderAction.APPROVE, order);
@@ -39,7 +38,7 @@ public class EnsureMethodsTest {
 
     @Test
     public void testSingleResourceAndListOfActions() {
-        Order order = new Order("1", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
         checker.ensureDeniedAll(order, Arrays.asList(OrderAction.APPROVE, OrderAction.VIEW));
 
         checker.ensureDeniedAll(Arrays.asList(OrderAction.APPROVE, OrderAction.VIEW), order);
@@ -47,7 +46,7 @@ public class EnsureMethodsTest {
 
     @Test
     public void testSingleResourceAndHardcodedActions() {
-        Order order = new Order("1", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
         checker.ensureDeniedView(order);
 
         checker.ensureDeniedViewOrApprove(order);
@@ -55,8 +54,8 @@ public class EnsureMethodsTest {
 
     @Test
     public void testSingleActionAndListOfResources() {
-        Order order = new Order("1", BigDecimal.ZERO);
-        Order order2 = new Order("2", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
+        Order order2 = new Order("2", 0);
         checker.ensureDeniedAll(OrderAction.VIEW, Arrays.asList(order, order2));
 
         checker.ensureDeniedAll(Arrays.asList(order, order2), OrderAction.VIEW);
@@ -64,8 +63,8 @@ public class EnsureMethodsTest {
 
     @Test
     public void testListOfActionsAndListOfResources() {
-        Order order = new Order("1", BigDecimal.ZERO);
-        Order order2 = new Order("2", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
+        Order order2 = new Order("2", 0);
         checker.ensureDeniedAll(Arrays.asList(order, order2), Arrays.asList(OrderAction.VIEW, OrderAction.APPROVE));
 
         checker.ensureDeniedAll_2(Arrays.asList(OrderAction.VIEW, OrderAction.APPROVE), Arrays.asList(order, order2));
@@ -73,7 +72,7 @@ public class EnsureMethodsTest {
 
     @Test
     public void testMapOfSingleObjects() {
-        Order order = new Order("1", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
         Map<Order, OrderAction> map = Stream.of(order)
                 .collect(Collectors.toMap(o -> order, o -> OrderAction.VIEW));
         checker.ensureDeniedAll(map);
@@ -85,7 +84,7 @@ public class EnsureMethodsTest {
 
     @Test
     public void testMapOfSingleObjectAndList() {
-        Order order = new Order("1", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
         Map<Order, List<OrderAction>> map = Stream.of(order)
                 .collect(Collectors.toMap(o -> order, o -> Arrays.asList(OrderAction.VIEW)));
         checker.ensureDeniedAll_3(map);
@@ -97,7 +96,7 @@ public class EnsureMethodsTest {
 
     @Test
     public void testMapOfListAndSingleObject() {
-        Order order = new Order("1", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
         Map<List<Order>, OrderAction> map = Stream.of(order)
                 .collect(Collectors.toMap(o -> Arrays.asList(order), o -> OrderAction.VIEW));
         checker.ensureDeniedAll_5(map);
@@ -109,7 +108,7 @@ public class EnsureMethodsTest {
 
     @Test
     public void testMapOfLists() {
-        Order order = new Order("1", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
         Map<List<Order>, List<OrderAction>> map = Stream.of(order)
                 .collect(Collectors.toMap(o -> Arrays.asList(order), o -> Arrays.asList(OrderAction.VIEW)));
         checker.ensureDeniedAll_7(map);
@@ -123,7 +122,7 @@ public class EnsureMethodsTest {
     public static void initialize() throws EasyAbacInitException {
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
         AbacAuthModel model = creator.createModel(EnsureMethods.class.getResourceAsStream("/deny.yaml"));
-        EasyAbacBuilder builder = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE);
+        EasyAbacBuilder builder = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE); // FIXME Direct not working
         builder.subjectAttributesProvider(() -> Collections.singletonList(new AttributeWithValue(SUBJECT_ID, Collections.singletonList("subject_id"))));
         attributiveAuthorizationService = builder.build();
         factory = new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);

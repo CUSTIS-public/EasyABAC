@@ -13,7 +13,6 @@ import custis.easyabac.model.easy.EasyAbacModelCreator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +26,7 @@ public class GettingMethodsTest {
 
     @Test
     public void testSingleResourceAndActions() {
-        Order order = new Order("1", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
         List<OrderAction> actions = checker.getDeniedActions(order, asList(OrderAction.APPROVE, OrderAction.VIEW));
 
         System.out.println(actions);
@@ -39,8 +38,8 @@ public class GettingMethodsTest {
 
     @Test
     public void testListAndList() {
-        Order order = new Order("1", BigDecimal.ZERO);
-        Order order2 = new Order("2", BigDecimal.ZERO);
+        Order order = new Order("1", 0);
+        Order order2 = new Order("2", 0);
 
         Map<Order, List<OrderAction>> actions = checker.getDeniedActions(
                 asList(order, order2),

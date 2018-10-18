@@ -67,6 +67,14 @@ THE POSSIBILITY OF SUCH DAMAGE.
             <groupId>${project.groupId}</groupId>
             <artifactId>easyabac-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wso2-balana-pdp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>easy-model-loader</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.openjdk.jmh</groupId>

@@ -94,6 +94,8 @@ public class AttributeValueExtractor {
                 } catch (IllegalAccessException e) {
                     log.error(e.getMessage());
                 }
+            } else {
+                // TODO case
             }
         }
         return attributes;

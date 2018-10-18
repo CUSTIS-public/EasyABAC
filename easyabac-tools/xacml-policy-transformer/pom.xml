@@ -12,7 +12,7 @@
     <groupId>custis.easyabac</groupId>
     <artifactId>xacml-policy-transformer</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Custis.XacmlPolicTransformer</name>
+    <name>Custis.XacmlPolicyTransformer</name>
     <description>XACML Policy Transformer</description>
 
     <prerequisites>

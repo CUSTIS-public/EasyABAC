@@ -5,12 +5,11 @@ import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.permissionchecker.OrderPermissionChecker;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.init.AbacAuthModelFactory;
-import custis.easyabac.core.init.BalanaPdpHandlerFactory;
-import custis.easyabac.core.model.ModelType;
 import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
 import custis.easyabac.model.AbacAuthModel;
 import custis.easyabac.model.EasyAbacInitException;
+import custis.easyabac.model.easy.EasyAbacModelCreator;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -26,19 +25,17 @@ public class DynamicAuthorizationBenchmark extends AbstractAuthorizationBenchmar
 
     @Setup
     public void init() throws EasyAbacInitException {
-        AbacAuthModel model = AbacAuthModelFactory.getInstance(ModelType.EASY_YAML,
-                getClass().getResourceAsStream("/OrdersPolicy.yaml"));
+        EasyAbacModelCreator creator = new EasyAbacModelCreator();
+        AbacAuthModel model = creator.createModel(getClass().getResourceAsStream("/OrdersPolicy.yaml"));
 
-        AttributiveAuthorizationService managerAuthService = new EasyAbacBuilder(model, pdpHandlerFactory)
-                .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+        AttributiveAuthorizationService managerAuthService = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                 .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                 .datasources(Collections.singletonList(getCustomerBranchIdDatasource()))
                 .build();
         EasyABACPermissionCheckerFactory mgrFactory = new EasyABACPermissionCheckerFactory(managerAuthService);
         this.managerChecker = mgrFactory.getPermissionChecker(OrderPermissionChecker.class);
 
-        AttributiveAuthorizationService operatorAuthService = new EasyAbacBuilder(model, pdpHandlerFactory)
-                .pdpHandlerFactory(BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+        AttributiveAuthorizationService operatorAuthService = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                 .subjectAttributesProvider(getSubjectAttributesProvider(getOperatorSubject(), model))
                 .datasources(Collections.singletonList(getCustomerBranchIdDatasource()))
                 .build();

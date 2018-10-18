@@ -7,6 +7,8 @@ import custis.easyabac.benchmark.model.Subject;
 import custis.easyabac.core.EasyAbacDatasourceException;
 import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
+import custis.easyabac.model.AbacAuthModel;
+import custis.easyabac.model.attribute.AttributeWithValue;
 
 import java.util.ArrayList;
 import java.util.List;

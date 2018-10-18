@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-import static custis.easyabac.core.init.AuthModelTransformer.makeXacmlName;
-import static custis.easyabac.core.init.AuthModelTransformer.modeModelAttributeIdFromXacml;
+import static custis.easyabac.model.easy.AuthModelTransformer.makeXacmlName;
+import static custis.easyabac.model.easy.AuthModelTransformer.modeModelAttributeIdFromXacml;
 
 public class LoggingViewTrace implements Trace {
 

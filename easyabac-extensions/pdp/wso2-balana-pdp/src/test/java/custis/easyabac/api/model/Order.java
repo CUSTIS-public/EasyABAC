@@ -1,25 +1,29 @@
 package custis.easyabac.api.model;
 
+import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
+import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
  * Сущность "Заказ" в системе
  */
 @Getter
+@AuthorizationEntity(name = "order")
 public class Order {
 
+    @AuthorizationAttribute
     private String id;
 
-    private BigDecimal amount;
+    @AuthorizationAttribute
+    private int amount;
 
     Order() {
 
     }
 
-    public Order(String id, BigDecimal amount) {
+    public Order(String id, int amount) {
         this.id = id;
         this.amount = amount;
     }
