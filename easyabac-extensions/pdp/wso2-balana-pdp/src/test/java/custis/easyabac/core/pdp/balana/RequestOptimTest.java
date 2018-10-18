@@ -1,6 +1,7 @@
 package custis.easyabac.core.pdp.balana;
 
 import custis.easyabac.core.EasyAbacBuilder;
+import custis.easyabac.core.Options;
 import custis.easyabac.core.cache.SampleCache;
 import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.datasource.Param;
@@ -8,6 +9,7 @@ import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
 import custis.easyabac.core.pdp.RequestId;
+import custis.easyabac.core.trace.logging.LoggingViewTrace;
 import custis.easyabac.model.EasyAbacInitException;
 import custis.easyabac.model.easy.EasyAbacModelCreator;
 import org.junit.Assert;
@@ -52,8 +54,11 @@ public class RequestOptimTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, REPORT_CATEGORY);
 
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
+        Options options = new Options.OptionsBuilder().enableTrace(true).optimizeRequest(false).build();
         authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .datasources(Arrays.asList(datasourceUserCat, datasourceReportCat))
+                .options(options)
+                .trace(new LoggingViewTrace())
                 .cache(new SampleCache())
                 .build();
     }

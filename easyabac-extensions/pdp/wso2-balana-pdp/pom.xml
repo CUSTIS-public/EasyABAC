@@ -62,13 +62,18 @@
         </dependency>
 
         <dependency>
-            <groupId>custis.easyabac</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>easy-model-loader</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>custis.easyabac</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>easyabac-spring-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>logging-trace</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

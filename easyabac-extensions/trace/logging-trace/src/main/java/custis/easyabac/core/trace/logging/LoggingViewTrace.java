@@ -1,5 +1,6 @@
-package custis.easyabac.core.trace;
+package custis.easyabac.core.trace.logging;
 
+import custis.easyabac.core.trace.Trace;
 import custis.easyabac.core.trace.model.*;
 import custis.easyabac.model.AbacAuthModel;
 import custis.easyabac.model.Condition;
@@ -59,7 +60,7 @@ public class LoggingViewTrace implements Trace {
             printPolicy((CalculatedPolicy) mainPolicy, 1, modelWithTrace, traceResult.getAttributes());
         }
         //printTraceResult(traceResult);
-        //LOGGER.info(modelWithTrace.toString());
+        LOGGER.info(modelWithTrace.toString());
     }
 
     private void printPolicyWithoutTrace(Policy policy, int level, StringBuilder modelWithTrace) {

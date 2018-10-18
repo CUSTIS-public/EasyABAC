@@ -11,4 +11,6 @@ public interface PdpHandler {
     boolean xacmlPolicyMode();
 
     MultiAuthResponse evaluate(MultiAuthRequest multiAuthRequest) throws EasyAbacInitException;
+
+    MultiAuthResponse evaluate(MultiAuthRequestOptimize multiAuthRequest) throws EasyAbacInitException;
 }

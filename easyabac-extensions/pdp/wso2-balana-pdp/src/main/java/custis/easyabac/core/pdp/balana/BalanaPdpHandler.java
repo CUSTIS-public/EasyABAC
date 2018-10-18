@@ -5,6 +5,7 @@ import custis.easyabac.core.pdp.*;
 import custis.easyabac.core.pdp.balana.trace.BalanaTraceHandler;
 import custis.easyabac.core.pdp.balana.trace.BalanaTraceHandlerProvider;
 import custis.easyabac.core.trace.model.TraceResult;
+import custis.easyabac.model.AbacAuthModel;
 import custis.easyabac.model.EasyAbacInitException;
 import custis.easyabac.model.IdGenerator;
 import custis.easyabac.model.attribute.AttributeWithValue;
@@ -24,6 +25,7 @@ import org.wso2.balana.xacml3.*;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static custis.easyabac.core.pdp.balana.BalanaAttributesFactory.ATTRIBUTE_REQUEST_ID;
@@ -35,10 +37,12 @@ public class BalanaPdpHandler implements PdpHandler {
 
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
+    private final AbacAuthModel abacAuthModel;
     private final PDP pdp;
     private final boolean xacmlPolicyMode;
 
-    public BalanaPdpHandler(PDP pdp, boolean xacmlPolicyMode) {
+    public BalanaPdpHandler(AbacAuthModel abacAuthModel, PDP pdp, boolean xacmlPolicyMode) {
+        this.abacAuthModel = abacAuthModel;
         this.pdp = pdp;
         this.xacmlPolicyMode = xacmlPolicyMode;
     }
@@ -67,12 +71,15 @@ public class BalanaPdpHandler implements PdpHandler {
 
     @Override
     public MultiAuthResponse evaluate(MultiAuthRequest multiAuthRequest) throws EasyAbacInitException {
+        return evaluate(multiAuthRequest.getRequests());
+    }
 
+    private MultiAuthResponse evaluate(Map<RequestId, List<AttributeWithValue>> requests) throws EasyAbacInitException {
         Set<RequestReference> requestReferences = new HashSet<>();
         Set<Attributes> attributesSet = new HashSet<>();
-        for (RequestId requestId : multiAuthRequest.getRequests().keySet()) {
+        for (RequestId requestId : requests.keySet()) {
 
-            List<AttributeWithValue> attributeWithValues = multiAuthRequest.getRequests().get(requestId);
+            List<AttributeWithValue> attributeWithValues = requests.get(requestId);
 
             addRequestIdAttribute(requestId, attributeWithValues);
 
@@ -123,6 +130,24 @@ public class BalanaPdpHandler implements PdpHandler {
 
         return new MultiAuthResponse(results);
     }
+
+    @Override
+    public MultiAuthResponse evaluate(MultiAuthRequestOptimize multiAuthRequest) throws EasyAbacInitException {
+        Map<RequestId, List<AttributeWithValue>> requests = new HashMap<>();
+
+        Map<String, custis.easyabac.model.attribute.Attribute> modelAttributes = abacAuthModel.getAttributes();
+
+        multiAuthRequest.getRequests().forEach((requestId, attributeWithValueIds) -> {
+            List<AttributeWithValue> attributeWithValues = attributeWithValueIds.stream().map(o -> {
+                AuthAttribute authAttribute = multiAuthRequest.getAttributesWithValue().get(o);
+                return new AttributeWithValue(modelAttributes.get(authAttribute.getId()), authAttribute.getValues());
+            }).collect(Collectors.toList());
+            requests.put(requestId, attributeWithValues);
+        });
+
+        return evaluate(requests);
+    }
+
 
     private void addRequestIdAttribute(RequestId requestId, List<AttributeWithValue> attributeWithValues) {
         AttributeWithValue requestIdAttribute = new AttributeWithValue(new custis.easyabac.model.attribute.Attribute(ATTRIBUTE_REQUEST_ID, Category.ENV, DataType.STRING),
