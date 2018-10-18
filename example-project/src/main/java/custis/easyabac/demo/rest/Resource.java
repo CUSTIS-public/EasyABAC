@@ -1,7 +1,6 @@
 package custis.easyabac.demo.rest;
 
 import custis.easyabac.api.NotExpectedResultException;
-import custis.easyabac.demo.model.Branch;
 import custis.easyabac.demo.model.Customer;
 import custis.easyabac.demo.model.Order;
 import custis.easyabac.demo.permissionchecker.BranchPermissionChecker;

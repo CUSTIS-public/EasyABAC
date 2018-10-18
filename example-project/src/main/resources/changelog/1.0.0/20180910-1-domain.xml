@@ -2,16 +2,8 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
-    <changeSet resourceId="1" author="alapitskiy">
-        <createTable tableName="branch">
-            <column name="resourceId" type="VARCHAR(100)">
-                <constraints primaryKey="true" primaryKeyName="pk_branch_id"/>
-            </column>
-            <column name="name" type="VARCHAR(1000)" />
-        </createTable>
-    </changeSet>
 
-    <changeSet resourceId="2" author="alapitskiy">
+    <changeSet resourceId="1" author="alapitskiy">
         <createTable tableName="customer">
             <column name="resourceId" type="VARCHAR(100)">
                 <constraints primaryKey="true" primaryKeyName="pk_customer_id"/>

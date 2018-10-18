@@ -1,6 +1,5 @@
 package custis.easyabac.demo.repository;
 
-import custis.easyabac.demo.model.Branch;
 import custis.easyabac.demo.model.BranchId;
 import org.springframework.data.repository.CrudRepository;
 

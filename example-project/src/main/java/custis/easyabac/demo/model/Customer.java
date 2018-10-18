@@ -23,21 +23,17 @@ public class Customer {
     @Column
     private String lastName;
 
-    @ManyToOne
-    @JoinColumn(name = "branch_id", insertable = false, updatable = false)
-    private Branch branch;
-
     @AttributeOverride(name = "value", column = @Column(name = "branch_id"))
     private BranchId branchId;
 
     Customer() {
     }
 
-    public Customer(String firstName, String lastName, Branch branch) {
+    public Customer(String firstName, String lastName, BranchId branchId) {
         this.id = CustomerId.newId();
         this.firstName = firstName;
         this.lastName = lastName;
-        this.branchId = branch.getId();
+        this.branchId = branchId;
     }
 
     @Override

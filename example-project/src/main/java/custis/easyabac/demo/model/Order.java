@@ -1,7 +1,5 @@
 package custis.easyabac.demo.model;
 
-import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
-import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -14,12 +12,10 @@ import java.util.Objects;
 @Entity
 @Getter
 @Table(name = "order")
-@AuthorizationEntity(name = "order")
 public class Order {
 
     @Id
     @AttributeOverride(name = "value", column = @Column(name = "id"))
-    @AuthorizationAttribute(id = "id")
     private OrderId id;
 
     @AttributeOverride(name = "value", column = @Column(name = "customer_id"))
@@ -30,12 +26,7 @@ public class Order {
     private Customer customer;
 
     @Column(name = "amount")
-    @AuthorizationAttribute
     private BigDecimal amount;
-
-    @ManyToOne
-    @JoinColumn(name = "branch_id", insertable = false, updatable = false)
-    private Branch branch;
 
     @AttributeOverride(name = "value", column = @Column(name = "branch_id"))
     private BranchId branchId;
@@ -47,10 +38,10 @@ public class Order {
 
     }
 
-    public Order(Customer customer, Branch branch, BigDecimal amount) {
+    public Order(Customer customer, BranchId branchId, BigDecimal amount) {
         this.id = OrderId.newId();
         this.customerId = customer.getId();
-        this.branchId = branch.getId();
+        this.branchId = branchId;
         this.amount = amount;
         this.state = OrderState.NEW;
     }
