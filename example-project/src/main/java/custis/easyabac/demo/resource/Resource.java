@@ -1,11 +1,12 @@
-package custis.easyabac.demo.rest;
+package custis.easyabac.demo.resource;
 
 import custis.easyabac.api.EntityPermissionChecker;
 import custis.easyabac.core.EasyAbac;
 import custis.easyabac.demo.authn.AuthenticationContext;
 import custis.easyabac.demo.model.Order;
 import custis.easyabac.demo.model.OrderAction;
-import custis.easyabac.demo.model.User;
+import custis.easyabac.demo.resource.dto.OrderDto;
+import custis.easyabac.demo.resource.dto.UserDto;
 import custis.easyabac.demo.service.OrderService;
 import custis.easyabac.demo.service.UserService;
 import custis.easyabac.model.EasyAbacInitException;
@@ -18,8 +19,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 @Controller
 public class Resource {
@@ -32,9 +36,7 @@ public class Resource {
 
     @GetMapping("/orders")
     public String orders(Model model) throws EasyAbacInitException {
-        List<User> users = userService.getAllUsers();
         List<Order> orders = orderService.getAllOrders();
-
 
         List<OrderAction> actions = Arrays.asList(OrderAction.values());
         InputStream modelStream = getClass().getResourceAsStream("/policy.yaml");
@@ -46,9 +48,19 @@ public class Resource {
         Map<Order, List<OrderAction>> result = permissionChecker.getPermittedActions(orders, actions);
 
 
-        model.addAttribute("users", users);
-        model.addAttribute("orders", orders);
+
+        List<UserDto> userDtos = userService.getAllUsers().stream()
+                .map(user -> UserDto.of(user))
+                .collect(toList());
+
+        List<OrderDto> orderDtos = orders.stream()
+                .map(order -> OrderDto.of(order, result.getOrDefault(order, Collections.emptyList())))
+                .collect(toList());
+
+        model.addAttribute("users", userDtos);
+        model.addAttribute("orders", orderDtos);
         model.addAttribute("currentUserId", AuthenticationContext.currentUserId());
+        model.addAttribute("allowedActions", result);
         return "orders";
     }
 

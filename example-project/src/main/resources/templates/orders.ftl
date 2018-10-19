@@ -24,6 +24,20 @@
         width: 500px;
     }
 
+    .button {
+        background-color: #26ade4;
+        border: none;
+        color: white;
+        padding: 15px 25px;
+        text-align: center;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        background-color: #186f93;
+    }
+
 </style>
 
 <h1>Пользователь</h1>
@@ -50,6 +64,7 @@
         <th class="tg-84g4">ИД Филиала</th>
         <th class="tg-84g4">Клиент</th>
         <th class="tg-84g4">Статус</th>
+        <th class="tg-84g4">Разрешенные действия</th>
     </thead>
     <tbody>
         <#list orders as order>
@@ -59,6 +74,11 @@
                 <td>${order.branchId}</td>
                 <td>${order.customer.firstName} ${order.customer.firstName}</td>
                 <td>${order.state}</td>
+                <td>
+                    <#list order.actions as action>
+                        <button class="button">${action}</button>
+                    </#list>
+                </td>
             </tr>
         </#list>
     </tbody>

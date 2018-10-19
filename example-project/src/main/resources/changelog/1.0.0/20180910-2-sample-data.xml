@@ -37,7 +37,15 @@
     <changeSet id="4" author="alapitskiy">
         <sql>
             INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_1', 'MSK_customer_1', 'MSK', 500, 'NEW');
-            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_2', 'MSK_customer_1', 'MSK', 2000, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_2', 'MSK_customer_2', 'MSK', 2000, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_3', 'MSK_customer_3', 'MSK', 100, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_4', 'MSK_customer_4', 'MSK', 1100, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_5', 'MSK_customer_5', 'MSK', 500, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_1', 'SPB_customer_1', 'SPB', 5000, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_2', 'SPB_customer_2', 'SPB', 500, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_3', 'SPB_customer_3', 'SPB', 1000, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_4', 'SPB_customer_4', 'SPB', 200, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_5', 'SPB_customer_5', 'SPB', 10, 'NEW');
         </sql>
     </changeSet>
 </databaseChangeLog>
