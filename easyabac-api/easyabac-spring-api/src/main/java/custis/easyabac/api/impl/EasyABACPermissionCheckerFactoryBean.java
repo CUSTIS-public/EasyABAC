@@ -1,7 +1,7 @@
 package custis.easyabac.api.impl;
 
 import custis.easyabac.api.utils.Lazy;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.*;
@@ -28,7 +28,7 @@ public class EasyABACPermissionCheckerFactoryBean<T, S, A>
     private ApplicationEventPublisher publisher;
 
     private Lazy<T> permissionChecker;
-    private AttributiveAuthorizationService attributiveAuthorizationService;
+    private AuthService authService;
 
     /**
      * Creates a new {@link EasyABACPermissionCheckerFactoryBean} for the given repository interface.
@@ -90,7 +90,7 @@ public class EasyABACPermissionCheckerFactoryBean<T, S, A>
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.notNull(attributiveAuthorizationService, "AttributiveAuthorizationService should not be null");
+        Assert.notNull(authService, "AuthService should not be null");
 
         this.factory = createPermissionCheckerFactory();
         this.factory.setBeanClassLoader(classLoader);
@@ -132,12 +132,12 @@ public class EasyABACPermissionCheckerFactoryBean<T, S, A>
 
 
     protected EasyABACPermissionCheckerFactory createPermissionCheckerFactory() {
-        return new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);
+        return new EasyABACPermissionCheckerFactory(authService);
     }
 
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.attributiveAuthorizationService = applicationContext.getBean(AttributiveAuthorizationService.class);
+        this.authService = applicationContext.getBean(AuthService.class);
     }
 }

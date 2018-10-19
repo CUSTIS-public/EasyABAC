@@ -1,14 +1,14 @@
 package custis.easyabac.api.test;
 
-import custis.easyabac.api.PermitAwarePermissionChecker;
+import custis.easyabac.api.EntityPermissionChecker;
 import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
 import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 import custis.easyabac.api.impl.EasyABACPermissionChecker;
 import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.datasource.SimpleDatasource;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.core.pdp.PdpHandlerFactory;
 import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
 import custis.easyabac.model.AbacAuthModel;
@@ -59,7 +59,7 @@ public abstract class EasyAbacBaseTestClass {
     @Parameterized.Parameter(value = 2)
     public TestDescription testDescription;
 
-    protected PermitAwarePermissionChecker getPermissionChecker(Class entityClass) throws FileNotFoundException, EasyAbacInitException {
+    protected EntityPermissionChecker getPermissionChecker(Class entityClass) throws FileNotFoundException, EasyAbacInitException {
         EasyAbacBuilder builder = new EasyAbacBuilder(model, pdpHandlerFactory);
 
         // subject extender
@@ -85,7 +85,7 @@ public abstract class EasyAbacBaseTestClass {
         }
         builder.datasources(datasources);
 
-        AttributiveAuthorizationService authService = builder.build();
+        AuthService authService = builder.build();
         EasyABACPermissionChecker<Object, Object> permissionChecker = new EasyABACPermissionChecker<>(authService);
         return permissionChecker;
     }

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 @NoPermissionCheckerBean
-public interface PermitAwarePermissionChecker<T, A> {
+public interface EntityPermissionChecker<T, A> {
 
     /** проверить, что для сущности доступно действие */
     void ensurePermitted(T entity, A operation) throws NotPermittedException;

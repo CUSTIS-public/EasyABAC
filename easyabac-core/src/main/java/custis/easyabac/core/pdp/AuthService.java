@@ -3,7 +3,7 @@ package custis.easyabac.core.pdp;
 import java.util.List;
 import java.util.Map;
 
-public interface AttributiveAuthorizationService {
+public interface AuthService {
 
     AuthResponse authorize(List<AuthAttribute> attributes);
 

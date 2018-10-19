@@ -2,7 +2,7 @@ package custis.easyabac.api.impl;
 
 import custis.easyabac.api.PermissionChecker;
 import custis.easyabac.api.core.*;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.interceptor.ExposeInvocationInterceptor;
@@ -24,10 +24,10 @@ public class EasyABACPermissionCheckerFactory implements BeanClassLoaderAware, B
     protected BeanFactory beanFactory;
 
     private final Map<String, PermissionCheckerInformation> repositoryInformationCache;
-    private final AttributiveAuthorizationService attributiveAuthorizationService;
+    private final AuthService authService;
 
-    public EasyABACPermissionCheckerFactory(AttributiveAuthorizationService attributiveAuthorizationService) {
-        this.attributiveAuthorizationService = attributiveAuthorizationService;
+    public EasyABACPermissionCheckerFactory(AuthService authService) {
+        this.authService = authService;
         this.repositoryInformationCache = new ConcurrentReferenceHashMap<>(16, ConcurrentReferenceHashMap.ReferenceType.WEAK);
 
         this.permissionCheckerBaseClass = Optional.empty();
@@ -49,11 +49,7 @@ public class EasyABACPermissionCheckerFactory implements BeanClassLoaderAware, B
     }
 
     private EasyABACPermissionChecker<?, ?> getTargetPermissionChecker(PermissionCheckerInformation information) {
-
-        // FIXME JpaEntityInformation<?, ?> entityInformation = getEntityInformation(information.getResourceType());
-
-        // FIXME return getTargetRepositoryViaReflection(information, entityInformation, attributiveAuthorizationService);
-        return new EasyABACPermissionChecker<>(attributiveAuthorizationService);
+        return new EasyABACPermissionChecker<>(authService);
     }
 
     /**
@@ -94,7 +90,7 @@ public class EasyABACPermissionCheckerFactory implements BeanClassLoaderAware, B
 
 
         result.addAdvice(new DefaultMethodInterceptor());
-        result.addAdvice(new DynamicMethodInterceptor(information, attributiveAuthorizationService));
+        result.addAdvice(new DynamicMethodInterceptor(information, authService));
         T repository = (T) result.getProxy(classLoader);
 
         if (log.isDebugEnabled()) {
