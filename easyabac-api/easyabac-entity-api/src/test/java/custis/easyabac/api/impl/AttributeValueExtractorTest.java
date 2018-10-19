@@ -44,9 +44,9 @@ public class AttributeValueExtractorTest {
         Assert.assertEquals(2, attributes.size());
         AuthAttribute attr1 = attributes.get(0);
         AuthAttribute attr2 = attributes.get(1);
-        Assert.assertEquals(true, attr1.getId().startsWith("DefaultEntity."));
-        Assert.assertEquals(true, attr2.getId().startsWith("DefaultEntity."));
-        if (attr1.getId().equals("DefaultEntity.id")) {
+        Assert.assertEquals(true, attr1.getId().startsWith("defaultEntity."));
+        Assert.assertEquals(true, attr2.getId().startsWith("defaultEntity."));
+        if (attr1.getId().equals("defaultEntity.id")) {
             Assert.assertEquals(1, attr1.getValues().size());
             Assert.assertEquals("idVal", attr1.getValues().get(0));
 

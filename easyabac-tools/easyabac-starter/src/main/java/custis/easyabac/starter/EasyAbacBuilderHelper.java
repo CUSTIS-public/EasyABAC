@@ -16,18 +16,18 @@ import java.io.InputStream;
 
 public class EasyAbacBuilderHelper {
 
-    public static <T> EasyAbacBuilder defaultBuilder(String source, EntityGetter<T> entityGetter) throws EasyAbacInitException {
-        return defaultBuilder(new ByteArrayInputStream(source.getBytes()), entityGetter);
+    public static <T> EasyAbacBuilder defaultDebugBuilder(String source, EntityGetter<T> entityGetter) throws EasyAbacInitException {
+        return defaultDebugBuilder(new ByteArrayInputStream(source.getBytes()), entityGetter);
     }
 
-    public static <T> EasyAbacBuilder defaultBuilder(InputStream modelStream, EntityGetter<T> entityGetter) throws EasyAbacInitException {
+    public static <T> EasyAbacBuilder defaultDebugBuilder(InputStream modelStream, EntityGetter<T> entityGetter) throws EasyAbacInitException {
         ModelCreator modelCreator = new EasyAbacModelCreator();
         AbacAuthModel model = modelCreator.createModel(modelStream);
         EasyAbacBuilder builder = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .options(
                         new Options.OptionsBuilder()
                                 .enableTrace(true)
-                                .optimizeRequest(true)
+                                .enableOptimization(true)
                                 .build()
                 )
                 .subjectAttributesProvider(new EntitySubjectAttributesProvider<>(model, entityGetter))

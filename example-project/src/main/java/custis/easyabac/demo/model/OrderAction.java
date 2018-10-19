@@ -9,18 +9,28 @@ import java.util.Optional;
 @AuthorizationAction(entity = "order")
 public enum OrderAction {
 
-    VIEW("view"), CREATE("create"), APPROVE("approve"), REJECT("reject");
+    VIEW("view", "View order details"),
+    CREATE("create", "Create new order"),
+    APPROVE("approve", "Approve existing order"),
+    REJECT("reject", "Reject existing order");
 
     @AuthorizationActionId
     private String id;
 
-    private OrderAction(String id) {
+    private String title;
+
+    OrderAction(String id, String title) {
         this.id = id;
+        this.title = title;
     }
 
     // Simple getters and setters
     public String getId() {
         return this.id;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public static OrderAction byId(String id) {

@@ -1,11 +1,12 @@
 package custis.easyabac.starter;
 
 import custis.easyabac.api.PermitAwarePermissionChecker;
+import custis.easyabac.api.impl.EasyABACPermissionChecker;
 import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 
-public class PerwitAwareCheckerHelper {
+public class PermitAwareCheckerHelper {
 
-    public static PermitAwarePermissionChecker<T, A> newInstance(AttributiveAuthorizationService service) {
-
+    public static <T, A> PermitAwarePermissionChecker<T, A> newInstance(AttributiveAuthorizationService service) {
+        return new EasyABACPermissionChecker<>(service);
     }
 }

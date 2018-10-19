@@ -29,12 +29,6 @@
             <artifactId>easyabac-starter</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>custis.easyabac</groupId>
-            <artifactId>policy-testing-infra</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- spring boot -->
 
         <dependency>
