@@ -64,7 +64,6 @@
         <th class="tg-84g4">ИД Филиала</th>
         <th class="tg-84g4">Клиент</th>
         <th class="tg-84g4">Статус</th>
-        <th class="tg-84g4">Разрешенные действия</th>
     </thead>
     <tbody>
         <#list orders as order>
