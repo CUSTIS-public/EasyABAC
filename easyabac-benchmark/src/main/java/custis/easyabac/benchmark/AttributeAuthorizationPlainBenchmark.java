@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @State(Scope.Benchmark)
-public class AttributeAuthorizationBenchmark extends AbstractAuthorizationBenchmark {
+public class AttributeAuthorizationPlainBenchmark extends AbstractAuthorizationBenchmark {
 
     private AttributiveAuthorizationService authorizationService;
 
