@@ -22,6 +22,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class was used to generate tests for action class, but now not using in favor to simple attributes
+ */
+@Deprecated
 public class ActionGenerator {
     public  static void createAction(Resource resource, String packageName, SourceRoot sourceRoot) {
         if (resource.getActions() == null || resource.getActions().isEmpty()) {

@@ -1,12 +1,12 @@
 package custis.easyabac.benchmark.model.attrprovider;
 
-import custis.easyabac.api.attr.imp.AttributiveAuthorizationAction;
+import custis.easyabac.api.attr.imp.AttributiveAuthAction;
 import custis.easyabac.core.pdp.AuthAttribute;
 
 import java.util.Arrays;
 import java.util.Optional;
 
-public enum OrderActionExt implements AttributiveAuthorizationAction {
+public enum OrderActionExt implements AttributiveAuthAction {
 
     VIEW("view"), CREATE("create"), APPROVE("approve"), REJECT("reject");
 

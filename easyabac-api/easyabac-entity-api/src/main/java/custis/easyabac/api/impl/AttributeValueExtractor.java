@@ -4,8 +4,8 @@ import custis.easyabac.api.attr.annotation.AuthorizationAction;
 import custis.easyabac.api.attr.annotation.AuthorizationActionId;
 import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
 import custis.easyabac.api.attr.annotation.AuthorizationEntity;
-import custis.easyabac.api.attr.imp.AttributeAuthorizationEntity;
-import custis.easyabac.api.attr.imp.AttributiveAuthorizationAction;
+import custis.easyabac.api.attr.imp.AttributiveAuthAction;
+import custis.easyabac.api.attr.imp.AttributiveAuthEntity;
 import custis.easyabac.core.pdp.AuthAttribute;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,8 +25,8 @@ public class AttributeValueExtractor {
     public static final String ENVIRONMENT_NAME = "env";
 
     public static <T> List<AuthAttribute> extractAttributesFromSubject(T object) {
-        if (object instanceof AttributeAuthorizationEntity) {
-            return ((AttributeAuthorizationEntity) object).getAuthAttributes();
+        if (object instanceof AttributiveAuthEntity) {
+            return ((AttributiveAuthEntity) object).getAuthAttributes();
         } else {
             return performReflectiveExtraction(object, SUBJECT_NAME);
         }
@@ -39,8 +39,8 @@ public class AttributeValueExtractor {
     }
 
     public static <T> List<AuthAttribute> extractAttributesFromResource(T object) {
-        if (object instanceof AttributeAuthorizationEntity) {
-            return ((AttributeAuthorizationEntity) object).getAuthAttributes();
+        if (object instanceof AttributiveAuthEntity) {
+            return ((AttributiveAuthEntity) object).getAuthAttributes();
         } else {
             return performReflectiveExtraction(object);
         }
@@ -51,8 +51,8 @@ public class AttributeValueExtractor {
     }
 
     public static <T> List<AuthAttribute> extractAttributesFromAction(T object) {
-        if (object instanceof AttributiveAuthorizationAction) {
-            return Collections.singletonList(((AttributiveAuthorizationAction) object).getAuthAttribute());
+        if (object instanceof AttributiveAuthAction) {
+            return Collections.singletonList(((AttributiveAuthAction) object).getAuthAttribute());
         } else {
             return performReflectiveActionExtraction(object);
         }

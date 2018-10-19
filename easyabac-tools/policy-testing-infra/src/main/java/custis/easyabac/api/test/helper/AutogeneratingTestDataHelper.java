@@ -1,59 +1,41 @@
 package custis.easyabac.api.test.helper;
 
-import custis.easyabac.api.attr.annotation.AuthorizationAttribute;
-import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 import custis.easyabac.api.test.TestDescription;
-import custis.easyabac.core.pdp.AuthResponse;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.Map;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.function.Predicate;
 
-import static custis.easyabac.api.impl.AttributeValueExtractor.extractActionEntityByValue;
-import static custis.easyabac.api.test.helper.TestDescriptionHelper.loadTestDescriptionFromResource;
+import static custis.easyabac.api.test.helper.TestDescriptionHelper.loadTestDescription;
 
 public class AutogeneratingTestDataHelper {
 
-    public static Object[] loadTestFromResource(String resource, Class entityClass, Class actionClass, String entityCode) throws Exception {
-        return getTestData(loadTestDescriptionFromResource(resource), entityClass, actionClass, entityCode);
+    public static List<Object[]> loadGeneratedTestsFromPackage(Class testClass, String resourceName) throws Exception {
+        return loadGeneratedTestsFromPackage(testClass.getPackage().getName(), name -> name.startsWith(resourceName.toLowerCase()));
     }
 
-    public static Object[] getTestData(TestDescription testDescription, Class entityClass, Class actionClass, String entityCode) throws Exception {
-        Object[] testData = new Object[4];
-        Map<String, Object> resourceMap = testDescription.getAttributesByCode(entityCode);
-        testData[0] = createResource(entityClass, resourceMap == null ? Collections.emptyMap() : resourceMap);
-        testData[1] = extractActionEntityByValue(actionClass, testDescription.getShortAction());
-        testData[2] = AuthResponse.Decision.PERMIT.name().equals(testDescription.getExpectedResult());
-        testData[3] = testDescription;
-        return testData;
-    }
+    public static List<Object[]> loadGeneratedTestsFromPackage(String packageName, Predicate<String> resourceNamePredicate) throws Exception {
+        List<Object[]> data = new ArrayList<>();
 
-    private static <T> T createResource(Class<T> clazz, Map<String, Object> attributes) throws Exception {
-        T obj = clazz.newInstance();
-        return populateResource(obj, attributes);
-    }
+        Enumeration<URL> e = AutogeneratingTestDataHelper.class.getClassLoader().getResources("");
+        while (e.hasMoreElements()) {
+            URL url = e.nextElement();
 
-    private static <T> T populateResource(T resource, Map<String, Object> attributes) throws IllegalAccessException {
-        for (Field declaredField : resource.getClass().getDeclaredFields()) {
-            declaredField.setAccessible(true);
 
-            AuthorizationAttribute authAttribute = declaredField.getAnnotation(AuthorizationAttribute.class);
-            declaredField.set(resource, attributes.get(authAttribute.id()));
-        }
-        return resource;
-    }
-
-    public static String getEntityCode(Class entityClass) {
-        String entityCode = entityClass.getSimpleName();
-        if (entityClass.isAnnotationPresent(AuthorizationEntity.class)) {
-            Annotation ann = entityClass.getDeclaredAnnotation(AuthorizationEntity.class);
-            AuthorizationEntity authEnt = ((AuthorizationEntity) ann);
-            if (!authEnt.name().isEmpty()) {
-                entityCode = authEnt.name();
+            File folder = new File(url.getFile(), packageName.replace(".", "/"));
+            if (!folder.exists()) {
+                continue;
+            }
+            for (String fileName : folder.list((dir, name) -> resourceNamePredicate.test(name))) {
+                TestDescription testDescription = loadTestDescription(new File(folder, fileName));
+                data.add(TestDataHelper.getTestData(testDescription));
             }
         }
-        return entityCode;
+
+        return data;
     }
 
 }

@@ -1,12 +1,12 @@
 package custis.easyabac.api.impl.model;
 
-import custis.easyabac.api.attr.imp.AttributeAuthorizationEntity;
+import custis.easyabac.api.attr.imp.AttributiveAuthEntity;
 import custis.easyabac.core.pdp.AuthAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImplementingEntity implements AttributeAuthorizationEntity {
+public class ImplementingEntity implements AttributiveAuthEntity {
 
     private String id;
     private int amount;

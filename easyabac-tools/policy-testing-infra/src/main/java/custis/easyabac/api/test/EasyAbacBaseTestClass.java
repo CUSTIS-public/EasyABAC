@@ -20,19 +20,6 @@ import java.io.InputStream;
 @RunWith(Parameterized.class)
 public abstract class EasyAbacBaseTestClass {
 
-    protected final AbacAuthModel model;
-    protected final PdpHandlerFactory pdpHandlerFactory = BalanaPdpHandlerFactory.PROXY_INSTANCE;
-
-    public EasyAbacBaseTestClass(InputStream modelSource) throws EasyAbacInitException {
-        EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        this.model = creator.createModel(modelSource);
-    }
-
-    public EasyAbacBaseTestClass(AbacAuthModel model) {
-        this.model = model;
-
-    }
-
     @Parameterized.Parameter
     public Object resource;
 
@@ -44,6 +31,18 @@ public abstract class EasyAbacBaseTestClass {
 
     @Parameterized.Parameter(value = 3)
     public TestDescription testDescription;
+
+    protected final AbacAuthModel model;
+    protected final PdpHandlerFactory pdpHandlerFactory = BalanaPdpHandlerFactory.PROXY_INSTANCE;
+
+    public EasyAbacBaseTestClass(InputStream modelSource) throws EasyAbacInitException {
+        EasyAbacModelCreator creator = new EasyAbacModelCreator();
+        this.model = creator.createModel(modelSource);
+    }
+
+    public EasyAbacBaseTestClass(AbacAuthModel model) {
+        this.model = model;
+    }
 
     @Test
     public void authorizationTest() throws EasyAbacInitException {

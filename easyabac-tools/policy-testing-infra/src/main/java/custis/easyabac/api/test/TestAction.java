@@ -5,6 +5,14 @@ public class TestAction {
     private String id;
     private String value;
 
+    public TestAction() {
+    }
+
+    public TestAction(String id, String value) {
+        this.id = id;
+        this.value = value;
+    }
+
     public String getId() {
         return id;
     }
