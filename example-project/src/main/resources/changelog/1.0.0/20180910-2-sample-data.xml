@@ -29,8 +29,8 @@
          INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_1', 'SPB', 'Victor', 'Sidorov');
          INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_2', 'SPB', 'Kirill', 'Kirillov');
          INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_3', 'SPB', 'Anton', 'Antonov');
-          INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_4', 'SPB', 'Victor', 'Sidorov');
-          INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_5', 'SPB', 'Kirill', 'Kirillov');
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_4', 'SPB', 'Victor', 'Sidorov');
+         INSERT INTO t_customer(id, branch_id, first_name, last_name) VALUES ('SPB_customer_5', 'SPB', 'Kirill', 'Kirillov');
       </sql>
    </changeSet>
 
