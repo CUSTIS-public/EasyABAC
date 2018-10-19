@@ -37,6 +37,7 @@
     <changeSet id="4" author="alapitskiy">
         <sql>
             INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_1', 'MSK_customer_1', 'MSK', 500, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_2', 'MSK_customer_1', 'MSK', 2000, 'NEW');
         </sql>
     </changeSet>
 </databaseChangeLog>

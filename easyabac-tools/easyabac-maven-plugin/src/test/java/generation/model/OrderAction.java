@@ -1,30 +1,31 @@
 package generation.model;
 
-import custis.easyabac.api.attr.annotation.AuthorizationAction;
-import custis.easyabac.api.attr.annotation.AuthorizationActionId;
-
 import java.util.Arrays;
 import java.util.Optional;
 
-@AuthorizationAction(entity = "order")
 public enum OrderAction {
 
-    VIEW("view"), CREATE("create"), APPROVE("approve"), REJECT("reject");
+    VIEW("View order details"),
+    CREATE("Create new order"),
+    APPROVE("Approve existing order"),
+    REJECT("Reject existing order");
 
-    @AuthorizationActionId
-    private String id;
+    private String title;
 
-    private OrderAction(String id) {
-        this.id = id;
+    OrderAction(String title) {
+        this.title = title;
     }
 
     // Simple getters and setters
-    public String getId() {
-        return this.id;
+    public String getTitle() {
+        return title;
     }
 
     public static OrderAction byId(String id) {
-        Optional<OrderAction> optional = Arrays.asList(values()).stream().filter(action -> action.id.equals(id)).findFirst();
+        Optional<OrderAction> optional = Arrays.asList(values()).stream()
+                .filter(
+                        action -> action.name().toLowerCase().equals(id)
+                ).findFirst();
         if (optional.isPresent()) {
             return optional.get();
         }

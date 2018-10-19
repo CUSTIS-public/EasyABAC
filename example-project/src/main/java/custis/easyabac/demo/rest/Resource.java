@@ -1,8 +1,8 @@
 package custis.easyabac.demo.rest;
 
 import custis.easyabac.api.PermitAwarePermissionChecker;
+import custis.easyabac.core.EasyAbac;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.demo.authn.AuthenticationContext;
 import custis.easyabac.demo.model.Order;
 import custis.easyabac.demo.model.OrderAction;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,17 +44,20 @@ public class Resource {
 
     @GetMapping("/api/orders")
     public List<OrderRepresentation> getOrders() throws EasyAbacInitException {
-        InputStream is = Resource.class.getResourceAsStream("/policy.yaml");
-        EasyAbacBuilder builder = EasyAbacBuilderHelper.defaultDebugBuilder(is, () -> userService.findById(AuthenticationContext.currentUserId()));
-        AttributiveAuthorizationService easyAbac = builder.build();
+        List<OrderAction> actions = Arrays.asList(OrderAction.values());
+        List<Order> orders = orderService.getAllOrders();
+
+        InputStream modelStream = getClass().getResourceAsStream("/policy.yaml");
+        EasyAbacBuilder builder = EasyAbacBuilderHelper.defaultDebugBuilder(modelStream, () -> userService.findById(AuthenticationContext.currentUserId()));
+        EasyAbac easyAbac = builder.build();
+
         PermitAwarePermissionChecker<Order, OrderAction> permissionChecker = PermitAwareCheckerHelper.newInstance(easyAbac);
 
-        List<Order> orders = orderService.getAllOrders();
-        Map<Order, List<OrderAction>> permitted = permissionChecker.getPermittedActions(orders, Arrays.asList(OrderAction.values()));
+        Map<Order, List<OrderAction>> result = permissionChecker.getPermittedActions(orders, actions);
 
         return orders
                 .stream()
-                .map(order -> OrderRepresentation.of(order, permitted.get(order)))
+                .map(order -> OrderRepresentation.of(order, result.getOrDefault(order, Collections.emptyList())))
                 .collect(toList());
     }
 

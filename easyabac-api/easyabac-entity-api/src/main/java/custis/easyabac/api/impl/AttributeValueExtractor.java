@@ -11,6 +11,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,12 +20,14 @@ import java.util.List;
 public class AttributeValueExtractor {
 
     private final static Log log = LogFactory.getLog(AttributeValueExtractor.class);
+    private static final String ACTION_NAME = "action";
+    private static final String SUBJECT_NAME = "subject";
 
     public static <T> List<AuthAttribute> extractAttributesFromSubject(T object) {
         if (object instanceof AttributeAuthorizationEntity) {
             return ((AttributeAuthorizationEntity) object).getAuthAttributes();
         } else {
-            return performReflectiveExtraction(object, "subject");
+            return performReflectiveExtraction(object, SUBJECT_NAME);
         }
     }
 
@@ -50,6 +54,26 @@ public class AttributeValueExtractor {
             return Collections.singletonList(((AttributiveAuthorizationAction) object).getAuthAttribute());
         } else {
             return performReflectiveActionExtraction(object);
+        }
+    }
+
+    public static <T> Object extractActionEntityByValue(Class<T> clazz, String value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        try {
+            Method method = clazz.getMethod("byId", String.class);
+            Object o = method.invoke(null, value);
+            return o;
+        } catch (NoSuchMethodException e) {
+            // may be it is enum
+            if (clazz.isEnum()) {
+                for (T enumConstant : clazz.getEnumConstants()) {
+                    if (((Enum) enumConstant).name().toLowerCase().equals(value)) {
+                        return enumConstant;
+                    }
+                }
+                throw new IllegalArgumentException("Not found action value for \"" + value + "\" in class " + clazz.getSimpleName());
+            } else {
+                throw e;
+            }
         }
     }
 
@@ -174,16 +198,23 @@ public class AttributeValueExtractor {
         }
         return attributes;
     }
-
-    private static <T> List<AuthAttribute> performReflectiveActionExtraction(T object) {
+    private static <T> String getActionName(T object) {
         String entityName = object.getClass().getSimpleName();
         entityName = entityName.substring(0, 1).toLowerCase() + entityName.substring(1);
+        if (entityName.toLowerCase().endsWith(ACTION_NAME)) {
+            entityName = entityName.substring(0, entityName.length() - 6);
+        }
         if (object.getClass().isAnnotationPresent(AuthorizationAction.class)) {
             AuthorizationAction ann = object.getClass().getAnnotation(AuthorizationAction.class);
             if (!ann.entity().isEmpty()) {
                 entityName = ann.entity();
             }
         }
+        return entityName;
+    }
+
+    private static <T> List<AuthAttribute> performReflectiveActionExtraction(T object) {
+        String entityName = getActionName(object);
 
         List<AuthAttribute> attributes = new ArrayList<>();
         boolean foundAnnotated = false;
@@ -195,7 +226,7 @@ public class AttributeValueExtractor {
                     field.setAccessible(true);
                     Object value = field.get(object);
 
-                    attributes.add(new AuthAttribute(entityName + ".action", entityName + "." + value.toString()));
+                    attributes.add(new AuthAttribute(entityName + "." + ACTION_NAME, entityName + "." + value.toString()));
                     foundAnnotated = true;
                 } catch (IllegalAccessException e) {
                     log.error(e.getMessage());
@@ -205,7 +236,7 @@ public class AttributeValueExtractor {
 
         if (!foundAnnotated) {
             if (object instanceof Enum) {
-                attributes.add(new AuthAttribute(entityName + ".action", ((Enum) object).name().toLowerCase()));
+                attributes.add(new AuthAttribute(entityName + "." + ACTION_NAME, entityName + "." + ((Enum) object).name().toLowerCase()));
             }
         }
         return attributes;

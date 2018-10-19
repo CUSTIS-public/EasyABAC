@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
- * Сущность "Заказ" в системе
+ * Entity "Order" in system
  */
 @Entity
 @Table(name = "t_order")

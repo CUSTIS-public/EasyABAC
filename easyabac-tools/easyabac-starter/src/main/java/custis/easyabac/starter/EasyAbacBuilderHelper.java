@@ -1,7 +1,7 @@
 package custis.easyabac.starter;
 
-import custis.easyabac.api.impl.EntityGetter;
 import custis.easyabac.api.impl.EntitySubjectAttributesProvider;
+import custis.easyabac.api.impl.SubjectEntityProvider;
 import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.Options;
 import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
@@ -16,11 +16,16 @@ import java.io.InputStream;
 
 public class EasyAbacBuilderHelper {
 
-    public static <T> EasyAbacBuilder defaultDebugBuilder(String source, EntityGetter<T> entityGetter) throws EasyAbacInitException {
-        return defaultDebugBuilder(new ByteArrayInputStream(source.getBytes()), entityGetter);
+    public static <T> EasyAbacBuilder defaultDebugBuilder(String source, SubjectEntityProvider<T> subjectEntityProvider) throws EasyAbacInitException {
+        return defaultDebugBuilder(new ByteArrayInputStream(source.getBytes()), subjectEntityProvider);
     }
 
-    public static <T> EasyAbacBuilder defaultDebugBuilder(InputStream modelStream, EntityGetter<T> entityGetter) throws EasyAbacInitException {
+    /**
+     * Default builder helper for EasyAbac creation
+     * @param modelStream InputStream with model data
+     * @param subjectEntityProvider Subject information provider
+     */
+    public static <T> EasyAbacBuilder defaultDebugBuilder(InputStream modelStream, SubjectEntityProvider<T> subjectEntityProvider) throws EasyAbacInitException {
         ModelCreator modelCreator = new EasyAbacModelCreator();
         AbacAuthModel model = modelCreator.createModel(modelStream);
         EasyAbacBuilder builder = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE)
@@ -30,7 +35,7 @@ public class EasyAbacBuilderHelper {
                                 .enableOptimization(true)
                                 .build()
                 )
-                .subjectAttributesProvider(new EntitySubjectAttributesProvider<>(model, entityGetter))
+                .subjectAttributesProvider(new EntitySubjectAttributesProvider<>(model, subjectEntityProvider))
                 .trace(LoggingViewTrace.INSTANCE);
         return builder;
     }

@@ -11,16 +11,16 @@ import java.util.*;
 public class EntitySubjectAttributesProvider<T> implements SubjectAttributesProvider {
 
     private final AbacAuthModel model;
-    private final EntityGetter<T> entityGetter;
+    private final SubjectEntityProvider<T> subjectEntityProvider;
 
-    public EntitySubjectAttributesProvider(AbacAuthModel model, EntityGetter<T> entityGetter) {
+    public EntitySubjectAttributesProvider(AbacAuthModel model, SubjectEntityProvider<T> subjectEntityProvider) {
         this.model = model;
-        this.entityGetter = entityGetter;
+        this.subjectEntityProvider = subjectEntityProvider;
     }
 
     @Override
     public List<AttributeWithValue> provide() {
-        Optional<T> optional = entityGetter.get();
+        Optional<T> optional = subjectEntityProvider.provide();
         if (optional.isPresent()) {
             List<AuthAttribute> attributes = AttributeValueExtractor.extractAttributesFromSubject(optional.get());
             Map<String, Attribute> modelAttributes = model.getAttributes();

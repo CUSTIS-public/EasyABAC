@@ -16,6 +16,7 @@ public class OrderRepresentation {
     private OrderState state;
     private List<OrderAction> actions;
 
+
     public OrderRepresentation(String id, CustomerRepresentation customer, BigDecimal amount, String branchId, OrderState state, List<OrderAction> actions) {
         this.id = id;
         this.customer = customer;

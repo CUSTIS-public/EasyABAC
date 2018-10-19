@@ -24,10 +24,11 @@ import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static custis.easyabac.api.impl.AttributeValueExtractor.extractActionEntityByValue;
 
 @RunWith(Parameterized.class)
 public abstract class EasyAbacBaseTestClass {
@@ -111,11 +112,6 @@ public abstract class EasyAbacBaseTestClass {
         return populateResource(obj, attributes);
     }
 
-    private static <T> T createAction(Class<T> clazz, String action) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        Method method = clazz.getMethod("byId", String.class);
-        return (T) method.invoke(null, action);
-    }
-
     protected static List<Object[]> generateTestData(Class testClass, Class entityClass, Class actionClass,  AuthResponse.Decision decision) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, IOException {
         String entityCode = getEntityCode(entityClass);
 
@@ -138,7 +134,7 @@ public abstract class EasyAbacBaseTestClass {
                 TestDescription testDescription = getTestDescription(folder, fileName);
                 Map<String, Object> resourceMap = testDescription.getAttributesByCode(entityCode);
                 testData[0] = createResource(entityClass, resourceMap == null ? Collections.emptyMap() : resourceMap);
-                testData[1] = createAction(actionClass, testDescription.getShortAction());
+                testData[1] = extractActionEntityByValue(actionClass, testDescription.getShortAction());
                 testData[2] = testDescription;
                 data.add(testData);
             }

@@ -19,6 +19,7 @@ import java.util.Optional;
 import static custis.easyabac.api.core.call.ActionPatternType.*;
 import static custis.easyabac.api.core.call.Constants.LEXEM_AND;
 import static custis.easyabac.api.core.call.Constants.LEXEM_OR;
+import static custis.easyabac.api.impl.AttributeValueExtractor.extractActionEntityByValue;
 
 /**
  * Call Processor for dynamic methods
@@ -62,9 +63,7 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
                 }
                 for (String splittedAction : splittedActions) {
                     try {
-                        Method method = checkerInfo.getActionType().getMethod("byId", String.class);
-                        Object o = method.invoke(null, splittedAction);
-                        typedActions.add(o);
+                        typedActions.add(extractActionEntityByValue(checkerInfo.getActionType(), splittedAction));
                     } catch (NoSuchMethodException e) {
                         throw new UnsupportedDynamicMethodSignature(method, "Not found static method byId(String) in " + checkerInfo.getActionType().getSimpleName());
                     } catch (IllegalArgumentException e) {
@@ -72,7 +71,6 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
                     } catch (Exception e) {
                         throw new UnsupportedDynamicMethodSignature(method, "Cannot execute method buId(String) in " + checkerInfo.getActionType().getSimpleName());
                     }
-
                 }
                 return Optional.of(new TwoArgumentsRequestGenerator(checkerInfo, typedActions));
             }
