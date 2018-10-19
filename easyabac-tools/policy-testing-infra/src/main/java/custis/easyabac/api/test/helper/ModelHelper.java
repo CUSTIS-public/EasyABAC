@@ -6,8 +6,8 @@ import java.util.Enumeration;
 
 public class ModelHelper {
 
-    public static InputStream loadModelFromResource(Class testClass, String resource) throws IOException {
-        Enumeration<URL> e = testClass.getClassLoader().getResources("");
+    public static InputStream loadModelFromResource(String resource) throws IOException {
+        Enumeration<URL> e = ModelHelper.class.getClassLoader().getResources("");
         while (e.hasMoreElements()) {
             URL url = e.nextElement();
 

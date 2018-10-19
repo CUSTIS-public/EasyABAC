@@ -1,5 +1,7 @@
 expectedResult: PERMIT
-action: order.view
+action:
+  id: order.action
+  value: order.view
 attributes:
   order:
     branchId: MSK

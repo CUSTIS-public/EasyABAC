@@ -5,7 +5,7 @@ import java.util.Map;
 public class TestDescription {
 
     private String expectedResult;
-    private String action;
+    private TestAction action;
 
     private Map<String, Map<String, Object>> attributes;
 
@@ -17,15 +17,15 @@ public class TestDescription {
         this.expectedResult = expectedResult;
     }
 
-    public String getAction() {
+    public TestAction getAction() {
         return action;
     }
 
     public String getShortAction() {
-        return action.substring(action.lastIndexOf(".") + 1);
+        return action.getValue().substring(action.getValue().lastIndexOf(".") + 1);
     }
 
-    public void setAction(String action) {
+    public void setAction(TestAction action) {
         this.action = action;
     }
 

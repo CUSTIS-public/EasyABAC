@@ -112,7 +112,7 @@ public class TestGenerator {
             Map<String, String> data = tests.get(i);
             String action = data.remove(FunctionUtils.ACTION);
             testDescription.setExpectedResult(decision.name());
-            testDescription.setAction(action);
+            // FIXME testDescription.setAction(action);
 
             Map<String, Object> prettyData = beautifyValues(abacAuthModel, data);
 
