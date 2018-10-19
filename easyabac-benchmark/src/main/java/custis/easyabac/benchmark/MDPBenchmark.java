@@ -9,7 +9,7 @@ import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.model.AbacAuthModel;
 import custis.easyabac.model.EasyAbacInitException;
 import custis.easyabac.model.easy.EasyAbacModelCreator;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
 import custis.easyabac.core.pdp.RequestId;
@@ -29,7 +29,7 @@ public class MDPBenchmark extends AbstractAuthorizationBenchmark {
         AbacAuthModel model = creator.createModel(MDPBenchmark.class.getResourceAsStream("/OrdersPolicy.yaml"));
 
         Datasource customerBranchIdDatasource = getCustomerBranchIdDatasource();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+        AuthService authorizationService = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                 .datasources(Collections.singletonList(customerBranchIdDatasource))
                 .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                 .build();

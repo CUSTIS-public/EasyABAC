@@ -4,7 +4,7 @@ import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.Options;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
 import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
@@ -21,9 +21,9 @@ import java.util.List;
 @State(Scope.Benchmark)
 public class AttributeAuthorizationFeaturedBenchmark extends AbstractAuthorizationBenchmark {
 
-    private AttributiveAuthorizationService authorizationServiceWithTrace;
-    private AttributiveAuthorizationService authorizationServiceWithAudit;
-    private AttributiveAuthorizationService authorizationServiceFullFeatured;
+    private AuthService authorizationServiceWithTrace;
+    private AuthService authorizationServiceWithAudit;
+    private AuthService authorizationServiceFullFeatured;
 
     @Setup(Level.Trial)
     public void initService() throws EasyAbacInitException {
@@ -32,7 +32,7 @@ public class AttributeAuthorizationFeaturedBenchmark extends AbstractAuthorizati
 
         Options enableTraceOptions = new Options.OptionsBuilder()
                 .enableTrace(true)
-                .optimizeRequest(false)
+                .enableOptimization(false)
                 .build();
         this.authorizationServiceWithTrace = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .trace(new LoggingViewTrace())
@@ -43,7 +43,7 @@ public class AttributeAuthorizationFeaturedBenchmark extends AbstractAuthorizati
         Options enableAuditOptions = new Options.OptionsBuilder()
                 .enableTrace(false)
                 .enableAudit(true)
-                .optimizeRequest(false)
+                .enableOptimization(false)
                 .build();
         this.authorizationServiceWithAudit = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .options(enableAuditOptions)
@@ -53,7 +53,7 @@ public class AttributeAuthorizationFeaturedBenchmark extends AbstractAuthorizati
         Options enableAllOptions = new Options.OptionsBuilder()
                 .enableTrace(true)
                 .enableAudit(true)
-                .optimizeRequest(false)
+                .enableOptimization(false)
                 .build();
         this.authorizationServiceFullFeatured = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .options(enableAllOptions)
