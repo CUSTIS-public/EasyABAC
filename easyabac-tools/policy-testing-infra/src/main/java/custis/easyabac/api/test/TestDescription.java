@@ -4,9 +4,18 @@ import java.util.Map;
 
 public class TestDescription {
 
+    private String expectedResult;
     private String action;
 
     private Map<String, Map<String, Object>> attributes;
+
+    public String getExpectedResult() {
+        return expectedResult;
+    }
+
+    public void setExpectedResult(String expectedResult) {
+        this.expectedResult = expectedResult;
+    }
 
     public String getAction() {
         return action;

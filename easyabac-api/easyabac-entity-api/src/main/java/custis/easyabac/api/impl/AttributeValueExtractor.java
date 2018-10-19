@@ -20,8 +20,9 @@ import java.util.List;
 public class AttributeValueExtractor {
 
     private final static Log log = LogFactory.getLog(AttributeValueExtractor.class);
-    private static final String ACTION_NAME = "action";
-    private static final String SUBJECT_NAME = "subject";
+    public static final String ACTION_NAME = "action";
+    public static final String SUBJECT_NAME = "subject";
+    public static final String ENVIRONMENT_NAME = "env";
 
     public static <T> List<AuthAttribute> extractAttributesFromSubject(T object) {
         if (object instanceof AttributeAuthorizationEntity) {

@@ -1,6 +1,0 @@
-!!custis.easyabac.api.test.TestDescription
-action: order.view
-attributes:
-  subject: {branchId: order.branchId_1, role: MANAGER, maxOrderAmount: 1000}
-  customer: {branchId: order.branchId_1$}
-  order: {branchId: order.branchId_1, amount: 999}

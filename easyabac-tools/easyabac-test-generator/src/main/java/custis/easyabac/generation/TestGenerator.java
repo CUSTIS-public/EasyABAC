@@ -97,7 +97,7 @@ public class TestGenerator {
         ConstructorDeclaration constructor = type.addConstructor(Modifier.PUBLIC);
         constructor.addThrownException(Exception.class);
         BlockStmt body = constructor.getBody();
-        body.addStatement("super(loadModel(" + testName + ".class, \"" + modelFileName + "\"));");
+        body.addStatement("super(loadModelFromResource(" + testName + ".class, \"" + modelFileName + "\"));");
     }
 
     private static boolean createData(ClassOrInterfaceDeclaration type, AbacAuthModel abacAuthModel, String testName, Resource resource, SourceRoot resourceRoot, String resourceName, AuthResponse.Decision decision, String packageName) throws IOException, EasyAbacInitException {
@@ -111,6 +111,7 @@ public class TestGenerator {
             TestDescription testDescription = new TestDescription();
             Map<String, String> data = tests.get(i);
             String action = data.remove(FunctionUtils.ACTION);
+            testDescription.setExpectedResult(decision.name());
             testDescription.setAction(action);
 
             Map<String, Object> prettyData = beautifyValues(abacAuthModel, data);

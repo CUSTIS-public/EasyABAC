@@ -1,0 +1,7 @@
+expectedResult: PERMIT
+action: order.view
+attributes:
+  order:
+    branchId: MSK
+  subject:
+    branchId: MSK
