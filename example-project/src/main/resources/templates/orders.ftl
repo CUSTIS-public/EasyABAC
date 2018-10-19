@@ -74,11 +74,6 @@
                 <td>${order.branchId}</td>
                 <td>${order.customer.firstName} ${order.customer.firstName}</td>
                 <td>${order.state}</td>
-                <td>
-                    <#list order.actions as action>
-                        <button class="button">${action}</button>
-                    </#list>
-                </td>
             </tr>
         </#list>
     </tbody>

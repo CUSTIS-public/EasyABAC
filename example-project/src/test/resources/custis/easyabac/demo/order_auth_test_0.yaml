@@ -1,9 +1,0 @@
-expectedResult: PERMIT
-action:
-  id: order.action
-  value: order.view
-attributes:
-  order:
-    branchId: MSK
-  subject:
-    branchId: MSK
