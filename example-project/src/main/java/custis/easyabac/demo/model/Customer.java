@@ -1,21 +1,17 @@
 package custis.easyabac.demo.model;
 
-import lombok.Getter;
-
 import javax.persistence.*;
 import java.util.Objects;
 
 /**
- * Сущность "Клиент" в системе
+ * Entity "Client" in system
  */
 @Entity
-@Table(name = "customer")
-@Getter
+@Table(name = "t_customer")
 public class Customer {
 
     @Id
-    @AttributeOverride(name = "value", column = @Column(name = "id"))
-    private CustomerId id;
+    private String id;
 
     @Column
     private String firstName;
@@ -23,21 +19,42 @@ public class Customer {
     @Column
     private String lastName;
 
-    @ManyToOne
-    @JoinColumn(name = "branch_id", insertable = false, updatable = false)
-    private Branch branch;
-
     @AttributeOverride(name = "value", column = @Column(name = "branch_id"))
-    private BranchId branchId;
+    private String branchId;
 
     Customer() {
     }
 
-    public Customer(String firstName, String lastName, Branch branch) {
-        this.id = CustomerId.newId();
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
         this.lastName = lastName;
-        this.branchId = branch.getId();
+    }
+
+    public String getBranchId() {
+        return branchId;
+    }
+
+    public void setBranchId(String branchId) {
+        this.branchId = branchId;
     }
 
     @Override

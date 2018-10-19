@@ -10,11 +10,11 @@
     </parent>
 
     <groupId>custis.easyabac</groupId>
-    <artifactId>easyabac-spring-api</artifactId>
+    <artifactId>easyabac-starter</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Custis.EasyAbacAPI</name>
-    <description>API для вызова EasyABAC через Spring</description>
+    <name>Custis.EasyAbacStarterProject</name>
+    <description>Starter project for EasyABAC</description>
 
     <properties>
         <docker.entrypoint.spring.profiles.active>default</docker.entrypoint.spring.profiles.active>
@@ -26,14 +26,32 @@
         <!-- easyabac -->
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>custis.easyabac</groupId>
             <artifactId>easyabac-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>custis.easyabac</groupId>
+            <artifactId>wso2-balana-pdp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>custis.easyabac</groupId>
+            <artifactId>easy-model-loader</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>custis.easyabac</groupId>
+            <artifactId>easyabac-entity-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>custis.easyabac</groupId>
+            <artifactId>logging-trace</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>easyabac-entity-api</artifactId>
+            <groupId>custis.easyabac</groupId>
+            <artifactId>policy-testing-infra</artifactId>
+            <scope>test</scope>
         </dependency>
+
 
         <!-- spring -->
         <dependency>
@@ -52,8 +70,8 @@
             <version>${spring.version}</version>
         </dependency>
 
-        <!-- other -->
 
+        <!-- other -->
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -66,6 +84,7 @@
             <artifactId>javax.annotation-api</artifactId>
             <version>1.3.2</version>
         </dependency>
+
 
     </dependencies>
 

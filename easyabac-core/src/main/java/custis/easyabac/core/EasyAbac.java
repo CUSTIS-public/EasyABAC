@@ -256,7 +256,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private Attribute getActionAttributeFromRequest(List<Attribute> attributesByRequest) throws EasyAbacAuthException {
         List<Attribute> actions = attributesByRequest.stream().filter(attribute -> attribute.getCategory().equals(Category.ACTION)).collect(Collectors.toList());
         if (actions.size() != 1) {
-            throw new EasyAbacAuthException("The request must have only one action");
+            throw new EasyAbacAuthException("The request must have only one action. Current size = " + actions.size());
         }
 
         return actions.get(0);

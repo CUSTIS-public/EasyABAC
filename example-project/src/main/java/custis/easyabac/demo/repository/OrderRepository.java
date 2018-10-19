@@ -1,9 +1,8 @@
 package custis.easyabac.demo.repository;
 
 import custis.easyabac.demo.model.Order;
-import custis.easyabac.demo.model.OrderId;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface OrderRepository extends CrudRepository<Order, OrderId> {
+public interface OrderRepository extends JpaRepository<Order, String> {
 }

@@ -24,7 +24,7 @@
         <module>easyabac-tools/easyabac-maven-plugin</module>
         <module>easyabac-tools/xacml-policy-transformer</module>
         <module>easyabac-tools/easy-model-loader</module>
-        <module>easyabac-tools/easyabac-spring-boot-starter</module>
+        <module>easyabac-tools/easyabac-starter</module>
         <module>easyabac-tools/policy-testing-infra</module>
         <module>easyabac-benchmark</module>
     </modules>
@@ -85,6 +85,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>logging-trace</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>easyabac-starter</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
