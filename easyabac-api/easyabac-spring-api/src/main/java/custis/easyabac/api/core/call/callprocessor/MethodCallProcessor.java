@@ -7,8 +7,8 @@ import custis.easyabac.api.core.call.converters.ResultConverter;
 import custis.easyabac.api.core.call.getters.AttributesValuesGetterFactory;
 import custis.easyabac.api.core.call.getters.RequestGenerator;
 import custis.easyabac.api.core.call.getters.RequestWrapper;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.core.pdp.RequestId;
 
 import java.lang.reflect.Method;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public abstract class MethodCallProcessor {
-    protected final AttributiveAuthorizationService attributiveAuthorizationService;
+    protected final AuthService authService;
     protected final Method method;
     protected final PermissionCheckerInformation checkerInfo;
     protected final MethodType methodType;
@@ -25,10 +25,10 @@ public abstract class MethodCallProcessor {
     protected RequestGenerator valuesGetter;
     protected ResultConverter resultConverter;
 
-    protected MethodCallProcessor(PermissionCheckerInformation checkerInfo, Method method, AttributiveAuthorizationService attributiveAuthorizationService) {
+    protected MethodCallProcessor(PermissionCheckerInformation checkerInfo, Method method, AuthService authService) {
         this.checkerInfo = checkerInfo;
         this.method = method;
-        this.attributiveAuthorizationService = attributiveAuthorizationService;
+        this.authService = authService;
         this.methodType = MethodType.findByMethod(method);
         this.decisionType = DecisionType.findByMethod(method, methodType);
     }
@@ -38,7 +38,7 @@ public abstract class MethodCallProcessor {
         RequestWrapper reqWrapper = valuesGetter.generate(arguments);
 
         // executing requests
-        Map<RequestId, AuthResponse> responses = attributiveAuthorizationService.authorizeMultiple(reqWrapper.getRequests());
+        Map<RequestId, AuthResponse> responses = authService.authorizeMultiple(reqWrapper.getRequests());
 
         // processing result
         return resultConverter.convert(reqWrapper.getMapping(), responses);

@@ -4,9 +4,9 @@ import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.EasyAbacDatasourceException;
 import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.datasource.Param;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.model.easy.EasyAbacModelCreator;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -35,7 +35,7 @@ public class PipTest {
         InputStream policy = getResourceAsStream("test_pip_policy.xml");
         InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
+        AuthService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .useXacmlPolicy(policy).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
@@ -50,7 +50,7 @@ public class PipTest {
     public void TwoAttrEqualsTestYaml() throws Exception {
         InputStream easyModel = getResourceAsStream("test_pip_policy.yaml");
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
+        AuthService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
@@ -64,7 +64,7 @@ public class PipTest {
     public void TwoAttrEqualsTestYamlMultiPolicy() throws Exception {
         InputStream easyModel = getResourceAsStream("test_pip_policy_multipolicy.yaml");
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
+        AuthService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute(ACTION_OPERATION, "report.edit"));
@@ -87,7 +87,7 @@ public class PipTest {
         Datasource datasource = new UserCategoryDatasource(params, SUBJECT_ALLOWED_CATEGORIES);
 
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
+        AuthService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .datasources(Collections.singletonList(datasource)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
@@ -125,7 +125,7 @@ public class PipTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
+        AuthService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .useXacmlPolicy(policy).datasources(Arrays.asList(datasource, datasourceReportCat)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
@@ -158,7 +158,7 @@ public class PipTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
+        AuthService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .useXacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();

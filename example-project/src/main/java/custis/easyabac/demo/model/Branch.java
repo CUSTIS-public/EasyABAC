@@ -1,44 +1,33 @@
 package custis.easyabac.demo.model;
 
-import lombok.Getter;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import javax.persistence.*;
-import java.util.Objects;
-
-/**
- * Сущность "Филиал" в системе
- */
 @Entity
-@Table(name = "branch")
-@Getter
+@Table(name = "t_branch")
 public class Branch {
 
     @Id
-    @AttributeOverride(name = "value", column = @Column(name = "id"))
-    private BranchId id;
+    private String id;
 
     @Column
     private String name;
 
-    Branch() {
-
+    public String getId() {
+        return id;
     }
 
-    public Branch(String name) {
-        this.id = BranchId.newId();
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Branch branch = (Branch) o;
-        return Objects.equals(id, branch.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

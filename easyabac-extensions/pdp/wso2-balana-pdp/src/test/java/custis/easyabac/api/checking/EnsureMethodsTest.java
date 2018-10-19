@@ -4,7 +4,7 @@ import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
 import custis.easyabac.model.AbacAuthModel;
 import custis.easyabac.model.EasyAbacInitException;
@@ -24,7 +24,7 @@ import static custis.easyabac.model.attribute.Attribute.SUBJECT_ID;
 
 public class EnsureMethodsTest {
 
-    private static AttributiveAuthorizationService attributiveAuthorizationService;
+    private static AuthService authService;
     private static EasyABACPermissionCheckerFactory factory;
     private static EnsureMethods checker;
 
@@ -124,8 +124,8 @@ public class EnsureMethodsTest {
         AbacAuthModel model = creator.createModel(EnsureMethods.class.getResourceAsStream("/deny.yaml"));
         EasyAbacBuilder builder = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE);
         builder.subjectAttributesProvider(() -> Collections.singletonList(new AttributeWithValue(SUBJECT_ID, Collections.singletonList("subject_id"))));
-        attributiveAuthorizationService = builder.build();
-        factory = new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);
+        authService = builder.build();
+        factory = new EasyABACPermissionCheckerFactory(authService);
         checker = factory.getPermissionChecker(EnsureMethods.class);
     }
 }

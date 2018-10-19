@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Converts domain model Policy to Balana PolicySet
  */
-class BalanaPolicyBuilder {
+public class BalanaPolicyBuilder {
 
     private static final DenyUnlessPermitPolicyAlg DENY_UNLESS_PERMIT_POLICY_ALG = new DenyUnlessPermitPolicyAlg();
     private static final DenyUnlessPermitRuleAlg DENY_UNLESS_PERMIT_RULE_ALG = new DenyUnlessPermitRuleAlg();
@@ -70,7 +70,7 @@ class BalanaPolicyBuilder {
         predefinedAttributes.put(AttributesConstants.ENV_NOW, currentDateTime);
     }
 
-    PolicySet buildFrom(AbacAuthModel abacAuthModel) {
+    public PolicySet buildFrom(AbacAuthModel abacAuthModel) {
         return new PolicySet(defaultBalanaPolicySetId(),
                 DENY_UNLESS_PERMIT_POLICY_ALG,
                 new Target(),

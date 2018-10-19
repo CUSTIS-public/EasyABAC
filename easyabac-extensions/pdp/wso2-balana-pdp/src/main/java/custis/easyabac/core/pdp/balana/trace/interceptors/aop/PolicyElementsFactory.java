@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class PolicyElementsFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PolicyElementsFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(PolicyElementsFactory.class);
 
     public static PDP newPDP(Set<PolicyFinderModule> policyFinderModules, List<AttributeFinderModule> attributeFinderModules, boolean useProxy) {
         if (useProxy) {
@@ -93,14 +93,14 @@ public class PolicyElementsFactory {
             field.setAccessible(true);
             obligations = (Set<AbstractObligation>) field.get(sourceRule);
         } catch (Exception e) {
-            LOGGER.error("Ошибка при попытке получить значение поля obligationExpressions");
+            log.error("Ошибка при попытке получить значение поля obligationExpressions");
         }
         try {
             Field field = ReflectionUtils.findField(Rule.class, "adviceExpressions");
             field.setAccessible(true);
             advices = (Set<AdviceExpression>) field.get(sourceRule);
         } catch (Exception e) {
-            LOGGER.error("Ошибка при попытке получить значение поля adviceExpressions");
+            log.error("Ошибка при попытке получить значение поля adviceExpressions");
         }
 */
 
@@ -200,7 +200,7 @@ public class PolicyElementsFactory {
             abstractPolicy = new PolicyReference(cast.getId(), cast.getReferenceType(), cast.getConstraints(),
                     policyFinder, cast.getMetaData());
         } else {
-            LOGGER.error("Unknown AbstractPolicy implementation");
+            log.error("Unknown AbstractPolicy implementation");
             return policy;
         }
         result.setTarget(abstractPolicy);

@@ -2,7 +2,7 @@ package custis.easyabac.api.core.call.callprocessor;
 
 import custis.easyabac.api.core.PermissionCheckerInformation;
 import custis.easyabac.api.core.call.MethodType;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 
 import java.lang.reflect.Method;
 
@@ -12,16 +12,16 @@ import java.lang.reflect.Method;
 public class MethodCallProcessorFactory {
 
 
-    public static MethodCallProcessor createCallProcessor(PermissionCheckerInformation permissionCheckerInformation, Method method, AttributiveAuthorizationService attributiveAuthorizationService) {
+    public static MethodCallProcessor createCallProcessor(PermissionCheckerInformation permissionCheckerInformation, Method method, AuthService authService) {
         MethodType methodType = MethodType.findByMethod(method);
         MethodCallProcessor callProcessor;
         switch (methodType) {
             case ENSURE:
             case IS:
-                 callProcessor = new CheckingMethodCallProcessor(permissionCheckerInformation, method, attributiveAuthorizationService);
+                 callProcessor = new CheckingMethodCallProcessor(permissionCheckerInformation, method, authService);
                  break;
             case GET:
-                 callProcessor = new GettingMethodCallProcessor(permissionCheckerInformation, method, attributiveAuthorizationService);
+                 callProcessor = new GettingMethodCallProcessor(permissionCheckerInformation, method, authService);
                  break;
             default:
                 throw new UnsupportedOperationException("not implemented");

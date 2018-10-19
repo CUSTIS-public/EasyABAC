@@ -26,15 +26,14 @@
         <!-- easyabac -->
         <dependency>
             <groupId>custis.easyabac</groupId>
-            <artifactId>easyabac-spring-boot-starter</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <artifactId>easyabac-starter</artifactId>
         </dependency>
+
         <dependency>
             <groupId>custis.easyabac</groupId>
             <artifactId>policy-testing-infra</artifactId>
             <scope>test</scope>
         </dependency>
-
 
         <!-- spring boot -->
 
@@ -59,12 +58,6 @@
         </dependency>
 
         <!-- utils -->
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.18</version>
-        </dependency>
 
         <dependency>
             <groupId>com.mattbertolini</groupId>
@@ -145,7 +138,7 @@
 
                     <testBasePackage>custis.easyabac.autogen</testBasePackage>
 
-                    <modelPackage>custis.easyabac.demo.authz.model</modelPackage>
+                    <modelPackage>custis.easyabac.demo.authn.model</modelPackage>
                 </configuration>
             </plugin>
         </plugins>

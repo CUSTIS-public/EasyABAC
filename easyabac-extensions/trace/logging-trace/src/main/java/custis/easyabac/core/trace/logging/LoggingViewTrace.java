@@ -17,7 +17,7 @@ import static custis.easyabac.model.easy.AuthModelTransformer.modeModelAttribute
 
 public class LoggingViewTrace implements Trace {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(LoggingViewTrace.class);
+    public static final Logger log = LoggerFactory.getLogger(LoggingViewTrace.class);
     public static final Trace INSTANCE = new LoggingViewTrace();
 
     @Override
@@ -27,8 +27,8 @@ public class LoggingViewTrace implements Trace {
         modelWithTrace.append("\n--ATTRIBUTES--\n");
         if (traceResult == null) {
             modelWithTrace.append("\n NO TRACE RESULT \n");
-            if (LOGGER.isDebugEnabled()) {
-                //LOGGER.debug(modelWithTrace.toString());
+            if (log.isDebugEnabled()) {
+                //log.debug(modelWithTrace.toString());
             }
             return;
         }
@@ -60,7 +60,7 @@ public class LoggingViewTrace implements Trace {
             printPolicy((CalculatedPolicy) mainPolicy, 1, modelWithTrace, traceResult.getAttributes());
         }
         //printTraceResult(traceResult);
-        LOGGER.info(modelWithTrace.toString());
+        log.info(modelWithTrace.toString());
     }
 
     private void printPolicyWithoutTrace(Policy policy, int level, StringBuilder modelWithTrace) {
@@ -128,8 +128,10 @@ public class LoggingViewTrace implements Trace {
             } else {
                 modelWithTrace.append(model.getFirstOperand().getId()).append(" [n/a]").append(", ");
             }
+            modelWithTrace.append("\n");
 
             if (model.getSecondOperandAttribute() != null) {
+                modelWithTrace.append(modelWithTrace.append(makeTabulation(level + 1) + "           "));
                 CalculatedAttribute calcSecond = attributes.get(makeXacmlName(model.getSecondOperandAttribute().getId()));
                 if (calcSecond != null) {
                     modelWithTrace.append(model.getSecondOperandAttribute().getId() + " " + calcSecond.getValues()).append("\n");

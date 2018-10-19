@@ -5,7 +5,7 @@ import custis.easyabac.api.impl.EasyABACPermissionCheckerFactory;
 import custis.easyabac.api.model.Order;
 import custis.easyabac.api.model.OrderAction;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
 import custis.easyabac.model.AbacAuthModel;
 import custis.easyabac.model.EasyAbacInitException;
@@ -20,7 +20,7 @@ import static java.util.Arrays.asList;
 
 public class GettingMethodsTest {
 
-    private static AttributiveAuthorizationService attributiveAuthorizationService;
+    private static AuthService authService;
     private static EasyABACPermissionCheckerFactory factory;
     private static GettingMethods checker;
 
@@ -54,8 +54,8 @@ public class GettingMethodsTest {
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
         AbacAuthModel model = creator.createModel(EnsureMethods.class.getResourceAsStream("/deny.yaml"));
         EasyAbacBuilder builder = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE);
-        attributiveAuthorizationService = builder.build();
-        factory = new EasyABACPermissionCheckerFactory(attributiveAuthorizationService);
+        authService = builder.build();
+        factory = new EasyABACPermissionCheckerFactory(authService);
         checker = factory.getPermissionChecker(GettingMethods.class);
     }
 }

@@ -1,5 +1,0 @@
-!!custis.easyabac.api.test.TestDescription
-action: order.view
-attributes:
-  subject: {branchId: '!N/A!-JrTW1', role: OPERATOR}
-  customer: {branchId: '!N/A!-JrTW1'}

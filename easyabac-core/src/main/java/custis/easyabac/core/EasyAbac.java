@@ -1,7 +1,6 @@
 package custis.easyabac.core;
 
 import custis.easyabac.core.audit.Audit;
-import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.extend.RequestExtender;
 import custis.easyabac.core.pdp.*;
 import custis.easyabac.core.trace.Trace;
@@ -18,24 +17,23 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class EasyAbac implements AttributiveAuthorizationService {
+public class EasyAbac implements AuthService {
 
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 
     private final PdpHandler pdpHandler;
     private final AbacAuthModel abacAuthModel;
-    private final List<Datasource> datasources;
     private final List<RequestExtender> requestExtenders;
     private final Audit audit;
     private final Trace trace;
     private final Map<String, Map<String, Attribute>> attributesByAction;
     private final Options options;
 
-    EasyAbac(PdpHandler pdpHandler, AbacAuthModel abacAuthModel, List<Datasource> datasources,
-             List<RequestExtender> requestExtenders, Audit audit, Trace trace, Map<String, Map<String, Attribute>> attributesByAction, Options options) {
+    EasyAbac(PdpHandler pdpHandler, AbacAuthModel abacAuthModel, List<RequestExtender> requestExtenders,
+             Audit audit, Trace trace, Map<String, Map<String, Attribute>> attributesByAction, Options options) {
+
         this.pdpHandler = pdpHandler;
         this.abacAuthModel = abacAuthModel;
-        this.datasources = datasources;
         this.requestExtenders = requestExtenders;
         this.audit = audit;
         this.trace = trace;
@@ -79,6 +77,9 @@ public class EasyAbac implements AttributiveAuthorizationService {
 
     @Override
     public Map<RequestId, AuthResponse> authorizeMultiple(Map<RequestId, List<AuthAttribute>> attributes) {
+
+        final boolean enableOptimization = isEnableOptimization(attributes.size());
+
         List<AttributeWithValue> additionalAttributes = new ArrayList<>();
 
         for (RequestExtender extender : requestExtenders) {
@@ -89,8 +90,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
         MultiAuthResponse result = null;
         Map<RequestId, List<RequestId>> requestIdOptimizedMap = null;
 
-
-        if (options.isOptimizeRequest()) {
+        if (enableOptimization) {
             MultiAuthRequestOptimize multiAuthRequestOptimize = optimazePrepareMultiRequest(attributes, additionalAttributes);
             requestIdOptimizedMap = new HashMap<>();
 
@@ -121,7 +121,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
         }
 
 
-        if (options.isOptimizeRequest()) {
+        if (enableOptimization) {
             Map<RequestId, AuthResponse> detailedResult = new HashMap<>();
             for (RequestId optimRequestId : result.getResults().keySet()) {
                 List<RequestId> requestIds = requestIdOptimizedMap.get(optimRequestId);
@@ -152,6 +152,10 @@ public class EasyAbac implements AttributiveAuthorizationService {
         return result.getResults();
     }
 
+    private boolean isEnableOptimization(int numberOfRequests) {
+        return options.isEnableOptimization() && options.getOptimizationThreshold() < numberOfRequests;
+    }
+
     private MultiAuthRequest prepareMultiRequest(Map<RequestId, List<AuthAttribute>> authAttributes, List<AttributeWithValue> additionalAttributes) {
 
         Map<String, Attribute> allAttributesById = new HashMap<>();
@@ -173,7 +177,6 @@ public class EasyAbac implements AttributiveAuthorizationService {
             requests.put(requestId, attributeWithValuesByRequest);
         }
 
-            // Сортировка нужна для правильного сравнения для выявления одинаковых запросов
         return new MultiAuthRequest(allAttributesById, requests);
     }
 
@@ -253,7 +256,7 @@ public class EasyAbac implements AttributiveAuthorizationService {
     private Attribute getActionAttributeFromRequest(List<Attribute> attributesByRequest) throws EasyAbacAuthException {
         List<Attribute> actions = attributesByRequest.stream().filter(attribute -> attribute.getCategory().equals(Category.ACTION)).collect(Collectors.toList());
         if (actions.size() != 1) {
-            throw new EasyAbacAuthException("The request must have only one action");
+            throw new EasyAbacAuthException("The request must have only one action. Current size = " + actions.size());
         }
 
         return actions.get(0);

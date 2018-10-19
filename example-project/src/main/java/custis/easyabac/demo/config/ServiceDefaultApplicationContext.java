@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -19,7 +18,6 @@ import javax.sql.DataSource;
 @EnableJpaRepositories("custis.easyabac.demo.repository")
 @EnableConfigurationProperties
 @EnableAutoConfiguration
-@Import(custis.easyabac.boot.EasyABACConfiguration.class)
 public class ServiceDefaultApplicationContext {
 
     @Bean

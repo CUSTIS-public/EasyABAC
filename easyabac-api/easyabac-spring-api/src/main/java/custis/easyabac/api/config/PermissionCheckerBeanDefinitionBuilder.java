@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  */
 class PermissionCheckerBeanDefinitionBuilder {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PermissionCheckerBeanDefinitionBuilder.class);
+    private static final Logger log = LoggerFactory.getLogger(PermissionCheckerBeanDefinitionBuilder.class);
 
 	private final BeanDefinitionRegistry registry;
 	private final PermissionCheckerConfigurationExtension extension;

@@ -51,7 +51,7 @@ import static org.springframework.beans.factory.support.BeanDefinitionReaderUtil
  */
 public class PermissionCheckerConfigurationExtensionImpl implements PermissionCheckerConfigurationExtension {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PermissionCheckerConfigurationExtensionImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PermissionCheckerConfigurationExtensionImpl.class);
 	private static final String CLASS_LOADING_ERROR = "EasyABAC - Could not load type %s using class loader %s.";
 	private static final String MULTI_STORE_DROPPED = "Spring Data EasyABAC - Could not safely identify store assignment for repository candidate {}.";
 
@@ -244,7 +244,7 @@ public class PermissionCheckerConfigurationExtensionImpl implements PermissionCh
 			}
 		}
 
-		LOGGER.info(MULTI_STORE_DROPPED, repositoryInterface);
+        log.info(MULTI_STORE_DROPPED, repositoryInterface);
 
 		return false;
 	}
@@ -294,7 +294,7 @@ public class PermissionCheckerConfigurationExtensionImpl implements PermissionCh
 		try {
 			return org.springframework.util.ClassUtils.forName(repositoryInterface, classLoader);
 		} catch (ClassNotFoundException | LinkageError e) {
-			LOGGER.warn(String.format(CLASS_LOADING_ERROR, repositoryInterface, classLoader), e);
+            log.warn(String.format(CLASS_LOADING_ERROR, repositoryInterface, classLoader), e);
 		}
 
 		return null;

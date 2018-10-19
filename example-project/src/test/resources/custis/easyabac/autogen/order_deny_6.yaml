@@ -1,5 +1,0 @@
-!!custis.easyabac.api.test.TestDescription
-action: order.reject
-attributes:
-  subject: {role: MANAGER, maxOrderAmount: 1000}
-  order: {amount: 1000}

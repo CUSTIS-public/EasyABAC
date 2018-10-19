@@ -10,7 +10,6 @@ import custis.easyabac.core.extend.RequestExtender;
 import custis.easyabac.core.extend.subject.DummySubjectAttributesProvider;
 import custis.easyabac.core.extend.subject.SubjectAttributesExtender;
 import custis.easyabac.core.extend.subject.SubjectAttributesProvider;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.core.pdp.PdpHandler;
 import custis.easyabac.core.pdp.PdpHandlerFactory;
 import custis.easyabac.core.trace.DefaultTrace;
@@ -95,7 +94,7 @@ public class EasyAbacBuilder {
     }
 
 
-    public AttributiveAuthorizationService build() throws EasyAbacInitException {
+    public EasyAbac build() throws EasyAbacInitException {
         enrichDatasources(datasources, abacAuthModel);
 
 
@@ -113,7 +112,7 @@ public class EasyAbacBuilder {
 
         Map<String, Map<String, Attribute>> attributesByAction = groupAttributesByAction(datasources, abacAuthModel);
 
-        return new EasyAbac(pdpHandler, abacAuthModel, datasources, extenders, audit, trace, attributesByAction, options);
+        return new EasyAbac(pdpHandler, abacAuthModel, extenders, audit, trace, attributesByAction, options);
     }
 
     private void enrichDatasources(List<Datasource> datasources, AbacAuthModel abacAuthModel) throws EasyAbacInitException {

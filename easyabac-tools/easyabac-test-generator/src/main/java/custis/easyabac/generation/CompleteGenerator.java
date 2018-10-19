@@ -20,9 +20,7 @@ public class CompleteGenerator {
         SourceRoot resourceRoot = new SourceRoot(testResourcePath);
 
         for (Resource resource : model.getResources().values()) {
-            EntityGenerator.createEntity(resource, testBasePackage + MODEL_SUFFIX, sourceRoot);
             if (!resource.getActions().isEmpty()) {
-                ActionGenerator.createAction(resource, testBasePackage + MODEL_SUFFIX, sourceRoot);
                 TestGenerator.createTests(resource, testBasePackage, sourceRoot, resourceRoot, model, modelFileName);
             }
         }
