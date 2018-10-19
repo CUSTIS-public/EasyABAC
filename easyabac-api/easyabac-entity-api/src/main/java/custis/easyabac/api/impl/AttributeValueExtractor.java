@@ -7,15 +7,17 @@ import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 import custis.easyabac.api.attr.imp.AttributeAuthorizationEntity;
 import custis.easyabac.api.attr.imp.AttributiveAuthorizationAction;
 import custis.easyabac.core.pdp.AuthAttribute;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
 public class AttributeValueExtractor {
+
+    private final static Log log = LogFactory.getLog(AttributeValueExtractor.class);
 
     public static <T> List<AuthAttribute> extractAttributesFromSubject(T object) {
         if (object instanceof AttributeAuthorizationEntity) {

@@ -54,7 +54,7 @@ public class RequestOptimTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, REPORT_CATEGORY);
 
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        Options options = new Options.OptionsBuilder().enableTrace(true).optimizeRequest(false).build();
+        Options options = new Options.OptionsBuilder().enableTrace(true).enableOptimization(false).build();
         authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .datasources(Arrays.asList(datasourceUserCat, datasourceReportCat))
                 .options(options)

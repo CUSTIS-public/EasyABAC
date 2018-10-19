@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class Audit4jAudit implements Audit {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(DefaultAudit.class);
+    public static final Logger log = LoggerFactory.getLogger(DefaultAudit.class);
 
     public static Audit4jAudit INSTANCE = new Audit4jAudit();
 

@@ -1,26 +1,30 @@
 package custis.easyabac.core;
 
 public class Options {
-    private final boolean optimizeRequest;
+    private final boolean enableOptimization;
+    private final int optimizationThreshold;
     private final boolean enableTrace;
     private final boolean enableAudit;
 
+
     public static Options getDefaultOptions() {
         return new OptionsBuilder()
-                .optimizeRequest(true)
+                .enableOptimization(true)
                 .enableTrace(false)
                 .enableAudit(false)
+                .optimizationThreshold(10)
                 .build();
     }
 
-    public Options(boolean optimizeRequest, boolean enableTrace, boolean enableAudit) {
-        this.optimizeRequest = optimizeRequest;
+    public Options(boolean enableOptimization, int optimizationThreshold, boolean enableTrace, boolean enableAudit) {
+        this.enableOptimization = enableOptimization;
         this.enableTrace = enableTrace;
         this.enableAudit = enableAudit;
+        this.optimizationThreshold = optimizationThreshold;
     }
 
-    public boolean isOptimizeRequest() {
-        return optimizeRequest;
+    public boolean isEnableOptimization() {
+        return enableOptimization;
     }
 
     public boolean isEnableTrace() {
@@ -31,13 +35,26 @@ public class Options {
         return enableAudit;
     }
 
+    public int getOptimizationThreshold() {
+        return optimizationThreshold;
+    }
+
     public static class OptionsBuilder {
-        private boolean optimizeRequest;
+        private boolean enableOptimization;
         private boolean enableTrace;
         private boolean enableAudit;
+        private int optimizationThreshold;
 
-        public OptionsBuilder optimizeRequest(boolean optimizeRequest) {
-            this.optimizeRequest = optimizeRequest;
+        public OptionsBuilder enableOptimization(boolean enableOptimization) {
+            this.enableOptimization = enableOptimization;
+            return this;
+        }
+
+        public OptionsBuilder optimizationThreshold(int optimizationThreshold) {
+            if (optimizationThreshold < 0) {
+                optimizationThreshold = 0;
+            }
+            this.optimizationThreshold = optimizationThreshold;
             return this;
         }
 
@@ -51,8 +68,9 @@ public class Options {
             return this;
         }
 
+
         public Options build() {
-            return new Options(optimizeRequest, enableTrace, enableAudit);
+            return new Options(enableOptimization, optimizationThreshold, enableTrace, enableAudit);
         }
     }
 
