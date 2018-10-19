@@ -3,9 +3,9 @@ package custis.easyabac.core.pdp.balana;
 import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.datasource.Param;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.core.pdp.RequestId;
 import custis.easyabac.model.EasyAbacInitException;
 import custis.easyabac.model.easy.EasyAbacModelCreator;
@@ -24,7 +24,7 @@ public class EasyAbacInitTest {
     private static final String SUBJECT_ALLOWED_CATEGORIES = "subject.allowed-categories";
     private static final String REPORT_ID = "report.id";
 
-    private AttributiveAuthorizationService authorizationService;
+    private AuthService authorizationService;
 
     private InputStream getResourceAsStream(String s) {
         return this.getClass()

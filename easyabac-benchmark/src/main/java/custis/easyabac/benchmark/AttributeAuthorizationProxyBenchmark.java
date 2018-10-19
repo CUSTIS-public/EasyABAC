@@ -3,9 +3,9 @@ package custis.easyabac.benchmark;
 import custis.easyabac.benchmark.model.Order;
 import custis.easyabac.benchmark.model.OrderAction;
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
 import custis.easyabac.model.AbacAuthModel;
 import custis.easyabac.model.EasyAbacInitException;
@@ -21,8 +21,8 @@ import static java.util.Collections.singletonList;
 @State(Scope.Benchmark)
 public class AttributeAuthorizationProxyBenchmark extends AbstractAuthorizationBenchmark {
 
-    private AttributiveAuthorizationService managerAuthService;
-    private AttributiveAuthorizationService operatorAuthService;
+    private AuthService managerAuthService;
+    private AuthService operatorAuthService;
 
     @Setup(Level.Trial)
     public void initService() throws EasyAbacInitException {

@@ -9,7 +9,7 @@ import custis.easyabac.api.core.call.converters.CheckingResultConverter;
 import custis.easyabac.api.core.call.converters.ResultConverter;
 import custis.easyabac.api.core.call.getters.RequestGenerator;
 import custis.easyabac.api.core.call.getters.TwoArgumentsRequestGenerator;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,8 +28,8 @@ public class CheckingMethodCallProcessor extends MethodCallProcessor {
 
     private final ActionPatternType actionPatternType;
 
-    public CheckingMethodCallProcessor(PermissionCheckerInformation permissionCheckerInformation, Method method, AttributiveAuthorizationService attributiveAuthorizationService) {
-        super(permissionCheckerInformation, method, attributiveAuthorizationService);
+    public CheckingMethodCallProcessor(PermissionCheckerInformation permissionCheckerInformation, Method method, AuthService authService) {
+        super(permissionCheckerInformation, method, authService);
         this.actionPatternType = ActionPatternType.findByMethod(method, methodType, decisionType);
 
         // method return type

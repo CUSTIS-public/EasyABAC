@@ -4,9 +4,9 @@ import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.core.cache.SampleCache;
 import custis.easyabac.core.datasource.Datasource;
 import custis.easyabac.core.datasource.Param;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.model.EasyAbacInitException;
 import custis.easyabac.model.easy.EasyAbacModelCreator;
 import org.junit.Assert;
@@ -45,7 +45,7 @@ public class CacheTest {
         Datasource datasourceReportCat = new ReportCategoryDatasource(reportDsParams, RESOURCE_CATEGORY);
 
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
+        AuthService authorizationService = new EasyAbacBuilder(easyModel, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE)
                 .useXacmlPolicy(policy).datasources(Arrays.asList(datasourceUserCat, datasourceReportCat)).cache(new SampleCache()).build();
 
         Random random = new Random();

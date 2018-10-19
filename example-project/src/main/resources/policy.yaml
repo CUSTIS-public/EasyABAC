@@ -23,7 +23,7 @@ permissions:
 - title: Any User
   accessToActions: [order.view]
   rules:
-  - title: ANy user of branch
+  - title: Any user of branch
     operation: AND
     conditions:
     - order.branchId == subject.branchId

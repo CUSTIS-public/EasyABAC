@@ -1,7 +1,7 @@
 package custis.easyabac.benchmark;
 
+import custis.easyabac.api.EntityPermissionChecker;
 import custis.easyabac.api.NotExpectedResultException;
-import custis.easyabac.api.PermitAwarePermissionChecker;
 import custis.easyabac.api.impl.EasyABACPermissionChecker;
 import custis.easyabac.benchmark.model.attrprovider.OrderActionExt;
 import custis.easyabac.benchmark.model.attrprovider.OrderExt;
@@ -17,8 +17,8 @@ import static java.util.Collections.singletonList;
 @State(Scope.Thread)
 public class PermissionCheckerBenchmarExt extends AbstractAuthorizationBenchmarkExt {
 
-    private PermitAwarePermissionChecker<OrderExt, OrderActionExt> managerOrderPermissionChecker;
-    private PermitAwarePermissionChecker<OrderExt, OrderActionExt> operatorOrderPermissionChecker;
+    private EntityPermissionChecker<OrderExt, OrderActionExt> managerOrderPermissionChecker;
+    private EntityPermissionChecker<OrderExt, OrderActionExt> operatorOrderPermissionChecker;
 
     @Setup(Level.Trial)
     public void setup() throws EasyAbacInitException {

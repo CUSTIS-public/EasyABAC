@@ -7,7 +7,7 @@ import custis.easyabac.api.core.call.MethodType;
 import custis.easyabac.api.core.call.converters.GettingResultConverter;
 import custis.easyabac.api.core.call.converters.ResultConverter;
 import custis.easyabac.api.core.call.getters.RequestGenerator;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -24,8 +24,8 @@ public class GettingMethodCallProcessor extends MethodCallProcessor {
     private final GettingReturnType gettingReturnType;
     private boolean returningList;
 
-    public GettingMethodCallProcessor(PermissionCheckerInformation permissionCheckerInformation, Method method, AttributiveAuthorizationService attributiveAuthorizationService) {
-        super(permissionCheckerInformation, method, attributiveAuthorizationService);
+    public GettingMethodCallProcessor(PermissionCheckerInformation permissionCheckerInformation, Method method, AuthService authService) {
+        super(permissionCheckerInformation, method, authService);
         this.gettingReturnType = GettingReturnType.findByMethod(method, methodType, decisionType);
 
         // method return type

@@ -1,8 +1,7 @@
 package custis.easyabac.demo.rest;
 
-import custis.easyabac.api.PermitAwarePermissionChecker;
+import custis.easyabac.api.EntityPermissionChecker;
 import custis.easyabac.core.EasyAbac;
-import custis.easyabac.core.EasyAbacBuilder;
 import custis.easyabac.demo.authn.AuthenticationContext;
 import custis.easyabac.demo.model.Order;
 import custis.easyabac.demo.model.OrderAction;
@@ -11,8 +10,8 @@ import custis.easyabac.demo.rest.representation.UserRepresentation;
 import custis.easyabac.demo.service.OrderService;
 import custis.easyabac.demo.service.UserService;
 import custis.easyabac.model.EasyAbacInitException;
-import custis.easyabac.starter.EasyAbacBuilderHelper;
-import custis.easyabac.starter.PermitAwareCheckerHelper;
+import custis.easyabac.starter.EasyAbacDebugBuilderHelper;
+import custis.easyabac.starter.EntityPermissionCheckerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,10 +47,12 @@ public class Resource {
         List<Order> orders = orderService.getAllOrders();
 
         InputStream modelStream = getClass().getResourceAsStream("/policy.yaml");
-        EasyAbacBuilder builder = EasyAbacBuilderHelper.defaultDebugBuilder(modelStream, () -> userService.findById(AuthenticationContext.currentUserId()));
-        EasyAbac easyAbac = builder.build();
+        EasyAbac easyAbac = EasyAbacDebugBuilderHelper.defaultDebugBuilder(
+                modelStream,
+                () -> userService.findById(AuthenticationContext.currentUserId()))
+                .build();
 
-        PermitAwarePermissionChecker<Order, OrderAction> permissionChecker = PermitAwareCheckerHelper.newInstance(easyAbac);
+        EntityPermissionChecker<Order, OrderAction> permissionChecker = EntityPermissionCheckerHelper.newPermissionChecker(easyAbac);
 
         Map<Order, List<OrderAction>> result = permissionChecker.getPermittedActions(orders, actions);
 

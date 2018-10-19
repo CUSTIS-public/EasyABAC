@@ -21,6 +21,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class was used to generate tests for entity class, but now not using in favor to simple attributes
+ */
+@Deprecated
 public class EntityGenerator {
     public static void createEntity(Resource resource, String packageName, SourceRoot sourceRoot) {
         CompilationUnit entityUnit = new CompilationUnit(packageName);

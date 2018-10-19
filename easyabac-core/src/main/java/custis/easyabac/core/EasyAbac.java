@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class EasyAbac implements AttributiveAuthorizationService {
+public class EasyAbac implements AuthService {
 
     private final static Log log = LogFactory.getLog(EasyAbac.class);
 

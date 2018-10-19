@@ -1,9 +1,9 @@
 package custis.easyabac.core.pdp.balana;
 
 import custis.easyabac.core.EasyAbacBuilder;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
+import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.model.easy.EasyAbacModelCreator;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -30,7 +30,7 @@ public class XacmlInitializeTest {
         InputStream policy = getResourceAsStream("test1_policy.xml");
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(policy, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
+        AuthService authorizationService = new EasyAbacBuilder(policy, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
 
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
@@ -61,7 +61,7 @@ public class XacmlInitializeTest {
         InputStream attributes = getResourceAsStream("test_pip_policy.yaml");
 
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(policy, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
+        AuthService authorizationService = new EasyAbacBuilder(policy, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
 
         List<AuthAttribute> authAttrList = new ArrayList<>();
         authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "USER"));
@@ -91,7 +91,7 @@ public class XacmlInitializeTest {
         InputStream policy = getResourceAsStream("test_pip_policy.yaml");
 
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
-        AttributiveAuthorizationService authorizationService = new EasyAbacBuilder(policy, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
+        AuthService authorizationService = new EasyAbacBuilder(policy, creator, BalanaPdpHandlerFactory.PROXY_INSTANCE).build();
 
 //        List<AuthAttribute> authAttrList = new ArrayList<>();
 //        authAttrList.add(new AuthAttribute("urn:s_tst1:attr:01:resource:role", "USER"));

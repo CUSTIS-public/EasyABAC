@@ -1,4 +1,0 @@
-!!custis.easyabac.api.test.TestDescription
-action: order.approve
-attributes:
-  subject: {role: MANAGER$}

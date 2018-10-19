@@ -3,7 +3,7 @@ package custis.easyabac.api.impl;
 import custis.easyabac.api.core.PermissionCheckerInformation;
 import custis.easyabac.api.core.call.callprocessor.MethodCallProcessor;
 import custis.easyabac.api.core.call.callprocessor.MethodCallProcessorFactory;
-import custis.easyabac.core.pdp.AttributiveAuthorizationService;
+import custis.easyabac.core.pdp.AuthService;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
@@ -20,18 +20,18 @@ public class DynamicMethodInterceptor implements MethodInterceptor {
 
     private final Map<Method, MethodCallProcessor> callProcessors = new HashMap<>();
     private final PermissionCheckerInformation permissionCheckerInformation;
-    private final AttributiveAuthorizationService attributiveAuthorizationService;
+    private final AuthService authService;
 
-    public DynamicMethodInterceptor(PermissionCheckerInformation permissionCheckerInformation, AttributiveAuthorizationService attributiveAuthorizationService) {
+    public DynamicMethodInterceptor(PermissionCheckerInformation permissionCheckerInformation, AuthService authService) {
         this.permissionCheckerInformation = permissionCheckerInformation;
-        this.attributiveAuthorizationService = attributiveAuthorizationService;
+        this.authService = authService;
         lookupMethods(permissionCheckerInformation);
     }
 
     private void lookupMethods(PermissionCheckerInformation permissionCheckerInformation) {
         if (permissionCheckerInformation.hasAuthorizationCalls()) {
             for (Method authorizationCall : permissionCheckerInformation.getAuthorizationCalls()) {
-                callProcessors.put(authorizationCall, MethodCallProcessorFactory.createCallProcessor(permissionCheckerInformation, authorizationCall, attributiveAuthorizationService));
+                callProcessors.put(authorizationCall, MethodCallProcessorFactory.createCallProcessor(permissionCheckerInformation, authorizationCall, authService));
             }
         }
 
