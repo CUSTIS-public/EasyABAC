@@ -10,20 +10,17 @@ import custis.easyabac.core.pdp.balana.BalanaPdpHandlerFactory;
 import custis.easyabac.model.AbacAuthModel;
 import custis.easyabac.model.EasyAbacInitException;
 import custis.easyabac.model.easy.EasyAbacModelCreator;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 
 import java.util.Collections;
 
-@State(Scope.Thread)
+@State(Scope.Benchmark)
 public class DynamicAuthorizationBenchmark extends AbstractAuthorizationBenchmark {
 
     private OrderPermissionChecker managerChecker;
     private OrderPermissionChecker operatorChecker;
 
-    @Setup
+    @Setup(Level.Trial)
     public void init() throws EasyAbacInitException {
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
         AbacAuthModel model = creator.createModel(getClass().getResourceAsStream("/OrdersPolicy.yaml"));

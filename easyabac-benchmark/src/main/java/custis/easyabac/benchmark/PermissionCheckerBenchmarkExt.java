@@ -15,7 +15,7 @@ import org.openjdk.jmh.annotations.*;
 import static java.util.Collections.singletonList;
 
 @State(Scope.Thread)
-public class PermissionCheckerBenchmarExt extends AbstractAuthorizationBenchmarkExt {
+public class PermissionCheckerBenchmarkExt extends AbstractAuthorizationBenchmarkExt {
 
     private EntityPermissionChecker<OrderExt, OrderActionExt> managerOrderPermissionChecker;
     private EntityPermissionChecker<OrderExt, OrderActionExt> operatorOrderPermissionChecker;
@@ -75,7 +75,7 @@ public class PermissionCheckerBenchmarExt extends AbstractAuthorizationBenchmark
     }
 
     public static void main(String[] args) throws EasyAbacInitException {
-        PermissionCheckerBenchmarExt benchmark = new PermissionCheckerBenchmarExt();
+        PermissionCheckerBenchmarkExt benchmark = new PermissionCheckerBenchmarkExt();
         benchmark.setup();
         System.out.printf("Has exception: %b\n", benchmark.ensureApproveByNonManagerDenied());
     }

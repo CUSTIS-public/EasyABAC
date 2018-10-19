@@ -13,27 +13,35 @@ import custis.easyabac.core.pdp.AuthService;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
 import custis.easyabac.core.pdp.RequestId;
+import org.openjdk.jmh.annotations.*;
 
 import java.util.*;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 
+@State(Scope.Benchmark)
 public class MDPBenchmark extends AbstractAuthorizationBenchmark {
 
-    private static final int BATCH_SIZE = 3;
+    private static final int BATCH_SIZE = 33;
+    private AuthService authorizationService;
+    private Datasource customerBranchIdDatasource;
 
-    private void run() throws EasyAbacInitException {
+    @Setup(Level.Trial)
+    public void init() throws EasyAbacInitException {
         EasyAbacModelCreator creator = new EasyAbacModelCreator();
 
         AbacAuthModel model = creator.createModel(MDPBenchmark.class.getResourceAsStream("/OrdersPolicy.yaml"));
 
-        Datasource customerBranchIdDatasource = getCustomerBranchIdDatasource();
-        AuthService authorizationService = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE)
+        customerBranchIdDatasource = getCustomerBranchIdDatasource();
+        authorizationService = new EasyAbacBuilder(model, BalanaPdpHandlerFactory.DIRECT_INSTANCE)
                 .datasources(Collections.singletonList(customerBranchIdDatasource))
                 .subjectAttributesProvider(getSubjectAttributesProvider(getManagerSubject(), model))
                 .build();
+    }
 
+    @Benchmark
+    public Map<RequestId, AuthResponse> authorizeWithAttributes() {
         Map<RequestId, List<AuthAttribute>> mdp = new HashMap<>();
         OrderAction action = getOrderApproveAction();
         Subject managerSubject = getManagerSubject();
@@ -44,7 +52,7 @@ public class MDPBenchmark extends AbstractAuthorizationBenchmark {
 
             boolean matchedOrder = i % 3 == 0;
             Order order = new Order("order-" + rand.nextInt(),
-                    rand.nextInt(2000),
+                    rand.nextInt(matchedOrder ? managerSubject.getMaxOrderAmount() : 2000),
                     matchedOrder ? managerSubject.getBranchId() : "branch-" + rand.nextInt(10),
                     matchedOrder ? customerBranchId : "branch-" + rand.nextInt(10));
 
@@ -56,15 +64,19 @@ public class MDPBenchmark extends AbstractAuthorizationBenchmark {
             mdp.put(RequestId.newRandom(), authAttributes);
         }
 
-        Map<RequestId, AuthResponse> responses = authorizationService.authorizeMultiple(mdp);
+        return authorizationService.authorizeMultiple(mdp);
+    }
 
-        Map<AuthResponse.Decision, Long> decisions = responses.values().stream()
-                .collect(groupingBy(AuthResponse::getDecision, counting()));
-
-        decisions.forEach((decision, count) -> System.out.printf("Decision: %s has %d entries\n", decision, count));
+//    @Benchmark
+    public void authorizeWithPlainBalana() {
     }
 
     public static void main(String[] args) throws EasyAbacInitException {
-        new MDPBenchmark().run();
+        MDPBenchmark benchmark = new MDPBenchmark();
+        benchmark.init();
+        Map<RequestId, AuthResponse> responses = benchmark.authorizeWithAttributes();
+        Map<AuthResponse.Decision, Long> decisions = responses.values().stream()
+                .collect(groupingBy(AuthResponse::getDecision, counting()));
+        decisions.forEach((decision, count) -> System.out.printf("Decision: %s has %d entries\n", decision, count));
     }
 }
