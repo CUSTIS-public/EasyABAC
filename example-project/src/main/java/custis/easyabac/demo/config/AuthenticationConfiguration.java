@@ -16,7 +16,7 @@ public class AuthenticationConfiguration {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setFilter(new ExternalAuthenticationFilter());
         filterRegistrationBean.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
-        filterRegistrationBean.addUrlPatterns(new String[]{"/api/*"});
+        filterRegistrationBean.addUrlPatterns(new String[]{"/*"});
         return filterRegistrationBean;
     }
 }
