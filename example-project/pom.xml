@@ -4,11 +4,11 @@
     <parent>
         <groupId>custis.easyabac</groupId>
         <artifactId>easyabac</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>example-project</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Custis.ExampleProject</name>
     <description>Демо проект</description>
@@ -131,7 +131,7 @@
             <plugin>
                 <groupId>custis.easyabac</groupId>
                 <artifactId>easyabac-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1-SNAPSHOT</version>
                 <configuration>
                     <modelFile>policy.yaml</modelFile>
                     <sourcePath>src/main/java</sourcePath>

@@ -5,11 +5,11 @@
     <parent>
         <groupId>custis.easyabac</groupId>
         <artifactId>easyabac</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>easyabac-core</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <properties>
         <argLine>-Dfile.encoding=UTF-8 -Duser.timezone=UTC</argLine>
     </properties>

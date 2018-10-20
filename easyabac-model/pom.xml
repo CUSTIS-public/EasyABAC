@@ -4,13 +4,13 @@
     <parent>
         <groupId>custis.easyabac</groupId>
         <artifactId>easyabac</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>custis.easyabac</groupId>
     <artifactId>easyabac-model</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>Custis.EasyAbac Model</name>
     <description>Internal Model for EasyABAC</description>
 

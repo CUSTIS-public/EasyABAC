@@ -4,13 +4,13 @@
     <parent>
         <groupId>custis.easyabac</groupId>
         <artifactId>easyabac</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>custis.easyabac</groupId>
     <artifactId>easyabac-spring-api</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Custis.EasyAbacAPI</name>
     <description>API для вызова EasyABAC через Spring</description>
