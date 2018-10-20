@@ -1,5 +1,4 @@
 # easyabac
-[![pipeline status](https://git.custis.ru/dr/easyabac/easyabac/badges/develop/pipeline.svg)](https://git.custis.ru/dr/easyabac/easyabac/commits/develop)
 easyabac framework: для авторизации на основе атрибутов объектов в приложениях на Java. Реализация подхода Attribute 
 Based Access Control (ABAC). Более подробно про ABAC можно почитать
 в [нашей статье на Хабре](https://habr.com/company/custis/blog/248649/). Framework построен на основе стандарта XACML, краткий
