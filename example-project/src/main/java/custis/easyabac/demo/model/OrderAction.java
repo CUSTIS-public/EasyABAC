@@ -4,7 +4,7 @@ public enum OrderAction {
     VIEW("View order details"),
     CREATE("Create order"),
     APPROVE("Approve order"),
-    REJECT("Reject oreder");
+    REJECT("Reject order");
 
     private String title;
 
