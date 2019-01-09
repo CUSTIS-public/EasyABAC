@@ -1,6 +1,6 @@
 # EasyABAC
 easyabac framework: for authorization based on object attributes in Java applications. Implement the Attribute Based Access Control (ABAC) approach. You can read more about ABAC on [Wikipedia](https://en.wikipedia.org/wiki/Attribute-based_access_control).
-The framework is based on the XACML standard, a brief overview of the standard can be found in another of our article on [Wikipedia]https://en.wikipedia.org/wiki/XACML().
+The framework is based on the [XACML standard](https://en.wikipedia.org/wiki/XACML).
 
 # How to connect framework
 An example of connecting and using easyabac can be seen in `example-project`.
