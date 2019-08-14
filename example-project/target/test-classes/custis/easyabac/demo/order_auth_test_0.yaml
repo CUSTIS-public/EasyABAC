@@ -1,0 +1,11 @@
+expectedResult: PERMIT
+action:
+  id: order.action
+  value: order.view
+attributes:
+  order:
+    branchId: MSK
+  subject:
+    branchIds: MSK
+  env:
+    time: "08:34:00"

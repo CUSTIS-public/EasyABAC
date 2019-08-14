@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 /**
- * Сущность "Заказ" в системе
+ * Entity "Order" in the system
  */
 @Getter
 @AuthorizationEntity(name = "order")

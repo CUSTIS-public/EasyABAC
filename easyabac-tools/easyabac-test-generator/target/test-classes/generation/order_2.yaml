@@ -1,0 +1,7 @@
+!!custis.easyabac.api.test.TestDescription
+action: {id: order.action, value: order.view}
+attributes:
+  subject: {branchId: customer.branchId_1$, role: MANAGER, maxOrderAmount: 1000}
+  customer: {branchId: customer.branchId_1}
+  order: {branchId: customer.branchId_1$, amount: 1000}
+expectedResult: DENY

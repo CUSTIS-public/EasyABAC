@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Группа атрибутов в запросе
+ * Attribute group in request
  */
 public class AttributeGroup {
     private final String id;

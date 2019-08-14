@@ -75,7 +75,7 @@ public class PipTest {
     }
 
     @Test
-    @Ignore // FIXME для жени
+    @Ignore // FIXME for match
     public void SamplePipTest() throws Exception {
         InputStream policy = getResourceAsStream("test_pip_policy.xml");
         InputStream easyModel = getResourceAsStream("test_init_xacml.yaml");

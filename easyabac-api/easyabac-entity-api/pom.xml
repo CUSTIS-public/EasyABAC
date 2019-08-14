@@ -13,7 +13,7 @@
     <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Custis.EasyAbacAPI</name>
-    <description>API для вызова EasyABAC</description>
+    <description>API to call EasyABAC</description>
 
     <dependencies>
 

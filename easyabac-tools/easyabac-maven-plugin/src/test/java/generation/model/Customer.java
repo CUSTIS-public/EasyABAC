@@ -7,13 +7,13 @@ import custis.easyabac.api.attr.annotation.AuthorizationEntity;
 public class Customer {
 
     /**
-     * Authorization attribute "ИД клиента"
+     * Authorization attribute "Client ID"
      */
     @AuthorizationAttribute(id = "id")
     private String id;
 
     /**
-     * Authorization attribute "ИД филиала"
+     * Authorization attribute "Branch ID"
      */
     @AuthorizationAttribute(id = "branchId")
     private String branchId;

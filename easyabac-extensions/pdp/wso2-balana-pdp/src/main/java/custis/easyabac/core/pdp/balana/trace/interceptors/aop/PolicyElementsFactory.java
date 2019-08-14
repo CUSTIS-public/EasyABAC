@@ -93,15 +93,14 @@ public class PolicyElementsFactory {
             field.setAccessible(true);
             obligations = (Set<AbstractObligation>) field.get(sourceRule);
         } catch (Exception e) {
-            log.error("Ошибка при попытке получить значение поля obligationExpressions");
+            log.error ("Error while trying to get the value of the field required Expressions");
         }
         try {
             Field field = ReflectionUtils.findField(Rule.class, "adviceExpressions");
             field.setAccessible(true);
             advices = (Set<AdviceExpression>) field.get(sourceRule);
         } catch (Exception e) {
-            log.error("Ошибка при попытке получить значение поля adviceExpressions");
-        }
+        log.error ("Error while trying to get the value of the adviceExpressions field");        }
 */
 
 

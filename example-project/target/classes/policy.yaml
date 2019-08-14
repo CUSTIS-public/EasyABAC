@@ -1,0 +1,89 @@
+resources:
+  subject:
+    attributes:
+    - id: id
+      type: string
+    - id: role
+    - id: branchIds
+    - id: maxOrderAmount
+      type: int
+  order:
+    title: Order
+    actions:
+    - edit
+    - view
+    - create
+    - approve
+    - reject
+    attributes:
+    - id: id
+    - id: amount
+      type: int
+    - id: branchId
+    - id: state
+    - id: customer
+
+  customer:
+    title: Customer
+    attributes:
+    - id: id
+    - id: branchId
+
+permissions:
+- title: p_Any User
+  accessToActions: [order.view]
+  rules:
+  - title: Any user of branch
+    operation: AND
+    conditions:
+    - order.branchId in subject.branchIds
+
+- title: p_Operator1
+  accessToActions: [order.create]
+  rules:
+  - title: Operator create
+    operation: AND
+    conditions:
+    - customer.branchId in subject.branchIds
+    - order.branchId in subject.branchIds
+    - subject.role == 'OPERATOR'
+
+- title: p_Operator2
+  accessToActions: [order.edit]
+  rules:
+  - title: operator of branch and order.status=new
+    operation: AND
+    conditions:
+    - order.branchId in subject.branchIds
+    - subject.role == 'OPERATOR'
+    - order.state == 'NEW'
+
+- title: p_Operator time limitation
+  accessToActions: [order.view]
+  rules:
+  - title: Allow order viewing from 08:30 to 17:30
+    operation: AND
+    conditions:
+    - order.branchId in subject.branchIds
+    - env.time >= 08:30
+    - env.time <= 17:30
+
+- title: p_Operator time limitation for 'aaUser'
+  accessToActions: [order.view]
+  rules:
+  - title: Allow order viewing from 08:30 to 17:30
+    operation: AND
+    conditions:
+    - subject.id == 'aaUser'
+    - env.time >= 08:30
+    - env.time <= 12:00
+
+- title: p_Manager
+  accessToActions: [order.approve, order.reject]
+  rules:
+  - title: Manager access
+    operation: AND
+    conditions:
+    - order.branchId in subject.branchIds
+    - subject.role == 'MANAGER'
+    - subject.maxOrderAmount > order.amount

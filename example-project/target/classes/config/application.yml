@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: joker-demo-project
+  main:
+    banner-mode: "off"
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+  jpa:
+    show-sql: false
+    database-platform: H2
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: false
+        format_sql: false
+
+joker-db:
+  jdbc-url: jdbc:h2:tcp://localhost/~/testCom_Hibernate;DB_CLOSE_DELAY=-1;MODE=Oracle
+  username:
+  password:
+  driver-class-name: org.h2.Driver
+  testOnBorrow: true
+  validationQuery: SELECT 1
+
+server:
+  address: 0.0.0.0
+  port: 8081
+
+spring.liquibase:
+  change-log: classpath:changelog/master.xml
+  drop-first: true
+
+
+

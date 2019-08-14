@@ -1,0 +1,18 @@
+expectedResult: DENY
+action:
+  id: order.action
+  value: order.view
+attributes:
+  order:
+    branchId: SPB
+  subject:
+    id: aaUser
+    branchIds: MSK
+#  urn:
+#    oasis:
+#      names:
+#        tc:
+#          xacml:
+#            1.0:
+#              environment:
+#                current-time: "20:34:06.155000000+00:00"

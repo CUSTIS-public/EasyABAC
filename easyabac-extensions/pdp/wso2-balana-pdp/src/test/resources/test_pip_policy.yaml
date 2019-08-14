@@ -3,10 +3,10 @@ resources:
     attributes:
     - id: id
     - id: allowed-categories
-      title: категории доступные субъекту
+      title: categories available to the subject
       multiple: true
   report:
-    title: Отчет
+    title: Report
     actions:
     - edit
     - view
@@ -14,19 +14,19 @@ resources:
     attributes:
     - id: id
       type: int
-      title: код отчета
+      title: report code
     - id: category
-      title: категория доступа отчета
-      allowableValues:  #Разрешенные значения, для валидации политики
+      title: report access category
+      allowableValues:  # Valid values for policy validation
       - iod
       - dsp
 permissions:
-- title: политика редактирования отчета в зависимости от категории
+- title: report editing policy by category
   accessToActions:
     [report.edit, report.view]
   rules:
-  - title: проверяем возможность доступа к отчету в зависимости от категории
-    operation: OR #это здесь просто, что бы проверить загрузку. Возможные операции:  AND, OR, NAND, NOR
+  - title: check whether the report can be accessed depending on the category
+    operation: OR #it's just here to check the download. Possible operations: AND, OR, NAND, NOR
     conditions:
     - report.category in subject.allowed-categories
   returnAttributes:

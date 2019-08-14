@@ -13,19 +13,19 @@ public class Subject {
     private String id;
 
     /**
-     * Authorization attribute "Роль сотрудника "Менеджер" / Операционист"
+     * Authorization attribute "The role of the employee "Manager" / Operator"
      */
     @AuthorizationAttribute(id = "role")
     private String role;
 
     /**
-     * Authorization attribute "ИД филиала"
+     * Authorization attribute "Branch ID"
      */
     @AuthorizationAttribute(id = "branchId")
     private String branchId;
 
     /**
-     * Authorization attribute "Максимальный заказ"
+     * Authorization attribute "Maximum order"
      */
     @AuthorizationAttribute(id = "maxOrderAmount")
     private Integer maxOrderAmount;

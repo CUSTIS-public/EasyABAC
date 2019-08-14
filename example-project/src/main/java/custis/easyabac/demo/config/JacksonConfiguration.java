@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 /**
- * Выносим конфигурацию ObjectMapper, импортируем ее первой, чтобы Spring не создавал лишние конфигурации ObjectMapper
+ * We take out the ObjectMapper configuration, import it first so that Spring does not create unnecessary ObjectMapper configurations.
  */
 @Configuration
 public class JacksonConfiguration {

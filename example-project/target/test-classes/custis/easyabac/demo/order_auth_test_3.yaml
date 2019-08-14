@@ -1,0 +1,11 @@
+expectedResult: DENY
+action:
+  id: order.action
+  value: order.create
+attributes:
+  order:
+    branchId: XYZ
+  subject:
+    branchIds: MSK
+    role: OPERATOR
+

@@ -3,14 +3,14 @@ resources:
     attributes:
     - id: id
     - id: allowed-categories
-      title: категории доступные субъекту
+      title: categories available to the subject
       multiple: true
     - id: role
       allowableValues:
       - USER
       - ADMIN
   report:
-    title: Отчет
+    title: Report
     actions:
     - edit
     - view
@@ -18,39 +18,39 @@ resources:
     attributes:
     - id: id
       type: int
-      title: код отчета
+      title: report code
     - id: category
-      title: категория доступа отчета
+      title: report access category
       allowableValues:
       - iod
       - dsp
 permissions:
-- title: политика редактирования отчета в зависимости от категории
+- title: report editing policy by category
   accessToActions:
     [report.edit]
   rules:
-  - title: проверяем возможность доступа к отчету в зависимости от категории
+  - title: check whether the report can be accessed depending on the category
     operation: AND
     conditions:
     - report.category in subject.allowed-categories
     - subject.role in ['ADMIN', 'USER']
   returnAttributes:
     [subject.allowed-categories]
-- title: политика удаления отчета в зависимости от категории
+- title: policy of deleting a report depending on the category
   accessToActions:
     [report.remove]
   rules:
-  - title: проверяем возможность доступа к отчету в зависимости от категории
+  - title: check whether the report can be accessed depending on the category
     operation: AND
     conditions:
     - report.category in subject.allowed-categories
   returnAttributes:
     [subject.allowed-categories]
-- title: политика просмотра в зависимости от роли субъекта
+- title: viewing policy depending on the role of the subject
   accessToActions:
     [report.view]
   rules:
-  - title: проверяем возможность доступа к отчету в зависимости от категории
+  - title: check whether the report can be accessed depending on the category
     conditions:
     - subject.role == 'USER'
 

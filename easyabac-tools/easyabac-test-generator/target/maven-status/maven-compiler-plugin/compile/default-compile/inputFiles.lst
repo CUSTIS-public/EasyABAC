@@ -1,0 +1,11 @@
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/TestGenerator.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/algorithm/TestGenerationAlgorithm.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/EntityGenerator.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/algorithm/RuleGenerationUtils.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/CompleteGenerator.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/FileUtils.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/ActionGenerator.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/algorithm/DenyUnlessPermit.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/ModelGenerator.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/algorithm/FunctionUtils.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/easyabac-test-generator/src/main/java/custis/easyabac/generation/algorithm/CombinationAlgorithmFactory.java

@@ -1,0 +1,17 @@
+custis/easyabac/generation/ModelGenerator$1.class
+custis/easyabac/generation/ActionGenerator$1.class
+custis/easyabac/generation/algorithm/FunctionUtils.class
+custis/easyabac/generation/ModelGenerator.class
+custis/easyabac/generation/CompleteGenerator.class
+custis/easyabac/generation/TestGenerator$1.class
+custis/easyabac/generation/algorithm/FunctionUtils$1.class
+custis/easyabac/generation/algorithm/CombinationAlgorithmFactory.class
+custis/easyabac/generation/EntityGenerator.class
+custis/easyabac/generation/FileUtils.class
+custis/easyabac/generation/algorithm/TestGenerationAlgorithm.class
+custis/easyabac/generation/ActionGenerator.class
+custis/easyabac/generation/algorithm/DenyUnlessPermit.class
+custis/easyabac/generation/algorithm/RuleGenerationUtils.class
+custis/easyabac/generation/algorithm/RuleGenerationUtils$1.class
+custis/easyabac/generation/EntityGenerator$1.class
+custis/easyabac/generation/TestGenerator.class

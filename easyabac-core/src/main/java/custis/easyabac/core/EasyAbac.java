@@ -45,7 +45,7 @@ public class EasyAbac implements AuthService {
     public AuthResponse authorize(List<AuthAttribute> authAttributes) {
         Map<String, Attribute> allAttributes = new HashMap<>();
         try {
-            // TODO: 17.10.18 сделать что то с allAttributes
+            // TODO: 10/17/18 Do something with allAttributes
             List<AttributeWithValue> attributeWithValueList = enrichAttributes(authAttributes, allAttributes);
             for (RequestExtender extender : requestExtenders) {
                 extender.extend(attributeWithValueList);
@@ -302,7 +302,7 @@ public class EasyAbac implements AuthService {
                 .flatMap(attributeWithValueList -> attributeWithValueList.stream())
                 .filter(attribute -> attribute.getAttribute().getCategory() == Category.ACTION)
                 .collect(Collectors.toList());
-        // FIXME сделать
+        // FIXME to make
 
         audit.onMultipleActions(serializeSubject(subject), Collections.emptyMap(), Collections.emptyMap());
     }
