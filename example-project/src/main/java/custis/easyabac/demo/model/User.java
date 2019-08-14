@@ -1,7 +1,9 @@
 package custis.easyabac.demo.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * User aka User
@@ -13,7 +15,9 @@ public class User {
     @Id
     private String id;
 
-    private String branchId;
+    @ElementCollection
+    @CollectionTable(name = "T_USER_BRANCH", joinColumns = @JoinColumn(name = "USER_ID"))
+    private Set<String> branchIds = new HashSet<>();
 
     private String firstName;
 
@@ -32,12 +36,12 @@ public class User {
         this.id = id;
     }
 
-    public String getBranchId() {
-        return branchId;
+    public Set<String> getBranchIds() {
+        return branchIds;
     }
 
-    public void setBranchId(String branchId) {
-        this.branchId = branchId;
+    public void setBranchIds(Set<String> branchIds) {
+        this.branchIds = branchIds;
     }
 
     public String getFirstName() {

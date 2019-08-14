@@ -3,8 +3,8 @@ package custis.easyabac.api;
 import org.springframework.stereotype.Indexed;
 
 /**
- * @param <T> класс, для объектов которого проверяются разрешения
- * @param <A> класс действий
+ * @param <T> class for which objects permissions are checked
+ * @param <A> class action
  * @author Anton Lapitskiy
  */
 @Indexed

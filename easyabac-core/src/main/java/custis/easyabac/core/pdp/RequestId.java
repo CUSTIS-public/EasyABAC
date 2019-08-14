@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * FIXME Переписать нафиг
+ * FIXME Rewrite nafig
  */
 public class RequestId {
 

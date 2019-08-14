@@ -1,0 +1,13 @@
+expectedResult: PERMIT
+action:
+  id: order.action
+  value: order.create
+attributes:
+  order:
+    branchId: MSK
+  customer:
+    branchId: MSK
+  subject:
+    branchIds: MSK
+    role: OPERATOR
+

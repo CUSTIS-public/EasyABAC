@@ -6,7 +6,7 @@
     <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
             PolicyId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy0" Version="1.0"
             RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit">
-        <Description>Менеджер</Description>
+        <Description>Manager</Description>
         <Target>
             <AnyOf>
                 <AllOf>
@@ -39,7 +39,7 @@
             </AnyOf>
         </Target>
         <Rule RuleId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy0:rule0" Effect="Permit">
-            <Description>Филиал совпадает с филиалом заказа</Description>
+            <Description>The branch is the same as the branch of the order</Description>
             <Condition>
                 <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
                     <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
@@ -86,7 +86,7 @@
     <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
             PolicyId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy1" Version="1.0"
             RuleCombiningAlgId="urn:oasis:names:tc:xacml:3.0:rule-combining-algorithm:deny-unless-permit">
-        <Description>Операционист</Description>
+        <Description>Transaction man</Description>
         <Target>
             <AnyOf>
                 <AllOf>
@@ -110,7 +110,7 @@
             </AnyOf>
         </Target>
         <Rule RuleId="urn:oasis:names:tc:xacml:3.0:easy-policy:policy1:rule0" Effect="Permit">
-            <Description>Филиал совпадает с филиалом клиента</Description>
+            <Description>The branch is the same as the client branch</Description>
             <Condition>
                 <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
                     <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">

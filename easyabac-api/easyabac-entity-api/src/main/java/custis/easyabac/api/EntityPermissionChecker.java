@@ -6,27 +6,27 @@ import java.util.Map;
 @NoPermissionCheckerBean
 public interface EntityPermissionChecker<T, A> {
 
-    /** проверить, что для сущности доступно действие */
+    // check that an action is available for the entity * /
     void ensurePermitted(T entity, A operation) throws NotPermittedException;
 
-    /** проверить, что для сущности доступно хотя бы одно действие */
+    // check that at least one action is available for the entity * /
     void ensurePermittedAny(T entity, List<A> operations) throws NotPermittedException;
 
-    /** проверить, что для сущности доступны все действия */
+    // check that all actions are available for the entity * /
     void ensurePermittedAll(T entity, List<A> operations) throws NotPermittedException ;
 
-    /** проверить, что для сущности доступны все действия */
+    // check that all actions are available for the entity * /
     void ensurePermittedAll(Map<T, A> operationsMap) throws NotPermittedException ;
 
-    /** проверить, что для сущности доступно хотя бы одно действие */
+    // check that at least one action is available for the entity * /
     void ensurePermittedAny(Map<T, A> operationsMap) throws NotPermittedException;
 
-    /** получить список доступных действий из списка для сущности */
+    // get the list of available actions from the list for the entity * /
     List<A> getPermittedActions(T entity, List<A> operations);
 
-    /** получить список доступных действий для сущностей в соответствии с map-ой */
+    // get a list of available actions for entities in accordance with the map-oh * /
     Map<T, List<A>> getPermittedActions(Map<T, List<A>> operationsMap);
 
-    /** получить список доступных действий из списка для каждой сущности */
+    // get a list of available actions from the list for each entity * /
     Map<T, List<A>> getPermittedActions(List<T> entities, List<A> operations);
 }

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: custis.easyabac.core.pdp.balana.CacheTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.357 s - in custis.easyabac.core.pdp.balana.CacheTest

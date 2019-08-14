@@ -156,7 +156,7 @@ public class EasyAbacBuilder {
             attributesByAction.addAll(actionAttributeByAction);
 
 
-            // TODO: 16.10.18 добавить цикл для зависимых датасорсов
+            // TODO: 16.10.18 add loop for dependent datasors
             List<Attribute> attributeFromParams = attributesByAction.stream()
                     .flatMap(attribute -> datasources.stream()
                             .filter(datasource -> datasource.getReturnAttribute().equals(attribute))

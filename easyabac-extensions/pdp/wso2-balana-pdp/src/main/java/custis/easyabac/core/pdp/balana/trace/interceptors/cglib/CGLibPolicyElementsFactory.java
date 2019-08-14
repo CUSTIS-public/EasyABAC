@@ -213,7 +213,7 @@ public class CGLibPolicyElementsFactory {
                     policyFinder, policy.getMetaData()
             };
         } else {
-            log.error("Неизвестная реализация AbstractPolicy");
+            log.error ("Unknown implementation of AbstractPolicy");
             return policy;
         }
 

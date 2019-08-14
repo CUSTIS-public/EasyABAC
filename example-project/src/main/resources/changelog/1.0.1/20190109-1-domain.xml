@@ -1,0 +1,20 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="1" author="mrazavi">
+        <createTable tableName="T_USER_BRANCH">
+            <column name="USER_ID" type="VARCHAR(100)">
+            </column>
+            <column name="BRANCH_IDS" type="VARCHAR(100)" />
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="T_USER_BRANCH" baseColumnNames="BRANCH_IDS" constraintName="fk_employee_branch_id2" referencedTableName="t_branch"
+                                 referencedColumnNames="id" />
+        <addForeignKeyConstraint baseTableName="T_USER_BRANCH" baseColumnNames="USER_ID" constraintName="fk_employee_user_id2" referencedTableName="t_user"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -1,0 +1,4 @@
+HelpMojo.class
+custis/easyabac/generation/mojo/EasyAbacBaseMojo.class
+custis/easyabac/generation/mojo/TestGenerationMojo.class
+custis/easyabac/generation/mojo/ModelGenerationMojo.class

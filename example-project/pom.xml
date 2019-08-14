@@ -11,7 +11,7 @@
     <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Custis.ExampleProject</name>
-    <description>Демо проект</description>
+    <description>Demo project</description>
 
     <properties>
         <docker.entrypoint.spring.profiles.active>default</docker.entrypoint.spring.profiles.active>

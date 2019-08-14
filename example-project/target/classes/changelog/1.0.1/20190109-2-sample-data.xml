@@ -1,0 +1,70 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet id="1" author="mrazavi">
+        <sql>
+            INSERT INTO t_user(id, first_name, last_name, max_order_amount) VALUES ('user_mahdi', 'Mahdi', 'Razavi', 1000);
+            INSERT INTO t_user(id, first_name, last_name, max_order_amount) VALUES ('ali', 'Ali', 'Ahmadi', 1000);
+        </sql>
+    </changeSet>
+
+    <changeSet id="2" author="mrazavi">
+        <sql>
+            INSERT INTO T_USER_BRANCH(USER_ID, BRANCH_IDS) VALUES ('MSK_user_1', 'MSK');
+            INSERT INTO T_USER_BRANCH(USER_ID, BRANCH_IDS) VALUES ('MSK_user_2', 'MSK');
+            INSERT INTO T_USER_BRANCH(USER_ID, BRANCH_IDS) VALUES ('SPB_user_1', 'SPB');
+            INSERT INTO T_USER_BRANCH(USER_ID, BRANCH_IDS) VALUES ('aaUser', 'SPB');
+            INSERT INTO T_USER_BRANCH(USER_ID, BRANCH_IDS) VALUES ('user_mahdi', 'NN' );
+            INSERT INTO T_USER_BRANCH(USER_ID, BRANCH_IDS) VALUES ('user_mahdi', 'SPB');
+            INSERT INTO T_USER_BRANCH(USER_ID, BRANCH_IDS) VALUES ('user_mahdi', 'MSK');
+
+        </sql>
+    </changeSet>
+
+    <changeSet id="3" author="mrazavi">
+        <sql>
+            INSERT INTO T_ACCESS_ROLE(ID) VALUES ('MANAGER');
+            INSERT INTO T_ACCESS_ROLE(ID) VALUES ('OPERATOR');
+            INSERT INTO T_ACCESS_ROLE(ID) VALUES ('ACCOUNTANT');
+            INSERT INTO T_ACCESS_ROLE(ID) VALUES ('BACKUP');
+            INSERT INTO T_ACCESS_ROLE(ID) VALUES ('ACCOUNTANT_MANAGER');
+
+        </sql>
+    </changeSet>
+
+    <changeSet id="4" author="mrazavi">
+        <sql>
+            INSERT INTO T_USER_ACCESS_ROLE ( USER_ID , ROLES_ID) VALUES ('MSK_user_1', 'MANAGER');
+            INSERT INTO T_USER_ACCESS_ROLE ( USER_ID , ROLES_ID) VALUES ('MSK_user_2', 'OPERATOR');
+            INSERT INTO T_USER_ACCESS_ROLE ( USER_ID , ROLES_ID) VALUES ('SPB_user_1', 'MANAGER');
+            INSERT INTO T_USER_ACCESS_ROLE ( USER_ID , ROLES_ID) VALUES ('aaUser', 'OPERATOR');
+            INSERT INTO T_USER_ACCESS_ROLE ( USER_ID , ROLES_ID) VALUES ('user_mahdi','MANAGER');
+            INSERT INTO T_USER_ACCESS_ROLE ( USER_ID , ROLES_ID) VALUES ('ali','OPERATOR');
+            INSERT INTO T_USER_ACCESS_ROLE ( USER_ID , ROLES_ID) VALUES ('ali','ACCOUNTANT');
+        </sql>
+    </changeSet>
+
+    <changeSet id="5" author="mrazavi">
+        <sql>
+            INSERT INTO T_CUSTOMER_GROUP ( ID , NAME) VALUES ('CG_VIP', 'VIP group');
+            INSERT INTO T_CUSTOMER_GROUP ( ID , NAME) VALUES ('CG_PERSONAL', 'PERSONAL group');
+            INSERT INTO T_CUSTOMER_GROUP ( ID , NAME) VALUES ('CG_ORGANIZATION', 'Organization group');
+        </sql>
+    </changeSet>
+
+    <changeSet id="6" author="mrazavi">
+        <sql>
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('MSK_customer_1', 'CG_VIP');
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('MSK_customer_2', 'CG_PERSONAL');
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('MSK_customer_3', 'CG_PERSONAL');
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('MSK_customer_4', 'CG_ORGANIZATION');
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('MSK_customer_5', 'CG_VIP');
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('SPB_customer_1', 'CG_ORGANIZATION');
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('SPB_customer_2', 'CG_PERSONAL');
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('SPB_customer_3', 'CG_PERSONAL');
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('SPB_customer_4', 'CG_PERSONAL');
+            INSERT INTO T_CUSTOMER_CUSTOMER_GROUP( CUSTOMER_ID, GROUPS_ID) VALUES ('SPB_customer_5', 'CG_VIP');
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,7 +1,7 @@
 package custis.easyabac.demo.authn;
 
 /**
- * Провайдер данных текущего пользователя
+ * Current User Data Provider
  */
 public class AuthenticationContext {
 

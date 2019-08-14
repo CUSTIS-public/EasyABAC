@@ -1,0 +1,8 @@
+custis/easyabac/api/test/helper/TestDataHelper.class
+custis/easyabac/api/test/helper/AutogeneratingTestDataHelper.class
+custis/easyabac/api/test/EasyAbacBaseTestClass.class
+custis/easyabac/api/test/TestDescription.class
+custis/easyabac/api/test/helper/ModelHelper.class
+custis/easyabac/api/test/EasyAbacBaseDynamicRulesTestClass.class
+custis/easyabac/api/test/TestAction.class
+custis/easyabac/api/test/helper/TestDescriptionHelper.class

@@ -1,0 +1,8 @@
+/home/mrazavi/developments/abac-authorization/easyabac-tools/policy-testing-infra/src/main/java/custis/easyabac/api/test/EasyAbacBaseTestClass.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/policy-testing-infra/src/main/java/custis/easyabac/api/test/helper/TestDescriptionHelper.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/policy-testing-infra/src/main/java/custis/easyabac/api/test/helper/ModelHelper.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/policy-testing-infra/src/main/java/custis/easyabac/api/test/TestDescription.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/policy-testing-infra/src/main/java/custis/easyabac/api/test/helper/TestDataHelper.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/policy-testing-infra/src/main/java/custis/easyabac/api/test/TestAction.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/policy-testing-infra/src/main/java/custis/easyabac/api/test/EasyAbacBaseDynamicRulesTestClass.java
+/home/mrazavi/developments/abac-authorization/easyabac-tools/policy-testing-infra/src/main/java/custis/easyabac/api/test/helper/AutogeneratingTestDataHelper.java

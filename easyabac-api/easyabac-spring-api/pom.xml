@@ -13,7 +13,7 @@
     <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Custis.EasyAbacAPI</name>
-    <description>API для вызова EasyABAC через Spring</description>
+    <description>API for calling EasyABAC through Spring</description>
 
     <properties>
         <docker.entrypoint.spring.profiles.active>default</docker.entrypoint.spring.profiles.active>

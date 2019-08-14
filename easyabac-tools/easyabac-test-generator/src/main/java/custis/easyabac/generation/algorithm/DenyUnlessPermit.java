@@ -64,7 +64,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
                 for (Policy policy : denyOrNA) {
                     if (policy.getTarget().getAccessToActions().contains(accessToAction)) {
                         log.info("Policy[{}] with equal action in target{}", policy.getId(), policy.getTarget().getAccessToActions());
-                        generateValues(policy, Effect.DENY, new HashMap<>()); // FIXME сделать комбинацию
+                        generateValues(policy, Effect.DENY, new HashMap<>()); // FIXME make a combination
                     }
                 }
             }
@@ -90,7 +90,7 @@ public class DenyUnlessPermit implements TestGenerationAlgorithm {
                 for (Policy policy : permitOrNA) {
                     if (policy.getTarget().getAccessToActions().contains(accessToAction)) {
                         log.info("Policy[{}] with equal action in target{}", policy.getId(), policy.getTarget().getAccessToActions());
-                        generateValues(policy, Effect.PERMIT, new HashMap<>()); // FIXME сделать комбинацию
+                        generateValues(policy, Effect.PERMIT, new HashMap<>()); // FIXME make a combination
                     }
                 }
             }

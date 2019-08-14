@@ -6,4 +6,4 @@ attributes:
   order:
     branchId: MSK
   subject:
-    branchId: MSK
+    branchIds: MSK

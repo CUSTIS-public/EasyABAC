@@ -22,7 +22,7 @@ public enum GettingReturnType {
 
     public static GettingReturnType findByMethod(Method method, MethodType methodType, DecisionType decisionType) {
         String methodName = method.getName().toLowerCase();
-        int lastLine = methodName.lastIndexOf("_"); // на случай нескольких методов из-за erasure
+        int lastLine = methodName.lastIndexOf("_"); // on the case of several methods due to erasure
         if (lastLine != -1) {
             methodName = methodName.substring(0, lastLine);
         }

@@ -3,12 +3,13 @@ resources:
     attributes:
     - id: id
     - id: role
-    - id: branchId
+    - id: branchIds
     - id: maxOrderAmount
       type: int
   order:
     title: Order
     actions:
+    - edit
     - view
     - create
     - approve
@@ -18,6 +19,14 @@ resources:
     - id: amount
       type: int
     - id: branchId
+    - id: state
+    - id: customer
+
+  customer:
+    title: Customer
+    attributes:
+    - id: id
+    - id: branchId
 
 permissions:
 - title: Any User
@@ -26,23 +35,34 @@ permissions:
   - title: Any user of branch
     operation: AND
     conditions:
-    - order.branchId == subject.branchId
+    - order.branchId in subject.branchIds
 
 - title: Operator
   accessToActions: [order.create]
   rules:
-  - title: Operator access
+  - title: Operator create
     operation: AND
     conditions:
-    - order.branchId == subject.branchId
+    - customer.branchId == subject.branchIds
+    - order.branchId == subject.branchIds
     - subject.role == 'OPERATOR'
 
-- title: Менеджер
+- title: Operator
+  accessToActions: [order.edit]
+  rules:
+  - title: operator of branch and order.status=new
+    operation: AND
+    conditions:
+    - order.branchId in subject.branchIds
+    - subject.role == 'OPERATOR'
+    - order.state == 'NEW'
+
+- title: Manager
   accessToActions: [order.approve, order.reject]
   rules:
   - title: Manager access
     operation: AND
     conditions:
-    - order.branchId == subject.branchId
+    - order.branchId in subject.branchIds
     - subject.role == 'MANAGER'
     - subject.maxOrderAmount > order.amount

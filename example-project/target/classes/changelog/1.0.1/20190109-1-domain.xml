@@ -1,0 +1,148 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+
+    <changeSet author="mrazavi" id="1547898340010-35">
+        <createTable tableName="T_USER_BRANCH">
+            <column name="USER_ID" type="VARCHAR(100)">
+            </column>
+            <column name="BRANCH_IDS" type="VARCHAR(100)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="T_USER_BRANCH" baseColumnNames="BRANCH_IDS"
+                                 constraintName="fk_employee_branch_id2" referencedTableName="t_branch"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="T_USER_BRANCH" baseColumnNames="USER_ID"
+                                 constraintName="fk_employee_user_id2" referencedTableName="t_user"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet author="mrazavi" id="1547898340010-18">
+        <createTable tableName="T_ACCESS_ROLE">
+            <column name="ID" type="VARCHAR(255)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_6"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="mrazavi" id="1547898340010-20">
+        <createTable tableName="T_CUSTOMER_GROUP">
+            <column name="ID" type="VARCHAR(255)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_9"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="mrazavi" id="1547898340010-19">
+        <createTable tableName="T_CUSTOMER_CUSTOMER_GROUP">
+            <column name="CUSTOMER_ID" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GROUPS_ID" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex indexName="FKL9N4N3C34O5PU8V65CD7O91Q7_INDEX_3" tableName="T_CUSTOMER_CUSTOMER_GROUP">
+            <column name="CUSTOMER_ID"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="GROUPS_ID" baseTableName="T_CUSTOMER_CUSTOMER_GROUP"
+                                 constraintName="FK54YEFAT3AUES9PA010T2UPNY3" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="ID" referencedTableName="T_CUSTOMER_GROUP"/>
+        <addForeignKeyConstraint baseColumnNames="CUSTOMER_ID" baseTableName="T_CUSTOMER_CUSTOMER_GROUP"
+                                 constraintName="FKL9N4N3C34O5PU8V65CD7O91Q7" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="ID" referencedTableName="T_CUSTOMER"/>
+    </changeSet>
+
+    <changeSet author="mrazavi" id="1547898340010-21">
+        <createTable tableName="T_USER_ACCESS_ROLE">
+            <column name="USER_ID" type="VARCHAR(255)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_3"/>
+            </column>
+            <column name="ROLES_ID" type="VARCHAR(255)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_3"/>
+            </column>
+        </createTable>
+        <createIndex indexName="FKQ5UN6X7ECOEF5W1N39COP66KL_INDEX_3" tableName="T_USER_ACCESS_ROLE">
+            <column name="USER_ID"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="ROLES_ID" baseTableName="T_USER_ACCESS_ROLE"
+                                 constraintName="FK5PCYWI6DL18IV00UQ0FBX9SYK" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="ID" referencedTableName="T_ACCESS_ROLE"/>
+        <addForeignKeyConstraint baseColumnNames="USER_ID" baseTableName="T_USER_ACCESS_ROLE"
+                                 constraintName="FKQ5UN6X7ECOEF5W1N39COP66KL" deferrable="false"
+                                 initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="ID" referencedTableName="T_USER"/>
+    </changeSet>
+
+    <changeSet author="mrazavi" id="1547898340010-30">
+        <dropForeignKeyConstraint baseTableName="T_CUSTOMER" constraintName="FK_CUSTOMER_BRANCH_ID"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-31">
+        <dropForeignKeyConstraint baseTableName="T_USER_BRANCH" constraintName="FK_EMPLOYEE_BRANCH_ID2"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-32">
+        <dropForeignKeyConstraint baseTableName="T_ORDER" constraintName="FK_ORDER_BRANCH_ID"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-33">
+        <dropColumn columnName="ROLE" tableName="T_USER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-1">
+        <modifyDataType columnName="AMOUNT" newDataType="decimal(19,2)" tableName="T_ORDER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-2">
+        <modifyDataType columnName="BRANCH_ID" newDataType="varchar(255)" tableName="T_CUSTOMER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-3">
+        <modifyDataType columnName="BRANCH_ID" newDataType="varchar(255)" tableName="T_ORDER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-4">
+        <modifyDataType columnName="BRANCH_IDS" newDataType="varchar(255)" tableName="T_USER_BRANCH"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-5">
+        <modifyDataType columnName="CUSTOMER_ID" newDataType="varchar(255)" tableName="T_ORDER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-6">
+        <modifyDataType columnName="FIRST_NAME" newDataType="varchar(255)" tableName="T_CUSTOMER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-7">
+        <modifyDataType columnName="FIRST_NAME" newDataType="varchar(255)" tableName="T_USER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-8">
+        <modifyDataType columnName="ID" newDataType="varchar(255)" tableName="T_BRANCH"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-9">
+        <modifyDataType columnName="ID" newDataType="varchar(255)" tableName="T_CUSTOMER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-10">
+        <modifyDataType columnName="ID" newDataType="varchar(255)" tableName="T_ORDER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-11">
+        <modifyDataType columnName="ID" newDataType="varchar(255)" tableName="T_USER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-12">
+        <modifyDataType columnName="LAST_NAME" newDataType="varchar(255)" tableName="T_CUSTOMER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-13">
+        <modifyDataType columnName="LAST_NAME" newDataType="varchar(255)" tableName="T_USER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-14">
+        <modifyDataType columnName="MAX_ORDER_AMOUNT" newDataType="int" tableName="T_USER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-15">
+        <modifyDataType columnName="NAME" newDataType="varchar(255)" tableName="T_BRANCH"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-16">
+        <modifyDataType columnName="STATE" newDataType="varchar(255)" tableName="T_ORDER"/>
+    </changeSet>
+    <changeSet author="mrazavi" id="1547898340010-17">
+        <modifyDataType columnName="USER_ID" newDataType="varchar(255)" tableName="T_USER_BRANCH"/>
+        <addNotNullConstraint columnDataType="varchar(255)" columnName="USER_ID" tableName="T_USER_BRANCH"/>
+    </changeSet>
+
+
+</databaseChangeLog>
