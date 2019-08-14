@@ -47,15 +47,11 @@
             <column name="id" type="VARCHAR(100)">
                 <constraints primaryKey="true" primaryKeyName="pk_employee_id"/>
             </column>
-            <column name="branch_id" type="VARCHAR(100)" />
             <column name="first_name" type="VARCHAR(100)" />
             <column name="last_name" type="VARCHAR(100)" />
             <column name="role" type="VARCHAR(100)" />
             <column name="max_order_amount" type="NUMBER" />
         </createTable>
-
-        <addForeignKeyConstraint baseTableName="t_user" baseColumnNames="branch_id" constraintName="fk_employee_branch_id" referencedTableName="t_branch"
-                                 referencedColumnNames="id" />
     </changeSet>
 
 

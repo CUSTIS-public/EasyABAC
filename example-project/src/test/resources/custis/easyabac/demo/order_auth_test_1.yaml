@@ -1,4 +1,4 @@
-expectedResult: PERMIT
+expectedResult: DENY
 action:
   id: order.action
   value: order.view
@@ -6,4 +6,5 @@ attributes:
   order:
     branchId: MSK
   subject:
-    branchIds: MSK
+    branchIds: XYZ
+

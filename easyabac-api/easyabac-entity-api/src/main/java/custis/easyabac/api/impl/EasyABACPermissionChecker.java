@@ -2,6 +2,8 @@ package custis.easyabac.api.impl;
 
 import custis.easyabac.api.EntityPermissionChecker;
 import custis.easyabac.api.NotPermittedException;
+import custis.easyabac.api.attr.imp.AttributiveAuthAction;
+import custis.easyabac.api.attr.imp.AttributiveAuthEntity;
 import custis.easyabac.api.utils.ResourceActionPair;
 import custis.easyabac.core.pdp.AuthAttribute;
 import custis.easyabac.core.pdp.AuthResponse;
@@ -30,7 +32,18 @@ public class EasyABACPermissionChecker<T, A> implements EntityPermissionChecker<
     public void ensurePermitted(T entity, A operation) throws NotPermittedException {
         AuthResponse response = authService.authorize(extract(entity, operation));
         if (response.getDecision() != AuthResponse.Decision.PERMIT) {
-            throw new NotPermittedException("Not permitted " + operation);
+            final String[] details = {""};
+            if (operation instanceof AttributiveAuthAction) {
+                AttributiveAuthAction authAction = (AttributiveAuthAction) operation;
+                details[0] += ", " + authAction.getAuthAttribute().getId() + ":" + authAction.getAuthAttribute().getValues().stream().map(e -> e.toString()).reduce("", String::concat);
+            }
+            if (entity instanceof AttributiveAuthEntity) {
+                AttributiveAuthEntity authEntity = (AttributiveAuthEntity) entity;
+                authEntity.getAuthAttributes().stream().forEach(e -> {
+                    details[0] += ", " + e.getId() + ":" + e.getValues();
+                });
+            }
+            throw new NotPermittedException("Not permitted " + details[0] +" "+ operation);
         }
     }
 

@@ -12,10 +12,10 @@
 
    <changeSet id="2" author="alapitskiy">
         <sql>
-           INSERT INTO t_user(id, branch_id, first_name, last_name, role, max_order_amount) VALUES ('MSK_user_1', 'MSK', 'Ivan', 'Ivanov', 'MANAGER', 1000);
-           INSERT INTO t_user(id, branch_id, first_name, last_name, role, max_order_amount) VALUES ('MSK_user_2', 'MSK', 'Petr', 'Petrov', 'OPERATOR', 0);
-           INSERT INTO t_user(id, branch_id, first_name, last_name, role, max_order_amount) VALUES ('SPB_user_1', 'SPB', 'Victor', 'Sidorov', 'MANAGER', 2000);
-           INSERT INTO t_user(id, branch_id, first_name, last_name, role, max_order_amount) VALUES ('SPB_user_2', 'SPB', 'Kirill', 'Kirillov', 'OPERATOR', 0);
+           INSERT INTO t_user(id, first_name, last_name, role, max_order_amount) VALUES ('MSK_user_1', 'Ivan', 'Ivanov', 'MANAGER', 1000);
+           INSERT INTO t_user(id, first_name, last_name, role, max_order_amount) VALUES ('MSK_user_2', 'Petr', 'Petrov', 'OPERATOR', 0);
+           INSERT INTO t_user(id, first_name, last_name, role, max_order_amount) VALUES ('SPB_user_1', 'Victor', 'Sidorov', 'MANAGER', 2000);
+           INSERT INTO t_user(id, first_name, last_name, role, max_order_amount) VALUES ('SPB_user_2', 'Kirill', 'Kirillov', 'OPERATOR', 0);
         </sql>
     </changeSet>
 
@@ -36,15 +36,15 @@
 
     <changeSet id="4" author="alapitskiy">
         <sql>
-            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_1', 'MSK_customer_1', 'MSK', 500, 'NEW');
-            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_2', 'MSK_customer_2', 'MSK', 2000, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_1', 'MSK_customer_1', 'MSK', 500, 'PROCESSED');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_2', 'MSK_customer_2', 'MSK', 2000, 'PROCESSED');
             INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_3', 'MSK_customer_3', 'MSK', 100, 'NEW');
-            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_4', 'MSK_customer_4', 'MSK', 1100, 'NEW');
-            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_5', 'MSK_customer_5', 'MSK', 500, 'NEW');
-            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_1', 'SPB_customer_1', 'SPB', 5000, 'NEW');
-            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_2', 'SPB_customer_2', 'SPB', 500, 'NEW');
-            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_3', 'SPB_customer_3', 'SPB', 1000, 'NEW');
-            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_4', 'SPB_customer_4', 'SPB', 200, 'NEW');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_4', 'MSK_customer_4', 'MSK', 1100, 'PROCESSED');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('MSK_order_5', 'MSK_customer_5', 'MSK', 500, 'PROCESSED');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_1', 'SPB_customer_1', 'SPB', 5000, 'PROCESSED');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_2', 'SPB_customer_2', 'SPB', 500, 'PROCESSED');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_3', 'SPB_customer_3', 'SPB', 1000, 'PROCESSED');
+            INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_4', 'SPB_customer_4', 'SPB', 200, 'PROCESSED');
             INSERT INTO t_order(id, customer_id, branch_id, amount, state) VALUES ('SPB_order_5', 'SPB_customer_5', 'SPB', 10, 'NEW');
         </sql>
     </changeSet>

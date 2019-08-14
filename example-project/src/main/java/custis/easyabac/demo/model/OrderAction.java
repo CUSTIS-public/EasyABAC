@@ -1,6 +1,7 @@
 package custis.easyabac.demo.model;
 
 public enum OrderAction {
+    EDIT("Edit order details"),
     VIEW("View order details"),
     CREATE("Create order"),
     APPROVE("Approve order"),

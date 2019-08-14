@@ -1,9 +1,12 @@
-expectedResult: PERMIT
+expectedResult: DENY
 action:
   id: order.action
-  value: order.view
+  value: order.edit
 attributes:
   order:
     branchId: MSK
+    state: XXX
   subject:
     branchIds: MSK
+    role: OPERATOR
+

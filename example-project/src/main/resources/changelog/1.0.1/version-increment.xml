@@ -3,7 +3,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <include file="1.0.0/version-increment.xml" relativeToChangelogFile="true"/>
-    <include file="1.0.1/version-increment.xml" relativeToChangelogFile="true"/>
+    <include file="20190109-1-domain.xml" relativeToChangelogFile="true" />
+    <include file="20190109-2-sample-data.xml" relativeToChangelogFile="true" />
 
 </databaseChangeLog>
