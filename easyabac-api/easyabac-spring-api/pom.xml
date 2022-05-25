@@ -17,7 +17,7 @@
 
     <properties>
         <docker.entrypoint.spring.profiles.active>default</docker.entrypoint.spring.profiles.active>
-        <spring.version>5.0.9.RELEASE</spring.version>
+        <spring.version>5.2.22.RELEASE</spring.version>
     </properties>
 
     <dependencies>
